@@ -123,6 +123,11 @@ sudo systemctl restart entangled
 journalctl -fu entangled -o cat
 ```
 
+- Check Sync ( If False than go to create validator )
+```
+entangled status 2>&1 | jq .SyncInfo
+```
+
 ### Create Validator
 
 Heads up to the Cheat Sheets to create validator
