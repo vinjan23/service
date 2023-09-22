@@ -1,0 +1,144 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Installation Node
+network: Mainnet
+icon: sge
+chain: sgenet-1
+version: v1.1.0
+---
+
+### Hardware requirements
+
+The following requirements are recommended for running Defund:
+
+- 4 or more physical CPU cores
+- At least 200GB of SSD disk storage
+- At least 8GB of memory (RAM)
+- At least 100mbps network bandwidth
+
+
+### Install dependencies Required
+
+```
+sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool -y
+```
+
+### Install go
+
+We are gonna use GO Version 1.19.5
+If you already have GO installed you can skip this 
+
+```
+ver="1.20.4"
+cd $HOME
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+rm "go$ver.linux-amd64.tar.gz"
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+source ~/.bash_profile
+go version
+```
+
+### Install binary
+
+```
+cd $HOME
+git clone https://github.com/sge-network/sge
+cd sge
+git checkout v1.1.0
+make install
+```
+
+Verify that you've installed sged successfully
+
+```
+sged version
+```
+
+### Initialize Node
+
+Please change `<MONIKER>` To your own Moniker.
+
+```
+sged init $MONIKER --chain-id sgenet-1
+sged config chain-id sgenet-1
+sged config keyring-backend file
+```
+
+### Download Genesis file and addrbook
+
+- Genesis
+
+```
+wget -O $HOME/.sge/config/genesis.json "https://raw.githubusercontent.com/sge-network/networks/master/mainnet/sgenet-1/genesis.json"
+```
+
+### Configure Seeds and Peers
+
+```
+seeds="6a727128f427d166d90a1185c7965b178235aaee@rpc.sge.nodestake.top:666,babc3f3f7804933265ec9c40ad94f4da8e9e0017@seed.rhinostake.com:17756,20e1000e88125698264454a884812746c2eb4807@seeds.lavenderfive.com:17756,df949a46ae6529ae1e09b034b49716468d5cc7e9@seeds.stakerhouse.com:11156"
+sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.sge/config/config.toml
+peers="4980b478f91de9be0564a547779e5c6cb07eb995@3.239.15.80:26656,0e7042be1b77707aaf0597bb804da90d3a606c08@3.88.40.53:26656"
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.sge/config/config.toml
+sed -i -e "s/^filter_peers *=.*/filter_peers = \"true\"/" $HOME/.sge/config/config.toml
+external_address=$(wget -qO- eth0.me) 
+sed -i.bak -e "s/^external_address *=.*/external_address = \"$external_address:26656\"/" $HOME/.sge/config/config.toml
+sed -i 's/max_num_inbound_peers =.*/max_num_inbound_peers = 50/g' $HOME/.sge/config/config.toml
+sed -i 's/max_num_outbound_peers =.*/max_num_outbound_peers = 50/g' $HOME/.sge/config/config.toml
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0usge\"/" $HOME/.sge/config/app.toml
+```
+
+### config pruning
+
+```
+pruning="custom" && \
+pruning_keep_recent="100" && \
+pruning_keep_every="0" && \
+pruning_interval="10" && \
+sed -i -e "s/^pruning *=.*/pruning = \"$pruning\"/" ~/.sge/config/app.toml && \
+sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"$pruning_keep_recent\"/" ~/.sge/config/app.toml && \
+sed -i -e "s/^pruning-keep-every *=.*/pruning-keep-every = \"$pruning_keep_every\"/" ~/.sge/config/app.toml && \
+sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"$pruning_interval\"/" ~/.sge/config/app.toml
+```
+
+
+### create service file and start node
+
+Create service file
+Create a `ojod.service` file in the `/etc/systemd/system` folder with the following code. 
+You can change `USER` with your Linux user name. You need sudo previlege to do this step.
+
+```
+sudo tee /etc/systemd/system/sged.service > /dev/null <<EOF
+[Unit]
+Description=sged
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which sged) start
+Restart=always
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+- Enable Service and Start Node
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable sged
+sudo systemctl restart sged
+sudo journalctl -u sged -f -o cat
+```
+### Create Validator
+
+Heads up to the Cheat Sheets to create validator
+
+<a href="https://service.vinjan.xyz/mainnet/sge/cheat" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">CLI Cheatsheets</button>
+</a>
