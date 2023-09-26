@@ -1,0 +1,18 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Snapshot
+network: Testnet
+icon: mantrachain
+chain: mantrachain-1
+version: v1.0.1
+---
+( Block 178605 )
+```
+sudo systemctl stop mantrachaind
+cp $HOME/.mantrachain/data/priv_validator_state.json $HOME/.mantrachain/priv_validator_state.json.backup
+rm -rf $HOME/.mantrachain/data
+mantrachaind tendermint unsafe-reset-all --home ~/.mantrachain/ --keep-addr-book
+curl -L https://snapshot.vinjan.xyz/mantrachain/mantrachain-snapshot-20230926.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.mantrachain
+sudo systemctl restart mantrachaind
+sudo journalctl -u mantrachaind -f -o cat
+```
