@@ -1,0 +1,172 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: mantrachain
+chain: mantrachain-1
+version:
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+mantrachaind keys add wallet
+```
+
+Recover Wallet
+```
+mantrachaind keys add wallet --recover
+```
+
+List Wallet
+```
+mantrachaind keys list
+```
+
+Delete Wallet
+```
+mantrachaind keys delete wallet
+```
+
+Check Wallet Balance
+```
+mantrachaind q bank balances $(mantrachaind keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+```
+mantrachaind tx staking create-validator \
+--amount=10000000uaum \
+--pubkey=$(mantrachaind tendermint show-validator) \
+--moniker="<your-moniker>" \
+--identity="" \
+--details="" \
+--website "" \
+--chain-id="mantrachain-1" \
+--commission-rate="0.10" \
+--commission-max-rate="0.20" \
+--commission-max-change-rate="0.01" \
+--min-self-delegation="1000000" \
+--from=wallet \
+--gas-adjustment 1.4 \
+--gas=auto \
+-y
+```
+
+Edit Validator
+```
+mantrachaind tx staking edit-validator \
+--new-moniker="YOUR MONIKER" \
+--identity="IDENTITY KEYBASE" \
+--details="DETAILS VALIDATOR" \
+--website="LINK WEBSITE" \
+--chain-id=mantrachain-1 \
+--from=wallet \
+--gas-adjustment 1.4 \
+--gas="auto" \
+-y
+```
+
+
+Unjail Validator
+```
+mantrachaind tx slashing unjail --from wallet --chain-id mantrachain-1 --gas-adjustment 1.4 --gas auto -y
+```
+
+Check Jailed Reason
+```
+mantrachaind query slashing signing-info $(mantrachaind tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+mantrachaind tx distribution withdraw-all-rewards --from wallet --chain-id mantrachain-1 --gas-adjustment 1.4 --gas auto -y
+```
+
+Withdraw Rewards with Comission
+```
+mantrachaind tx distribution withdraw-rewards $(mantrachaind keys show wallet --bech val -a) --commission --from wallet --chain-id mantrachain-1 --gas-adjustment 1.4 --gas auto -y
+```
+
+Delegate Token to your own validator
+```
+mantrachaind tx staking delegate $(mantrachaind keys show wallet --bech val -a) 1000000uaum --from wallet --chain-id mantrachain-1 --gas-adjustment 1.4 --gas auto -y
+```
+
+Delegate Token to other validator
+```
+mantrachaind tx staking redelegate $(mantrachaind keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uaum --from wallet --chain-id mantrachain-1 --gas-adjustment 1.4 --gas auto -y
+```
+
+Unbond Token from your validator
+```
+mantrachaind tx staking unbond $(mantrachaind keys show wallet --bech val -a) 1000000uaum --from wallet --chain-id mantrachain-1 --gas-adjustment 1.4 --gas auto -y
+```
+
+Send Token to another wallet
+```
+mantrachaind tx bank send wallet <TO_WALLET_ADDRESS> 1000000uaum --from wallet --chain-id mantrachain-1 --gas-adjustment 1.4 --gas auto -y
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+mantrachaind tx gov vote 1 yes --from wallet --chain-id mantrachain-1 --gas-adjustment 1.4 --gas auto -y
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=44` To any other ports
+```
+CUSTOM_PORT=37
+sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:${PORT}658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:${PORT}657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:${PORT}060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:${PORT}656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":${PORT}660\"%" $HOME/.mantrachain/config/config.toml
+sed -i -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:${PORT}317\"%; s%^address = \":8080\"%address = \":${PORT}080\"%; s%^address = \"localhost:9090\"%address = \"localhost:${PORT}090\"%; s%^address = \"localhost:9091\"%address = \"localhost:${PORT}091\"%; s%^address = \"0.0.0.0:8545\"%address = \"0.0.0.0:${PORT}545\"%; s%^ws-address = \"0.0.0.0:8546\"%ws-address = \"0.0.0.0:${PORT}546\"%" $HOME/.mantrachain/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.mantrachain/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.mantrachain/config/config.toml
+```
+
+Reset Chain Data
+```
+mantrachaind tendermint unsafe-reset-all --home $HOME/.mantrachain --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop mantrachaind
+sudo systemctl disable mantrachaind
+sudo rm /etc/systemd/system/mantrachaind.service
+sudo systemctl daemon-reload
+rm -f $(which mantrachaind)
+rm -rf .mantrachain
+rm -rf mantrachaind
+```
