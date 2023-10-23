@@ -1,0 +1,171 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Mainnet
+icon: sge
+chain: sgenet-1
+version: v1.1.0
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+sged keys add wallet
+```
+
+Recover Wallet
+```
+sged keys add wallet --recover
+```
+
+List Wallet
+```
+sged keys list
+```
+
+Delete Wallet
+```
+sged keys delete wallet
+```
+
+Check Wallet Balance
+```
+sged q bank balances $(sged keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+```
+sged tx staking create-validator \
+--amount=10000000usge \
+--moniker= \
+--identity= \
+--details= \
+--website= \
+--from=wallet \
+--commission-max-change-rate="0.01" \
+--commission-max-rate="0.2" \
+--commission-rate="0.1" \
+--min-self-delegation="1" \
+--pubkey=$(sged tendermint show-validator) \
+--chain-id=sgenet-1 \
+--gas-adjustment=1.2 \
+--gas=auto \
+-y
+```
+
+Edit Validator
+```
+sged tx staking edit-validator \
+--moniker="<MONIKER>" \
+--identity="YOUR_KEYBASE_ID" \
+--details="YOUR_DETAILS" \
+--website="YOUR_WEBSITE_URL"
+--chain-id sgenet-1 \
+--from=wallet \
+--gas-adjustment=1.2 \
+--gas=auto \
+-y
+```
+
+
+Unjail Validator
+```
+sged tx slashing unjail --broadcast-mode=block --from wallet --chain-id sgenet-1 --gas-adjustment 1.2 --gas auto -y
+```
+
+Check Jailed Reason
+```
+sged query slashing signing-info $(sged tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+sged tx distribution withdraw-all-rewards --from wallet --chain-id sgenet-1 --gas-adjustment 1.2 --gas auto -y
+```
+
+Withdraw Rewards with Comission
+```
+sged tx distribution withdraw-rewards $(sged keys show wallet --bech val -a) --commission --from wallet --chain-id sgenet-1 --gas-adjustment 1.2 --gas auto -y
+```
+
+Delegate Token to your own validator
+```
+sged tx staking delegate $(sged keys show wallet --bech val -a) 1000000usge --from wallet --chain-id sgenet-1 --gas-adjustment 1.1 --gas auto -y
+```
+
+Delegate Token to other validator
+```
+sged tx staking redelegate $(sged keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000usge --from wallet --chain-id sgenet-1 --gas-adjustment 1.1 --gas auto -y
+```
+
+Unbond Token from your validator
+```
+sged tx staking unbond $(sged keys show wallet --bech val -a) 1000000usge --from wallet --chain-id sgenet-1 --gas-adjustment 1.1 --gas auto -y
+```
+Send Token to another wallet
+```
+sged tx bank send wallet <TO_WALLET_ADDRESS> 1000000usge --from wallet --chain-id sgenet-1
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+sged tx gov vote 1 yes --from wallet --chain-id sgenet-1 --gas-adjustment 1.1 --gas auto -y
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=18` To any other ports
+```
+CUSTOM_PORT=17
+sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:${PORT}658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:${PORT}657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:${PORT}060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:${PORT}656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":${PORT}660\"%" $HOME/.sge/config/config.toml
+sed -i -e "s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:${PORT}317\"%; s%^address = \":8080\"%address = \":${PORT}080\"%; s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:${PORT}090\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:${PORT}091\"%; s%^address = \"0.0.0.0:8545\"%address = \"0.0.0.0:${PORT}545\"%; s%^ws-address = \"0.0.0.0:8546\"%ws-address = \"0.0.0.0:${PORT}546\"%" $HOME/.sge/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i -e 's|^indexer *=.*|indexer = "kv"|' $HOME/.sge/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i -e 's|^indexer *=.*|indexer = "null"|' $HOME/.sge/config/config.toml
+```
+
+Reset Chain Data
+```
+sged tendermint unsafe-reset-all --home $HOME/.sge --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop sged
+sudo systemctl disable sged
+sudo rm /etc/systemd/system/sged.service
+sudo systemctl daemon-reload
+rm -f $(which sged)
+rm -rf .sge
+rm -rf sge
+```
