@@ -4,7 +4,7 @@ title: Installation Node
 icon: archway
 network: Mainnet
 chain: archway-1
-version: 1.0.0 
+version: 4.0.2
 ---
 
 ### Hardware requirements
@@ -25,11 +25,11 @@ sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang p
 
 ### Install go
 
-We are gonna use GO Version 1.19.5
+We are gonna use GO Version 1.20.6
 If you already have GO installed you can skip this 
 
 ```
-ver="1.20.4"
+ver="1.20.6"
 cd $HOME
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
@@ -46,7 +46,7 @@ go version
 cd $HOME
 git clone https://github.com/archway-network/archway.git
 cd archway
-git checkout v1.0.0
+git checkout v4.0.2
 make install
 ```
 
@@ -65,7 +65,7 @@ archwayd config keyring-backend file
 - Genesis & Addrbook
 
 ```
-wget -qO $HOME/.archway/config/genesis.json https://snapshots.theamsolutions.info/arch-genesis.json
+curl -Ls https://ss.archway.nodestake.top/genesis.json > $HOME/.archway/config/genesis.json
 ```
 
 ### Configure Seeds and Peers
