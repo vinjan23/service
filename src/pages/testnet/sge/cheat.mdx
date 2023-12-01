@@ -3,8 +3,8 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Node CLI Cheatsheet
 network: Testnet
 icon: sge
-chain: sge-network-3
-version: v1.0.1
+chain: sge-network-4
+version: v1.1.1
 ---
 
 ### CLI Cheatsheet
@@ -60,6 +60,7 @@ sged tx staking create-validator \
 --identity=<keybase> \
 --details= \
 --website= \
+--gas auto \
 -y
 ```
 
@@ -73,13 +74,14 @@ sged tx staking edit-validator \
 --chain-id sge-network-3 \
 --from=wallet \
 --gas-adjustment="1.4" \
+--gas auto
 -y
 ```
 
 
 Unjail Validator
 ```
-sged tx slashing unjail --broadcast-mode=block --from wallet --chain-id sge-network-3 --gas auto --gas-adjustment 1.4 --gas auto -y
+sged tx slashing unjail --broadcast-mode=block --from wallet --chain-id sge-network-4 --gas auto --gas-adjustment 1.4 --gas auto -y
 ```
 
 Check Jailed Reason
@@ -91,32 +93,32 @@ sged query slashing signing-info $(sged tendermint show-validator)
 
 Withdraw Rewards
 ```
-sged tx distribution withdraw-all-rewards --from wallet --chain-id sge-network-3 --gas-adjustment 1.4 --gas auto -y
+sged tx distribution withdraw-all-rewards --from wallet --chain-id sge-network-4 --gas-adjustment 1.4 --gas auto -y
 ```
 
 Withdraw Rewards with Comission
 ```
-sged tx distribution withdraw-rewards $(sged keys show wallet --bech val -a) --commission --from wallet --chain-id sge-network-3 --gas-adjustment 1.4 --gas auto -y
+sged tx distribution withdraw-rewards $(sged keys show wallet --bech val -a) --commission --from wallet --chain-id sge-network-4 --gas-adjustment 1.4 --gas auto -y
 ```
 
 Delegate Token to your own validator
 ```
-sged tx staking delegate $(sged keys show wallet --bech val -a) 1000000usge --from wallet --chain-id sge-network-3 --gas-adjustment 1.4 --gas auto -y
+sged tx staking delegate $(sged keys show wallet --bech val -a) 1000000usge --from wallet --chain-id sge-network-4 --gas-adjustment 1.4 --gas auto -y
 ```
 
 Delegate Token to other validator
 ```
-sged tx staking redelegate $(sged keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000usge --from wallet --chain-id sge-network-3 --gas-adjustment 1.4 --gas auto -y
+sged tx staking redelegate $(sged keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000usge --from wallet --chain-id sge-network-4 --gas-adjustment 1.4 --gas auto -y
 ```
 
 Unbond Token from your validator
 ```
-sged tx staking unbond $(sged keys show wallet --bech val -a) 1000000usge --from wallet --chain-id sge-network-3 --gas-adjustment 1.4 --gas auto -y
+sged tx staking unbond $(sged keys show wallet --bech val -a) 1000000usge --from wallet --chain-id sge-network-4 --gas-adjustment 1.4 --gas auto -y
 ```
 
 Send Token to another wallet
 ```
-sged tx bank send wallet <TO_WALLET_ADDRESS> 1000000usge --from wallet --chain-id sge-network-3
+sged tx bank send wallet <TO_WALLET_ADDRESS> 1000000usge --from wallet --chain-id sge-network-4 --gas-adjustment 1.4 --gas auto -y
 ```
 
 ### Governance 
@@ -125,7 +127,7 @@ Vote
 You can change the value of `yes` to `no`,`abstain`,`nowithveto`
 
 ```
-sged tx gov vote 1 yes --from wallet --chain-id sge-network-3 --gas-adjustment 1.4 --gas auto -y
+sged tx gov vote 1 yes --from wallet --chain-id sge-network-4 --gas-adjustment 1.4 --gas auto -y
 
 ```
 
