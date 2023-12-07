@@ -3,8 +3,8 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Node CLI Cheatsheet
 network: Testnet
 icon: cascadia
-chain: cascadia_6102-1
-version: v0.1.1
+chain: cascadia_11029-1
+version: v0.1.9
 ---
 
 ### CLI Cheatsheet
@@ -54,14 +54,14 @@ cascadiad tx staking create-validator \
 --identity="YOUR_KEYBASE_ID" \
 --details="YOUR_DETAILS" \
 --website="YOUR_WEBSITE_URL" \
---chain-id=cascadia_6102-1 \
+--chain-id=cascadia_11029-1 \
 --commission-rate=0.05 \
 --commission-max-rate=0.20 \
 --commission-max-change-rate=0.01 \
 --min-self-delegation=1 \
 --from=wallet \
 --gas-adjustment=1.4 \
---gas=auto \
+--gas=250000 \
 --gas-prices=7aCC \
 -y
 ```
@@ -73,11 +73,11 @@ cascadiad tx staking edit-validator \
 --identity="YOUR_KEYBASE_ID" \
 --details="YOUR_DETAILS" \
 --website="YOUR_WEBSITE_URL"
---chain-id cascadia_6102-1 \
+--chain-id cascadia_11029-1 \
 --commission-rate=0.05 \
 --from=<wallet> \
 --gas-adjustment="1.15" \
---gas auto \
+--gas 250000 \
 --gas-prices=7aCC \
 -y
 ```
@@ -85,7 +85,7 @@ cascadiad tx staking edit-validator \
 
 Unjail Validator
 ```
-cascadiad tx slashing unjail --from <wallet> --chain-id --chain-id cascadia_6102-1 --gas-adjustment 1.4 --gas auto --gas-prices=7aCC -y
+cascadiad tx slashing unjail --from <wallet> --chain-id --chain-id cascadia_11029-1 --gas-adjustment 1.4 --gas 250000 --gas-prices=7aCC -y
 ```
 
 Check Jailed Reason
@@ -97,32 +97,32 @@ cascadiad query slashing signing-info $(cascadiad tendermint show-validator)
 
 Withdraw Rewards
 ```
-cascadiad tx distribution withdraw-all-rewards --from wallet --chain-id cascadia_6102-1 --gas-adjustment 1.4 --gas auto --gas-prices=7aCC -y
+cascadiad tx distribution withdraw-all-rewards --from wallet --chain-id cascadia_11029-1 --gas-adjustment 1.4 --gas 250000 --gas-prices=7aCC -y
 ```
 
 Withdraw Rewards with Comission
 ```
-cascadiad tx distribution withdraw-rewards $(cascadiad keys show wallet --bech val -a) --commission --from wallet --chain-id cascadia_6102-1 --gas-adjustment 1.4 --gas auto --gas-prices=7aCC -y
+cascadiad tx distribution withdraw-rewards $(cascadiad keys show wallet --bech val -a) --commission --from wallet --chain-id cascadia_11029-1 --gas-adjustment 1.4 --gas 250000 --gas-prices=7aCC -y
 ```
 
 Delegate Token to your own validator
 ```
-cascadiad tx staking delegate $(cascadiad keys show wallet --bech val -a) 1000000aCC --from wallet --chain-id cascadia_6102-1 --gas-adjustment 1.4 --gas auto --gas-prices=7aCC -y
+cascadiad tx staking delegate $(cascadiad keys show wallet --bech val -a) 1000000aCC --from wallet --cascadia_11029-1 --gas-adjustment 1.4 --gas 250000 --gas-prices=7aCC -y
 ```
 
 Delegate Token to other validator
 ```
-cascadiad tx staking redelegate $(cascadiad keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000aCC --from wallet --chain-id cascadia_6102-1 --gas-adjustment 1.4 --gas auto --gas-prices=7aCC -y
+cascadiad tx staking redelegate $(cascadiad keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000aCC --from wallet --chain-id cascadia_11029-1 --gas-adjustment 1.4 --gas 250000 --gas-prices=7aCC -y
 ```
 
 Unbond Token from your validator
 ```
-cascadiad tx staking unbond $(cascadiad keys show wallet --bech val -a) 1000000aCC --from wallet --chain-id cascadia_6102-1 --gas-adjustment 1.4 --gas auto --gas-prices=7aCC -y
+cascadiad tx staking unbond $(cascadiad keys show wallet --bech val -a) 1000000aCC --from wallet --chain-id cascadia_11029-1 --gas-adjustment 1.4 --gas 250000 --gas-prices=7aCC -y
 ```
 
 Send Token to another wallet
 ```
-cascadiad tx bank send wallet <TO_WALLET_ADDRESS> 1000000aCC --from wallet --chain-id cascadia_6102-1
+cascadiad tx bank send wallet <TO_WALLET_ADDRESS> 1000000aCC --from wallet --chain-id cascadia_11029-1 --gas-adjustment 1.4 --gas 250000 --gas-prices=7aCC -y
 ```
 
 ### Governance 
@@ -131,7 +131,7 @@ Vote
 You can change the value of `yes` to `no`,`abstain`,`nowithveto`
 
 ```
-cascadiad tx gov vote 1 yes --from wallet --chain-id cascadia_6102-1 --gas-adjustment 1.4 --gas auto --gas-prices=7aCC -y
+cascadiad tx gov vote 1 yes --from wallet --chain-id cascadia_11029-1 --gas-adjustment 1.4 --gas 250000 --gas-prices=7aCC -y
 ```
 
 ### Other
