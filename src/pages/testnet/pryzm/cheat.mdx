@@ -1,0 +1,176 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: pryzm
+chain: indigo-1
+version: v0.9.0
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+pryzmd keys add wallet
+```
+
+Recover Wallet
+```
+pryzmd keys add wallet --recover
+```
+
+List Wallet
+```
+pryzmd keys list
+```
+
+Delete Wallet
+```
+pryzmd keys delete wallet
+```
+
+Check Wallet Balance
+```
+pryzmd q bank balances $(pryzmd keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+```
+pryzmd tx staking create-validator \
+--amount=1000000upryzm \
+--moniker="YOUR MONIKER" \
+--pubkey=$(pryzmd tendermint show-validator) \
+--identity="IDENTITY KEYBASE" \
+--details="DETAILS VALIDATOR" \
+--website="LINK WEBSITE" \
+--security-contact=CONTACT \
+--chain-id=indigo-1 \
+--commission-rate=0.1 \
+--commission-max-rate=0.20 \
+--commission-max-change-rate=0.01 \
+--min-self-delegation=1 \
+--from=wallet \
+--gas-adjustment 1.4 \
+--gas="auto" \
+-y
+```
+
+Edit Validator
+```
+pryzmd tx staking edit-validator \
+--new-moniker="YOUR MONIKER" \
+--identity="IDENTITY KEYBASE" \
+--details="DETAILS VALIDATOR" \
+--website="LINK WEBSITE" \
+--chain-id=indigo-1 \
+--from=wallet \
+--gas-adjustment 1.4 \
+--gas="auto" \
+-y
+```
+
+
+Unjail Validator
+```
+pryzmd tx slashing unjail --from wallet --chain-id indigo-1 --gas-adjustment 1.4 --gas auto -y
+```
+
+Check Jailed Reason
+```
+pryzmd query slashing signing-info $(pryzmd tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+pryzmd tx distribution withdraw-all-rewards --from wallet --chain-id indigo-1  --gas-adjustment 1.4 --gas=auto -y
+```
+
+Withdraw Rewards with Comission
+```
+pryzmd tx distribution withdraw-rewards $(pryzmd keys show wallet --bech val -a) --commission --from wallet --chain-id indigo-1  --gas-adjustment 1.4 --gas=auto -y
+```
+
+Delegate Token to your own validator
+```
+pryzmd tx staking delegate $(pryzmd keys show wallet --bech val -a) 1000000upryzm --from wallet --chain-id indigo-1  --gas-adjustment 1.4 --gas=auto -y
+```
+
+Delegate Token to other validator
+```
+pryzmd tx staking redelegate $(pryzmd keys show wallet -a) <TO_VALOPER_ADDRESS> 1000000upryzm --from wallet --chain-id indigo-1 --gas-adjustment 1.4 --gas auto -y
+```
+
+Unbond Token from your validator
+```
+pryzmd tx staking unbond $(pryzmd keys show wallet --bech val -a) 1000000upryzm --from wallet --chain-id indigo-1 --gas-adjustment 1.4 --gas auto -y
+```
+
+Send Token to another wallet
+```
+pryzmd tx bank send wallet <TO_WALLET_ADDRESS> 1000000upryzm --from wallet --chain-id indigo-1 --gas-adjustment 1.4 --gas auto -y
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+pryzmd tx gov vote 1 yes --from wallet  --chain-id indigo-1 --gas-adjustment 1.4 --gas auto -y
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=31` To any other ports
+```
+PORT=15
+pryzmd config node tcp://localhost:${PORT}657
+```
+```
+sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:${PORT}658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:${PORT}657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:${PORT}060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:${PORT}656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":${PORT}660\"%" $HOME/.pryzm/config/config.toml
+sed -i -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:${PORT}317\"%; s%^address = \":8080\"%address = \":${PORT}080\"%; s%^address = \"localhost:9090\"%address = \"localhost:${PORT}090\"%; s%^address = \"localhost:9091\"%address = \"localhost:${PORT}091\"%; s%^address = \"0.0.0.0:8545\"%address = \"0.0.0.0:${PORT}545\"%; s%^ws-address = \"0.0.0.0:8546\"%ws-address = \"0.0.0.0:${PORT}546\"%" $HOME/.pryzm/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i -e 's|^indexer *=.*|indexer = "kv"|' $HOME/.pryzm/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i -e 's|^indexer *=.*|indexer = "null"|' $HOME/.pryzm/config/config.toml
+```
+
+Reset Chain Data
+```
+pryzmd tendermint unsafe-reset-all --home $HOME/.pryzm --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop pryzmd
+sudo systemctl disable pryzmd
+sudo rm /etc/systemd/system/pryzmd.service
+sudo systemctl daemon-reload
+rm -f $(which pryzmd)
+rm -rf .pryzm
+rm -rf $HOME/go/bin/pryzmd
+```
