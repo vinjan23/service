@@ -51,7 +51,7 @@ Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOU
 Create Validator (Staking)
 ```
 artelad tx staking create-validator \
---amount=1000000uart" \
+--amount=1000000000000000000uart" \
 --pubkey=$(artelad tendermint show-validator) \
 --moniker="" \
 --identity="" \
@@ -109,17 +109,17 @@ artelad tx distribution withdraw-rewards $(artelad keys show wallet --bech val -
 
 Delegate Token to your own validator
 ```
-artelad tx staking delegate $(artelad keys show wallet --bech val -a) 1000000uart --from wallet --chain-id artela_11822-1 --gas-adjustment 1.4 --gas=auto --gas-prices=0.025uart -y
+artelad tx staking delegate $(artelad keys show wallet --bech val -a) 1000000000000000000uart --from wallet --chain-id artela_11822-1 --gas-adjustment 1.4 --gas=auto --gas-prices=0.025uart -y
 ```
 
 Delegate Token to other validator
 ```
-artelad tx staking redelegate $(artelad keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uart --from wallet --chain-id artela_11822-1 --gas-adjustment 1.4 --gas=auto --gas-prices=0.025uart -y
+artelad tx staking redelegate $(artelad keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000000000000000uart --from wallet --chain-id artela_11822-1 --gas-adjustment 1.4 --gas=auto --gas-prices=0.025uart -y
 ```
 
 Unbond Token from your validator
 ```
-artelad tx staking unbond $(artelad keys show wallet --bech val -a) 1000000uart --from wallet --chain-id artela_11822-1 --gas-adjustment 1.4 --gas=auto --gas-prices=0.025uart -y
+artelad tx staking unbond $(artelad keys show wallet --bech val -a) 1000000000000000000uart --from wallet --chain-id artela_11822-1 --gas-adjustment 1.4 --gas=auto --gas-prices=0.025uart -y
 ```
 
 Send Token to another wallet
