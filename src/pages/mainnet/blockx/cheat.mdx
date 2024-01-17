@@ -1,0 +1,170 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Mainnet
+icon: blockx
+chain: blockx_100-1
+version: v1.1.0
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+blockxd keys add <wallet>
+```
+
+Recover Wallet
+```
+blockxd keys add <wallet> --recover
+```
+
+List Wallet
+```
+blockxd keys list
+```
+
+Delete Wallet
+```
+blockxd keys delete wallet
+```
+
+Check Wallet Balance
+```
+blockxd q bank balances $(blockxd keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+```
+blockxd tx staking create-validator \
+--amount 9999999999999999990000abcx \
+--from wallet \
+--commission-max-change-rate "0.01" \
+--commission-max-rate "0.2" \
+--commission-rate "0.1" \
+--min-self-delegation "1" \
+--pubkey  $(blockxd tendermint show-validator) \
+--moniker="" \
+--chain-id blockx_100-1 \
+--identity="" \
+--details="" \
+--website="" \
+--gas=auto \
+-y
+```
+
+Edit Validator
+```
+blockxd tx staking edit-validator \
+--moniker="<MONIKER>" \
+--identity="YOUR_KEYBASE_ID" \
+--details="YOUR_DETAILS" \
+--website="YOUR_WEBSITE_URL"
+--chain-id blockx_100-1 \
+--from=wallet \
+--gas=auto \
+-y
+```
+
+
+Unjail Validator
+```
+blockxd tx slashing unjail --from wallet --chain-id blockx_100-1 --gas auto -y
+```
+
+Check Jailed Reason
+```
+blockxd query slashing signing-info $(blockxd tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+blockxd tx distribution withdraw-all-rewards --from wallet --chain-id blockx_100-1 --gas auto -y
+```
+
+Withdraw Rewards with Comission
+```
+blockxd tx distribution withdraw-rewards $(blockxd keys show wallet --bech val -a) --commission --from wallet --chain-id blockx_100-1 --gas auto -y
+```
+
+Delegate Token to your own validator
+```
+blockxd tx staking delegate $(blockxd keys show wallet --bech val -a) 1000000000000000000abcx --from wallet --chain-id blockx_100-1 --gas auto -y
+```
+
+Delegate Token to other validator
+```
+blockxd tx staking redelegate $(blockxd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000abcx --from wallet --chain-id blockx100-1 --gas auto -y
+```
+
+Unbond Token from your validator
+```
+blockxd tx staking unbond $(blockxd keys show wallet --bech val -a) 1000000abcx --from wallet --chain-id blockx_100-1 --gas auto -y
+```
+
+Send Token to another wallet
+```
+blockxd tx bank send wallet <TO_WALLET_ADDRESS> 1000000abcx --from wallet --chain-id blockx_100-1 --gas auto -y
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+blockxd tx gov vote 1 yes --from wallet --chain-id blockx_100-1 --gas auto -y
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=19` To any other ports
+```
+CUSTOM_PORT=19
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:${CUSTOM_PORT}658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:${CUSTOM_PORT}657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:${CUSTOM_PORT}060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:${CUSTOM_PORT}656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":${CUSTOM_PORT}660\"%" $HOME/.blockxd/config/config.toml
+sed -i.bak -e "s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:${CUSTOM_PORT}317\"%; s%^address = \":8080\"%address = \":${CUSTOM_PORT}080\"%; s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:${CUSTOM_PORT}090\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:${CUSTOM_PORT}091\"%; s%^address = \"0.0.0.0:8545\"%address = \"0.0.0.0:${CUSTOM_PORT}545\"%; s%^ws-address = \"0.0.0.0:8546\"%ws-address = \"0.0.0.0:${CUSTOM_PORT}546\"%" $HOME/.blockxd/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i -e 's|^indexer *=.*|indexer = "kv"|' $HOME/.blockxd/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i -e 's|^indexer *=.*|indexer = "null"|' $HOME/.blockxd/config/config.toml
+```
+
+Reset Chain Data
+```
+blockxd tendermint unsafe-reset-all --home $HOME/.blockxd --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop blockxd && \
+sudo systemctl disable blockxd && \
+rm /etc/systemd/system/blockxd.service && \
+sudo systemctl daemon-reload && \
+cd $HOME && \
+rm -rf .blockxd && \
+rm -rf $(which blockxd)
+```
