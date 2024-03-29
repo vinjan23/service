@@ -1,0 +1,14 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Live Peers
+network: Testnet
+icon: warden
+chain: alfama
+version: v0.2.0
+---
+Live Peers 
+
+```
+peers="1328be203b9cdbee6760b794671bb5977f8706df@167.235.59.164:26656,169c8c9b7eb1e9cde981bcfca51b5428e49dc01a@213.199.39.207:18656,cfc41ea1eb57932dc95f37ea9312451fd06d63d4@155.133.22.148:26656,395f3c90177bee9fc7f8ed022ab6df5167f49bd8@65.109.113.228:60556,3ae5e612e1cb72b4bee393517b58fb932e9f144f@37.252.186.201:26656,aef76fc25f10c50913fef69794c4bd859d2e72d9@5.78.107.130:26656,18c0cf1f2fcb1e3e00251da32e7720fcdd7b5fed@85.239.235.219:26656,4b32aec66d9e7d4906622e646242e90d9f08a60b@116.203.106.180:26656,89057c8e51fd3c3193c8792fae62e3d67f21ad13@75.119.133.228:26656,8e684d5c6f9cdef859431a6191a0635d27f771e8@84.247.165.17:26656"
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.warden/config/config.toml
+```
