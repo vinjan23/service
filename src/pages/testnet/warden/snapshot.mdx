@@ -1,0 +1,23 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Snapshot
+network: Testnet
+icon: warden
+chain: alfama
+version: v0.2.0
+---
+```
+Snapshot Info
+Block Hight: 413605
+Size: 524 Mb
+Time: Sat 2024-03-29
+```
+
+```
+sudo apt install lz4 -y
+sudo systemctl stop waqrdend
+wardend tendermint unsafe-reset-all --home $HOME/.warden --keep-addr-book
+curl -L https://snap.vinjan.xyz/warden/warden-snapshot-20240329.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.**
+sudo systemctl restart wardend
+journalctl -fu wardend -o cat
+```
