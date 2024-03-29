@@ -1,0 +1,162 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: warden
+chain: alfama
+version: v0.2.0
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Usefull Command
+```
+wardend status 2>&1 | jq .sync_info
+```
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+wardend keys add wallet
+```
+
+Recover Wallet
+```
+wardend keys add wallet --recover
+```
+
+List Wallet
+```
+wardend keys list
+```
+
+Delete Wallet
+```
+wardend keys delete wallet
+```
+
+Check Wallet Balance
+```
+wardend q bank balances $(wardend keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+- Check Your Pubkey
+```
+wardend comet show-validator
+```
+- Make File validator.json
+```
+nano $HOME/validator.json
+```
+```
+{
+  "pubkey": {"#pubkey"},
+  "amount": "1000000uward",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.2",
+  "min-self-delegation": "1"
+}
+```
+
+
+Unjail Validator
+```
+wardend tx slashing unjail --from Wallet_name --chain-id alfama --gas 350000 -y
+```
+
+Check Jailed Reason
+```
+wardend query slashing signing-info $(wardend tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+wardend tx distribution withdraw-all-rewards --from Wallet_Name --chain-id alfama --gas 350000 -y
+```
+
+Withdraw Rewards with Comission
+```
+wardend tx distribution withdraw-rewards $(wardend keys show wallet --bech val -a) --commission --from wallet --chain-id alfama  --gas 350000 -y
+```
+
+Delegate Token to your own validator
+```
+wardend tx staking delegate $(wardend keys show wallet --bech val -a) 1000000uward --from wallet --chain-id alfama  --gas 350000 -y
+```
+
+Delegate Token to other validator
+```
+wardend staking redelegate $(wardend keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uward --from wallet --chain-id alfama  --gas 350000 -y
+```
+
+Unbond Token from your validator
+```
+wardend tx staking unbond $(wardend keys show wallet --bech val -a) 1000000uward --from wallet ---chain-id alfama  --gas 350000 -y
+```
+
+Send Token to another wallet
+```
+wardend tx bank send wallet <TO_WALLET_ADDRESS> 1000000uward --from wallet --chain-id alfama
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=20` To any other ports
+```
+PORT=51
+wardend config node tcp://localhost:${PORT}657
+```
+```
+sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:${PORT}658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:${PORT}657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:${PORT}060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:${PORT}656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":${PORT}660\"%" $HOME/.selfchain/config/config.toml
+sed -i -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:${PORT}317\"%; s%^address = \":8080\"%address = \":${PORT}080\"%; s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:${PORT}090\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:${PORT}091\"%; s%^address = \"0.0.0.0:8545\"%address = \"0.0.0.0:${PORT}545\"%; s%^ws-address = \"0.0.0.0:8546\"%ws-address = \"0.0.0.0:${PORT}546\"%" $HOME/.selfchain/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.warden/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.warden/config/config.toml
+```
+
+Reset Chain Data
+```
+wardend tendermint unsafe-reset-all --home $HOME/.warden --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop wardend
+sudo systemctl disable wardend
+sudo rm /etc/systemd/system/wardend.service
+sudo systemctl daemon-reload
+rm -f $(which wardend)
+rm -rf .warden
+rm -rf wardenprotol
+```
