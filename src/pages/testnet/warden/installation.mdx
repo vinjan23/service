@@ -132,15 +132,7 @@ sudo systemctl enable wardend
 sudo systemctl restart wardend
 sudo journalctl -u wardend -f -o cat
 ```
-- Snapshot Height 413605
-```
-sudo apt install lz4 -y
-sudo systemctl stop waqrdend
-wardend tendermint unsafe-reset-all --home $HOME/.warden --keep-addr-book
-curl -L https://snap.vinjan.xyz/warden/warden-snapshot-20240329.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.**
-sudo systemctl restart wardend
-journalctl -fu wardend -o cat
-```
+
 ### Create Validator
 
 Heads up to the Cheat Sheets to create validator
