@@ -78,12 +78,12 @@ nano $HOME/validator.json
 wardend tx staking create-validator validator.json \
     --from=wallet \
     --chain-id=buenavista-1 \
-    --fees=500uward
+    --fees=1000uward
 ```
 
 Unjail Validator
 ```
-wardend tx slashing unjail --from Wallet_name --chain-id buenavista-1 --gas 350000 -y
+wardend tx slashing unjail --from Wallet_name --chain-id buenavista-1 --fees 1000uward -y
 ```
 
 Check Jailed Reason
@@ -95,32 +95,32 @@ wardend query slashing signing-info $(wardend tendermint show-validator)
 
 Withdraw Rewards
 ```
-wardend tx distribution withdraw-all-rewards --from Wallet_Name --chain-id buenavista-1 --gas 350000 -y
+wardend tx distribution withdraw-all-rewards --from Wallet_Name --chain-id buenavista-1 --fees 1000uward -y
 ```
 
 Withdraw Rewards with Comission
 ```
-wardend tx distribution withdraw-rewards $(wardend keys show wallet --bech val -a) --commission --from wallet --chain-id buenavista-1  --gas 350000 -y
+wardend tx distribution withdraw-rewards $(wardend keys show wallet --bech val -a) --commission --from wallet --chain-id buenavista-1  --fees 1000uward -y
 ```
 
 Delegate Token to your own validator
 ```
-wardend tx staking delegate $(wardend keys show wallet --bech val -a) 1000000uward --from wallet --chain-id buenavista-1  --gas 350000 -y
+wardend tx staking delegate $(wardend keys show wallet --bech val -a) 1000000uward --from wallet --chain-id buenavista-1 --fees 1000uward -y
 ```
 
 Delegate Token to other validator
 ```
-wardend staking redelegate $(wardend keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uward --from wallet --chain-id buenavista-1  --gas 350000 -y
+wardend staking redelegate $(wardend keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uward --from wallet --chain-id buenavista-1 --fees 1000uward -y
 ```
 
 Unbond Token from your validator
 ```
-wardend tx staking unbond $(wardend keys show wallet --bech val -a) 1000000uward --from wallet ---chain-id buenavista-1  --gas 350000 -y
+wardend tx staking unbond $(wardend keys show wallet --bech val -a) 1000000uward --from wallet ---chain-id buenavista-1  --fees 1000uward -y
 ```
 
 Send Token to another wallet
 ```
-wardend tx bank send wallet <TO_WALLET_ADDRESS> 1000000uward --from wallet --chain-id buenavista-1
+wardend tx bank send wallet <TO_WALLET_ADDRESS> 1000000uward --from wallet --chain-id buenavista-1 --fees 1000uward
 ```
 
 ### Other
