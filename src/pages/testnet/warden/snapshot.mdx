@@ -8,16 +8,15 @@ version: v0.2.0
 ---
 ```
 Snapshot Info
-Block Hight: 413605
-Size: 524 Mb
-Time: Sat 2024-03-29
+Block Hight: 62200
+Time: Sat 2024-04-21
 ```
 
 ```
 sudo apt install lz4 -y
-sudo systemctl stop waqrdend
+sudo systemctl stop wardend
 wardend tendermint unsafe-reset-all --home $HOME/.warden --keep-addr-book
-curl -L https://snap.vinjan.xyz/warden/warden-snapshot-20240329.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.**
+curl -L https://snapshot.vinjan.xyz/warden/warden-snapshot-20240421.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.warden
 sudo systemctl restart wardend
 journalctl -fu wardend -o cat
 ```
