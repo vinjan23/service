@@ -1,0 +1,143 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Installation Node
+network: Mainnet
+icon: seda
+chain: seda-1
+version: v0.1.1
+---
+
+### Hardware requirements
+
+The following requirements are recommended for running Defund:
+
+- 6 or more physical CPU cores
+- At least 500GB of SSD disk storage
+- At least 32GB of memory (RAM)
+- At least 100mbps network bandwidth
+
+
+### Install dependencies Required
+
+```
+sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool -y
+```
+
+### Install go
+
+We are gonna use GO Version 1.21.7
+If you already have GO installed you can skip this 
+
+```
+ver="1.21.7"
+cd $HOME
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+rm "go$ver.linux-amd64.tar.gz"
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+source ~/.bash_profile
+go version
+```
+
+### Install binary
+
+```
+cd $HOME
+git clone https://github.com/sedaprotocol/seda-chain.git
+cd seda-chain
+git checkout v0.1.1
+make install
+```
+
+Verify that you've installed sged successfully
+
+```
+sedad version
+```
+
+### Initialize Node
+
+Please change `<MONIKER>` To your own Moniker.
+
+```
+sedad init $MONIKER --chain-id seda-1
+```
+
+### Download Genesis file and addrbook
+
+- Genesis
+
+```
+wget -O $HOME/.sedad/config/genesis.json "https://raw.githubusercontent.com/sedaprotocol/seda-networks/main/mainnet/genesis.json"
+```
+
+### Configure Seeds and Peers
+
+```
+seeds="31f54fbcf445a9d9286426be59a17a811dd63f84@18.133.231.208:26656"
+sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.sedad/config/config.toml
+peers="770ff46af89cd0ca4f6cd7bc532648826f7995f5@62.169.30.154:26656,58c919e7b89b8c5b5a3024f5e7cec07d2e3b28d3@78.47.163.48:26656,8d887e7007696439a955e839d786532af746f697@94.130.13.186:25856,d4b0af2651d980d1a12267b8b936689120f39aef@195.201.10.252:17356,fc319e170aea3e99c75eb411505bd0a6d938b4e2@109.199.127.16:25856"
+sed -i -e "s|^persistent_peers *=.*|persistent_peers = \"$peers\"|" $HOME/.sedad/config/config.toml
+sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"10000000000aseda\"|" $HOME/.sedad/config/app.toml
+```
+
+### config pruning
+
+```
+pruning="custom"
+pruning_keep_recent="100"
+pruning_keep_every="0"
+pruning_interval="19"
+sed -i -e "s/^pruning *=.*/pruning = \"$pruning\"/" $HOME/.sedad/config/app.toml
+sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"$pruning_keep_recent\"/" $HOME/.sedad/config/app.toml
+sed -i -e "s/^pruning-keep-every *=.*/pruning-keep-every = \"$pruning_keep_every\"/" $HOME/.sedad/config/app.toml
+sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"$pruning_interval\"/" $HOME/.sedad/config/app.toml
+```
+
+
+### create service file and start node
+
+Create service file
+Create a `ojod.service` file in the `/etc/systemd/system` folder with the following code. 
+You can change `USER` with your Linux user name. You need sudo previlege to do this step.
+
+```
+sudo tee /etc/systemd/system/sedad.service > /dev/null <<EOF
+[Unit]
+Description=seda
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which sedad) start
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+- Enable Service and Start Node
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable sedad
+sudo systemctl restart sedad
+sudo journalctl -u sedad -f -o cat
+```
+
+### Snapshot
+<a href="https://service.vinjan.xyz/mainnet/seda/snapshot" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
+</a>
+
+### Create Validator
+
+Heads up to the Cheat Sheets to create validator
+
+<a href="https://service.vinjan.xyz/mainnet/seda/cheat" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">CLI Cheatsheets</button>
+</a>
