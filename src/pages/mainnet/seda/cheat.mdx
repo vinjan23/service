@@ -1,0 +1,189 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Mainnet
+icon: seda
+chain: seda-1
+version: v0.1.1
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+sedad keys add wallet
+```
+
+Recover Wallet
+```
+sedad keys add wallet --recover
+```
+
+List Wallet
+```
+sedad keys list
+```
+
+Delete Wallet
+```
+sedad keys delete wallet
+```
+
+Check Wallet Balance
+```
+sedad q bank balances $(sedad keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+
+- Check Pubkey
+```
+sedad comet show-validator
+```
+
+- Make File validator.json
+```
+nano $HOME/validator.json
+```
+- Create Xalidator
+```
+{
+  "pubkey": "Your_Pubkey",
+  "amount": "1000000000000000000aseda",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.02",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.02",
+  "min-self-delegation": "1"
+}
+```
+```
+sedad tx staking create-validator validator.json \
+    --from=wallet \
+    --chain-id=seda-1 \
+    --fees=2000000000000000aseda
+```
+  
+Edit Validator
+```
+sedad tx staking edit-validator \
+--new-moniker="" \
+--identity="" \
+--details="" \
+--website="" \
+--chain-id=seda-1 \
+--from=wallet \
+--fees=2000000000000000aseda
+```
+
+
+Unjail Validator
+```
+sedad tx slashing unjail --from wallet --chain-id seda-1 --fees=2000000000000000aseda -y
+```
+
+Check Jailed Reason
+```
+sedad query slashing signing-info $(sedad tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+sedad tx distribution withdraw-all-rewards --from wallet --chain-id seda-1 --fees=2000000000000000aseda -y
+```
+
+Withdraw Rewards with Comission
+```
+sedad tx distribution withdraw-rewards $(sedad keys show wallet --bech val -a) --commission --from wallet --chain-id seda-1 --fees=2000000000000000aseda -y
+```
+
+Delegate Token to your own validator
+```
+sedad tx staking delegate $(sedad keys show wallet --bech val -a) 1000000aseda --from wallet --chain-id seda-1 --fees=2000000000000000aseda -y
+```
+
+Delegate Token to other validator
+```
+sedad tx staking redelegate $(sedad keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000000000000000aseda --from wallet -chain-id seda-1 --fees=2000000000000000aseda -y
+```
+
+Unbond Token from your validator
+```
+sedad tx staking unbond $(sedad keys show wallet --bech val -a) 1000000000000000000aseda --from wallet -chain-id seda-1 --fees=2000000000000000aseda -y
+```
+
+Send Token to another wallet
+```
+sedad tx bank send wallet <TO_WALLET_ADDRESS> 1000000000000000000aseda --from wallet -chain-id seda-1 --fees=2000000000000000aseda -y
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+sedad tx gov vote 1 yes --from wallet --from wallet -chain-id seda-1 --fees=2000000000000000aseda -y
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=44` To any other ports
+
+CUSTOM_PORT=11
+```
+sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:11657\"%" $HOME/.sedad/config/client.toml
+```
+```
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:11658\"%; s%^laddr = \"tcp://0.0.0.0:26657\"%laddr = \"tcp://0.0.0.0:11657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:11060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:11656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":11660\"%" $HOME/.sedad/config/config.toml
+sed -i.bak -e "s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:11317\"%; s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:11090\"%" $HOME/.sedad/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.sedad/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.sedad/config/config.toml
+```
+
+Reset Chain Data
+```
+sedad tendermint unsafe-reset-all --home $HOME/.sedad --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+cd $HOME
+sudo systemctl stop sedad
+sudo systemctl disable sedad
+sudo rm /etc/systemd/system/sedad.service
+sudo systemctl daemon-reload
+rm -f $(which sedad)
+rm -rf $HOME/.sedad
+rm -rf $HOME/seda-chain
+```
