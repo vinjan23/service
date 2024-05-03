@@ -3,11 +3,11 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Genesis file
 network: Testnet
 icon: side
-chain: side-testnet-3
-version: v0.7.0
+chain: S2-testnet-1
+version: v0.8.0
 ---
 ## instruction
 
 ```
-curl -s https://raw.githubusercontent.com/sideprotocol/testnet/main/side-testnet-3/pregenesis.json > ~/.side/config/genesis.json
+wget -O $HOME/.side/config/genesis.json "https://github.com/sideprotocol/testnet/raw/main/S2-testnet-1/genesis.json"
 ```
