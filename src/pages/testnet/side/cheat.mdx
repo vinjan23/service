@@ -3,8 +3,8 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Node CLI Cheatsheet
 network: Testnet
 icon: side
-chain: side-testnet-3
-version: v0.7.0
+chain: S2-testnet-1
+version: v0.8.0
 ---
 
 ### CLI Cheatsheet
@@ -56,7 +56,7 @@ sided tx staking create-validator \
 --commission-rate="0.1" \
 --min-self-delegation="1" \
 --pubkey=$(sided tendermint show-validator) \
---chain-id=side-testnet-3 \
+--chain-id=S2-testnet-1 \
 --identity=<keybase> \
 --details= \
 --website= \
@@ -71,7 +71,7 @@ sided tx staking edit-validator \
 --identity="YOUR_KEYBASE_ID" \
 --details="YOUR_DETAILS" \
 --website="YOUR_WEBSITE_URL"
---chain-id side-testnet-3 \
+--chain-id S2-testnet-1 \
 --from=wallet \
 --gas-adjustment="1.4" \
 --gas auto
@@ -81,7 +81,7 @@ sided tx staking edit-validator \
 
 Unjail Validator
 ```
-sided tx slashing unjail --from wallet --chain-id side-testnet-3
+sided tx slashing unjail --from wallet --chain-id S2-testnet-1
 ```
 
 Check Jailed Reason
@@ -93,32 +93,32 @@ sided query slashing signing-info $(sided tendermint show-validator)
 
 Withdraw Rewards
 ```
-sided tx distribution withdraw-all-rewards --from wallet --chain-id sided-testnet-3  -y
+sided tx distribution withdraw-all-rewards --from wallet --chain-id S2-testnet-1  -y
 ```
 
 Withdraw Rewards with Comission
 ```
-sided tx distribution withdraw-rewards $(sided keys show wallet --bech val -a) --commission --from wallet --chain-id side-testnet-3 -y
+sided tx distribution withdraw-rewards $(sided keys show wallet --bech val -a) --commission --from wallet --chain-id S2-testnet-1 -y
 ```
 
 Delegate Token to your own validator
 ```
-sided tx staking delegate $(sided keys show wallet --bech val -a) 1000000uside --from wallet --chain-id side-testnet-3 -y
+sided tx staking delegate $(sided keys show wallet --bech val -a) 1000000uside --from wallet --chain-id S2-testnet-1 -y
 ```
 
 Delegate Token to other validator
 ```
-sided tx staking redelegate $(sided keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uside --from wallet --chain-id side-testnet-3 -y
+sided tx staking redelegate $(sided keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uside --from wallet --chain-id S2-testnet-1 -y
 ```
 
 Unbond Token from your validator
 ```
-sided tx staking unbond $(sided keys show wallet --bech val -a) 1000000usided --from wallet --chain-id side-testnet-3 -y
+sided tx staking unbond $(sided keys show wallet --bech val -a) 1000000usided --from wallet --chain-id S2-testnet-1 -y
 ```
 
 Send Token to another wallet
 ```
-sided tx bank send wallet <TO_WALLET_ADDRESS> 1000000uside --from wallet --chain-id side-testnet-3 -y
+sided tx bank send wallet <TO_WALLET_ADDRESS> 1000000uside --from wallet --chain-id S2-testnet-1 -y
 ```
 
 ### Governance 
@@ -127,7 +127,7 @@ Vote
 You can change the value of `yes` to `no`,`abstain`,`nowithveto`
 
 ```
-sided tx gov vote 1 yes --from wallet --chain-id side-testnet-3 -y
+sided tx gov vote 1 yes --from wallet --chain-id S2-testnet-1 -y
 
 ```
 
@@ -136,7 +136,10 @@ sided tx gov vote 1 yes --from wallet --chain-id side-testnet-3 -y
 Set Your own Custom Ports
 You can change value `CUSTOM_PORT=30` To any other ports
 ```
+PORT=49
 CUSTOM_PORT=49
+```
+```
 sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:${PORT}658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:${PORT}657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:${PORT}060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:${PORT}656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":${PORT}660\"%" $HOME/.side/config/config.toml
 sed -i -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:${PORT}317\"%; s%^address = \":8080\"%address = \":${PORT}080\"%; s%^address = \"localhost:9090\"%address = \"localhost:${PORT}090\"%; s%^address = \"localhost:9091\"%address = \"localhost:${PORT}091\"%; s%^address = \"0.0.0.0:8545\"%address = \"0.0.0.0:${PORT}545\"%; s%^ws-address = \"0.0.0.0:8546\"%ws-address = \"0.0.0.0:${PORT}546\"%" $HOME/.side/config/app.toml
 ```
@@ -167,6 +170,6 @@ sudo systemctl disable sided
 sudo rm /etc/systemd/system/sided.service
 sudo systemctl daemon-reload
 rm -f $(which sided)
-rm -rf .sided
+rm -rf .side
 rm -rf side
 ```
