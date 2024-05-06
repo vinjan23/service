@@ -1,0 +1,175 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Mainnet
+icon: dhealth
+chain: dhealth
+version: v1.0.0
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+dhealthd keys add wallet
+```
+
+Recover Wallet
+```
+dhealthd keys add wallet --recover
+```
+
+List Wallet
+```
+dhealthd keys list
+```
+
+Delete Wallet
+```
+dhealthd keys delete wallet
+```
+
+Check Wallet Balance
+```
+dhealthd q bank balances $(dhealthd keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+```
+dhealthd tx staking create-validator \
+--amount=2000000000udhp \
+--pubkey=$(dhealthd tendermint show-validator) \
+--moniker="<MONIKER>" \
+--identity="" \
+--website="" \
+--details="" \
+--chain-id=dhealth \
+--commission-rate="0.1" \
+--commission-max-rate="0.20" \
+--commission-max-change-rate="0.01" \
+--min-self-delegation=1 \
+--from=wallet \
+--gas=auto \
+--gas-adjustment=1.5 \
+--gas-prices="0.025udhp"
+```
+
+Edit Validator
+```
+dhealthd tx staking edit-validator \
+--new-moniker="" \
+--identity="" \
+--details="" \
+--website="" \
+--chain-id=dhealth \
+--from=wallet \
+--gas=auto \
+--gas-adjustment=1.5 \
+--gas-prices="0.025udhp"
+```
+
+
+Unjail Validator
+```
+dhealthd tx slashing unjail --from wallet --chain-id dhealth --gas-adjustment=1.5 --gas=auto --gas-prices="0.025udhp"
+```
+
+Check Jailed Reason
+```
+dhealthd query slashing signing-info $(dhealthd tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+dhealthd tx distribution withdraw-all-rewards --from wallet --chain-id dhealth --gas-adjustment=1.5 --gas=auto --gas-prices="0.025udhp"
+```
+
+Withdraw Rewards with Comission
+```
+dhealthd tx distribution withdraw-rewards $(dhealthd keys show wallet --bech val -a) --commission --from wallet --chain-id dhealth --gas-adjustment=1.5 --gas=auto --gas-prices="0.025udhp"
+```
+
+Delegate Token to your own validator
+```
+dhealthd tx staking delegate $(dhealthd keys show wallet --bech val -a) 1000000udhp --from wallet --chain-id dhealth --gas-adjustment=1.5 --gas=auto --gas-prices="0.025udhp"
+```
+
+Delegate Token to other validator
+```
+dhealthd tx staking redelegate $(dhealthd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000udhp --from wallet --chain-id dhealth --gas-adjustment=1.5 --gas=auto --gas-prices="0.025udhp"
+```
+
+Unbond Token from your validator
+```
+dhealthd tx staking unbond $(dhealthd keys show wallet --bech val -a) 1000000udhp --from wallet --chain-id dhealth --gas-adjustment=1.5 --gas=auto --gas-prices="0.025udhp"
+```
+
+Send Token to another wallet
+```
+dhealthd tx bank send wallet <TO_WALLET_ADDRESS> 1000000udhp --from wallet --chain-id dhealth --gas-adjustment=1.5 --gas=auto --gas-prices="0.025udhp"
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+dhealthd tx gov vote 1 yes --from wallet --chain-id dhealth --gas-adjustment=1.5 --gas=auto --gas-prices="0.025udhp"
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=44` To any other ports
+```
+PORT=39
+dhealthd config node tcp://localhost:${PORT}657
+```
+```
+sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:${PORT}658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:${PORT}657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:${PORT}060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:${PORT}656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":${PORT}660\"%" $HOME/.dhealth/config/config.toml
+sed -i -e "s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:${PORT}317\"%; s%^address = \":8080\"%address = \":${PORT}080\"%; s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:${PORT}090\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:${PORT}091\"%; s%^address = \"127.0.0.1:8545\"%address = \"127.0.0.1:${PORT}545\"%; s%^ws-address = \"127.0.0.1:8546\"%ws-address = \"127.0.0.1:${PORT}546\"%" $HOME/.dhealth/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.dhealth/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.dhealth/config/config.toml
+```
+
+Reset Chain Data
+```
+dhealthd tendermint unsafe-reset-all --home $HOME/.dhealth --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop dhealthd
+sudo systemctl disable dhealthd
+sudo rm /etc/systemd/system/dhealthd.service
+sudo systemctl daemon-reload
+rm -f $(which dhealthd)
+rm -rf .dhealth
+rm -rf dhealth
+```
