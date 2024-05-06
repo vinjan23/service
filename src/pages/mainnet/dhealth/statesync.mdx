@@ -1,0 +1,29 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Statesync
+network: Mainnet
+icon: dhealth
+chain: dhealth
+version: v1.0.0
+---
+
+```
+sudo systemctl stop dhealthd
+cp $HOME/.dhealth/data/priv_validator_state.json $HOME/.dhealth/priv_validator_state.json.backup
+dhealthd tendermint unsafe-reset-all --home $HOME/.dhealth --keep-addr-book
+SNAP_RPC="https://rpc.dhealth.com:443"
+LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
+# BLOCK_HEIGHT=$((LATEST_HEIGHT - 1000)); \
+BLOCK_HEIGHT=$((LATEST_HEIGHT - LATEST_HEIGHT % 1000)); \
+TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+echo $LATEST_HEIGHT $BLOCK_HEIGHT $TRUST_HASH
+sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1true| ; \
+s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$SNAP_RPC,$SNAP_RPC\"| ; \
+s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
+s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"|" ~/.dhealth/config/config.toml
+more ~/.dhealth/config/config.toml | grep 'rpc_servers'
+more ~/.dhealth/config/config.toml | grep 'trust_height'
+more ~/.dhealth/config/config.toml | grep 'trust_hash'
+sudo systemctl restart dhealthd
+sudo journalctl -u dhealthd -f -o cat
+```
