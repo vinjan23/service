@@ -7,9 +7,9 @@ const CONFIG = {
   basePathname: '/',
   trailingSlash: false,
 
-  title: 'Vinjan - Trusted Staking Provider',
+  title: 'Vinjan.Inc',
   description:
-    'Validator & Node Operator Cosmos Networks',
+    'Staking Provider & IBC Relayer',
   defaultImage: defaultImage,
 
   defaultTheme: 'system', // Values: "system" | "light" | "dark" | "light:only" | "dark:only"
