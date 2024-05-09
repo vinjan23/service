@@ -8,15 +8,15 @@ version: v0.3.0
 ---
 ```
 Snapshot Info
-Block Hight: 62200
-Time: Sat 2024-04-21
+Block Hight: 321626
+Time: Sat 2024-05-09
 ```
 
 ```
 sudo apt install lz4 -y
 sudo systemctl stop wardend
 wardend tendermint unsafe-reset-all --home $HOME/.warden --keep-addr-book
-curl -L https://snapshot.vinjan.xyz/warden/warden-snapshot-20240421.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.warden
+curl -L https://snapshot.vinjan.xyz./warden/warden-snapshot-20240509.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.warden
 sudo systemctl restart wardend
 journalctl -fu wardend -o cat
 ```
