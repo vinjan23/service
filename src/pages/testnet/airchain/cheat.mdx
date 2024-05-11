@@ -1,0 +1,169 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: airchain
+chain: junction
+version: v0.1.0
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Usefull Command
+```
+junctiond status 2>&1 | jq .sync_info
+```
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+junctiond keys add wallet
+```
+
+Recover Wallet
+```
+junctiond keys add wallet --recover
+```
+
+List Wallet
+```
+junctiond keys list
+```
+
+Delete Wallet
+```
+junctiond keys delete wallet
+```
+
+Check Wallet Balance
+```
+junctiond q bank balances $(junctiond keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+- Check Your Pubkey
+```
+junctiond comet show-validator
+```
+- Make File validator.json
+```
+nano $HOME/validator.json
+```
+```
+{
+  "pubkey": {"#pubkey"},
+  "amount": "9990000amf",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.2",
+  "min-self-delegation": "1"
+}
+```
+```
+junctiond tx staking create-validator $HOME/validator.json \
+    --from=wallet \
+    --chain-id=junction \
+    --fees=2000amf
+```
+
+Unjail Validator
+```
+junctiond tx slashing unjail --from Wallet --chain-id junction --fees 2000aamf
+```
+
+Check Jailed Reason
+```
+junctiond query slashing signing-info $(junctiond tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+junctiond tx distribution withdraw-all-rewards --from Wallet --chain-id junction --fees 2000aamf
+```
+
+Withdraw Rewards with Comission
+```
+junctiond tx distribution withdraw-rewards $(junctiond keys show wallet --bech val -a) --commission --from wallet --chain-id junction --fees 2000aamf
+```
+
+Delegate Token to your own validator
+```
+junctiond tx staking delegate $(junctiond keys show wallet --bech val -a) 1000000amf --from wallet --chain-id junction --fees 2000aamf
+```
+
+Delegate Token to other validator
+```
+junctiond staking redelegate $(junctiond keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000amf --from wallet --chain-id junction --fees 2000aamf
+```
+
+Unbond Token from your validator
+```
+junctiond tx staking unbond $(junctiond keys show wallet --bech val -a) 1000000amf --from wallet --chain-id junction --fees 2000aamf
+```
+
+Send Token to another wallet
+```
+junctiond tx bank send wallet <TO_WALLET_ADDRESS> 1000000amf --from wallet --chain-id junction --fees 2000aamf
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=20` To any other ports
+
+- PORT=38
+
+```
+sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:38657\"%" $HOME/.junction/config/client.toml
+```
+```
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:38658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:38657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:38060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:38656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":38660\"%" $HOME/.junction/config/config.toml
+sed -i.bak -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:38317\"%; s%^address = \"localhost:9090\"%address = \"localhost:38090\"%" $HOME/.junction/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.junction/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.junction/config/config.toml
+```
+
+Reset Chain Data
+```
+junctiond tendermint unsafe-reset-all --home $HOME/.junction --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop junctiond
+sudo systemctl disable junctiond
+sudo rm /etc/systemd/system/junctiond.service
+sudo systemctl daemon-reload
+rm -f $(which junctiond)
+rm -rf .junction
+rm -rf junction
+```
