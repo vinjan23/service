@@ -1,0 +1,157 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Installation Node
+network: Testnet
+icon: airchain
+chain: junction
+version: v0.1.0
+---
+
+### Hardware requirements
+
+The following requirements are recommended for running Warden:
+
+- 4 or more physical CPU cores
+- At least 200GB of SSD disk storage
+- At least 8GB of memory (RAM)
+- At least 100mbps network bandwidth
+
+
+### Install dependencies Required
+
+```
+sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool -y
+```
+
+### Install go
+
+We are gonna use GO Version 1.21.7
+If you already have GO installed you can skip this 
+
+```
+ver="1.21.7"
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+rm "go$ver.linux-amd64.tar.gz"
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+source ~/.bash_profile
+go version
+```
+### Install Ignite
+
+```
+curl https://get.ignite.com/cli! | bash
+```
+```
+sudo mv ignite /usr/local/bin/
+```
+
+### Install binary
+
+```
+cd $HOME
+git clone https://github.com/airchains-network/junction.git
+cd junction
+git checkout v0.1.0
+ignite chain build
+```
+
+Verify that you've installed Warden successfully
+
+```
+junctiond version --long | grep -e commit -e version
+```
+
+### Initialize Node
+
+Please change `<MONIKER>` To your own Moniker.
+
+```
+junctiond init <MONIKER> --chain-id junction
+```
+
+### Download Genesis file and addrbook
+
+- Genesis
+
+```
+wget -O $HOME/.junction/config/genesis.json https://raw.githubusercontent.com/airchains-network/junction-resources/main/testnet/genesis.json
+```
+- Addrbook
+```
+wget -O $HOME/.junction/config/addrbook.json https://raw.githubusercontent.com/vinjan23/Testnet.Guide/main/Airchain/addrbook.json
+```
+
+### Configure Seeds and Peers
+
+```
+peers="0fc70473e7ee84b77ebcb1c098d457379931bc0a@88.99.61.53:38656,eb4d2c546be8d2dc62d41ff5e98ef4ee96d2ff29@46.250.233.5:26656,086d19f4d7542666c8b0cac703f78d4a8d4ec528@135.148.232.105:26656,e09fa8cc6b06b99d07560b6c33443023e6a3b9c6@65.21.131.187:26656,0305205b9c2c76557381ed71ac23244558a51099@162.55.65.162:26656,7d6694fb464a9c9761992f695e6ba1d334403986@164.90.228.66:26656,b2e9bebc16bc35e16573269beba67ffea5932e13@95.111.239.250:26656,23152e91e3bd642bef6508c8d6bd1dbedccf9e56@95.111.237.24:26656,c1e9d12d80ec74b8ddbabdec9e0dad71337ba43f@135.181.82.176:26656,3b429f2c994fa76f9443e517fd8b72dcf60e6590@37.27.11.132:26656,84b6ccf69680c9459b3b78ca4ba80313fa9b315a@159.69.208.30:26656"
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" ~/.junction/config/config.toml
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0amf\"/" $HOME/.junction/config/app.toml
+```
+
+### config pruning
+
+```
+pruning="custom"
+pruning_keep_recent="100"
+pruning_keep_every="0"
+pruning_interval="10"
+sed -i -e "s/^pruning *=.*/pruning = \"$pruning\"/" $HOME/.warden/config/app.toml
+sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"$pruning_keep_recent\"/" $HOME/.junction/config/app.toml
+sed -i -e "s/^pruning-keep-every *=.*/pruning-keep-every = \"$pruning_keep_every\"/" $HOME/.junction/config/app.toml
+sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"$pruning_interval\"/" $HOME/.junction/config/app.toml
+```
+
+
+### create service file and start node
+
+Create service file
+Create a `wardend.service` file in the `/etc/systemd/system` folder with the following code. 
+You can change `USER` with your Linux user name. You need sudo previlege to do this step.
+
+```
+sudo tee /etc/systemd/system/junctiond.service > /dev/null <<EOF
+[Unit]
+Description=junction
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which junctiond) start
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+- Enable Service and Start Node
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable junctiond
+sudo systemctl restart junctiond
+sudo journalctl -u junctiond -f -o cat
+```
+
+### Snapshot
+<a href="https://service.vinjan.xyz/testnet/airchain/snapshot" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
+</a>
+
+### Statesync
+<a href="https://service.vinjan.xyz/testnet/airchain/statesync" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Statesync</button>
+</a>
+
+### Create Validator
+
+Heads up to the Cheat Sheets to create validator
+
+<a href="https://service.vinjan.xyz/testnet/airchain/cheat" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">CLI Cheatsheets</button>
+</a>
