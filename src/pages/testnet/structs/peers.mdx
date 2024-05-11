@@ -1,0 +1,13 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Live Peers
+network: Testnet
+icon: structs
+chain: structstestnet-88
+version: v0.2.0-beta
+---
+Automatically adding Live peers to your config.toml file
+```
+peers="605886634736003095e841b03736a214f5111ffe@155.138.142.145:26656"
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" ~/.structs/config/config.toml
+```
