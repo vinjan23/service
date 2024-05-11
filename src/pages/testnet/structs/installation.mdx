@@ -3,7 +3,7 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Installation Node
 network: Testnet
 icon: structs
-chain: 
+chain: structstestnet-88
 version: v0.2.0-beta
 ---
 
@@ -52,17 +52,13 @@ git clone --branch v0.2.0-beta https://github.com/playstructs/structsd.git
 cd structsd
 ignite chain build 
 ```
-### Create Wallet
-```
-structsd keys add wallet
-```
 
 ### Initialize Node
 
 Please change `<MONIKER>` To your own Moniker.
 
 ```
-
+structsd init <MONIKER> --chain-id structstestnet-88
 ```
 
 ### Download Genesis file and addrbook
@@ -70,23 +66,30 @@ Please change `<MONIKER>` To your own Moniker.
 - Genesis
 
 ```
-
+wget -O $HOME/.structs/config/genesis.json https://raw.githubusercontent.com/playstructs/structs-networks/88b/genesis.json
 ```
 - Addrbook
 ```
-
+wget -O $HOME/.structs/config/addrbook.json https://raw.githubusercontent.com/vinjan23/Testnet.Guide/main/Structs/addrbook.json
 ```
 
-### Configure Seeds and Peers
+### Configure Gas and Peers
 
 ```
-
+peers="605886634736003095e841b03736a214f5111ffe@155.138.142.145:26656"
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" ~/.structs/config/config.toml
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0ualpha\"/" $HOME/.structs/config/app.toml
 ```
 
 ### config pruning
 
 ```
-
+sed -i \
+-e 's|^pruning *=.*|pruning = "custom"|' \
+-e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "100"|' \
+-e 's|^pruning-keep-every *=.*|pruning-keep-every = "0"|' \
+-e 's|^pruning-interval *=.*|pruning-interval = "19"|' \
+$HOME/.structs/config/app.toml
 ```
 
 
@@ -95,19 +98,44 @@ Please change `<MONIKER>` To your own Moniker.
 Create service file
 
 ```
+sudo tee /etc/systemd/system/structsd.service > /dev/null <<EOF
+[Unit]
+Description=structs
+After=network-online.target
 
+[Service]
+User=$USER
+ExecStart=$(which structsd) start
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
 ```
 
 - Enable Service and Start Node
 
 ```
-
+sudo systemctl daemon-reload
+sudo systemctl enable structsd
+sudo systemctl restart structsd
+sudo journalctl -u structsd -f -o cat
 ```
 
 - Check Sync ( If False than go to create validator )
 ```
 
-```
+### Snapshot
+<a href="https://service.vinjan.xyz/testnet/structs/snapshot" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
+</a>
+
+### Statesync
+<a href="https://service.vinjan.xyz/testnet/structs/statesync" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Statesync</button>
+</a>
 
 ### Create Validator
 
