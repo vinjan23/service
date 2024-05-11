@@ -83,7 +83,7 @@ junctiond tx staking create-validator $HOME/validator.json \
 
 Unjail Validator
 ```
-junctiond tx slashing unjail --from Wallet --chain-id junction --fees 2000aamf
+junctiond tx slashing unjail --from wallet --chain-id junction --fees 2000amf
 ```
 
 Check Jailed Reason
@@ -95,32 +95,32 @@ junctiond query slashing signing-info $(junctiond tendermint show-validator)
 
 Withdraw Rewards
 ```
-junctiond tx distribution withdraw-all-rewards --from Wallet --chain-id junction --fees 2000aamf
+junctiond tx distribution withdraw-all-rewards --from wallet --chain-id junction --fees 2000amf
 ```
 
 Withdraw Rewards with Comission
 ```
-junctiond tx distribution withdraw-rewards $(junctiond keys show wallet --bech val -a) --commission --from wallet --chain-id junction --fees 2000aamf
+junctiond tx distribution withdraw-rewards $(junctiond keys show wallet --bech val -a) --commission --from wallet --chain-id junction --fees 2000amf
 ```
 
 Delegate Token to your own validator
 ```
-junctiond tx staking delegate $(junctiond keys show wallet --bech val -a) 1000000amf --from wallet --chain-id junction --fees 2000aamf
+junctiond tx staking delegate $(junctiond keys show wallet --bech val -a) 1000000amf --from wallet --chain-id junction --fees 2000amf
 ```
 
 Delegate Token to other validator
 ```
-junctiond staking redelegate $(junctiond keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000amf --from wallet --chain-id junction --fees 2000aamf
+junctiond staking redelegate $(junctiond keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000amf --from wallet --chain-id junction --fees 2000amf
 ```
 
 Unbond Token from your validator
 ```
-junctiond tx staking unbond $(junctiond keys show wallet --bech val -a) 1000000amf --from wallet --chain-id junction --fees 2000aamf
+junctiond tx staking unbond $(junctiond keys show wallet --bech val -a) 1000000amf --from wallet --chain-id junction --fees 2000amf
 ```
 
 Send Token to another wallet
 ```
-junctiond tx bank send wallet <TO_WALLET_ADDRESS> 1000000amf --from wallet --chain-id junction --fees 2000aamf
+junctiond tx bank send wallet <TO_WALLET_ADDRESS> 1000000amf --from wallet --chain-id junction --fees 2000amf
 ```
 
 ### Other
