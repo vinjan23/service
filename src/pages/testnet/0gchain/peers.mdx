@@ -1,0 +1,14 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Live Peers
+network: Testnet
+icon: 0gchain
+chain: zgtendermint_16600-1
+version: v0.1.0
+---
+Automatically adding Live peers to your config.toml file
+```
+peers="445f20cc15a24d8159cf491e542cc3ee779888b8@152.53.18.245:20656,ba3f19565a6c3106526d90b413824b6bed01080b@88.99.61.53:45656"
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.0gchain/config/config.toml
+```
+
