@@ -11,9 +11,9 @@ version: v0.2.11
 
 The following requirements are recommended for running Warden:
 
-- 4 or more physical CPU cores
-- At least 200GB of SSD disk storage
-- At least 8GB of memory (RAM)
+- 8 or more physical CPU cores
+- At least 500GB of SSD disk storage
+- At least 32GB of memory (RAM)
 - At least 100mbps network bandwidth
 
 
@@ -45,7 +45,7 @@ go version
 cd $HOME
 git clone https://github.com/initia-labs/initia.git
 cd initia
-git checkout v0.2.11
+git checkout v0.2.15
 make install
 ```
 
@@ -72,15 +72,15 @@ wget -O $HOME/.initia/config/genesis.json https://raw.githubusercontent.com/init
 ```
 - Addrbook
 ```
-
+wget -O $HOME/.initia/config/addrbook.json https://raw.githubusercontent.com/vinjan23/Testnet.Guide/main/Initia/addrbook.json
 ```
 
 ### Configure Seeds and Peers
 
 ```
-peers="093e1b89a498b6a8760ad2188fbda30a05e4f300@35.240.207.217:26656,ff9dbc6bb53227ef94dc75ab1ddcaeb2404e1b0b@178.170.47.171:26656,47ad94a6abc97d4810e2f2be1711d6356c04a83b@135.125.246.102:26656,329227cf8632240914511faa9b43050a34aa863e@43.131.13.84:26656,42cd9d7a33f8250ad2dbe04634e7c7c23fca6657@5.9.80.214:26656,d35102679b876be785a2e03d932300e3a8123086@95.217.85.149:46656"
+peers="0f6d3a20140188a16d959482e0cc9fc7f365939c@65.108.237.188:37656,27811bb5e1aad01bfbe7d780a23a00d7760deb8d@195.201.9.32:37656,f48610351be116d5e01ebee3e9c6c4178091f480@65.109.113.233:25756,093e1b89a498b6a8760ad2188fbda30a05e4f300@35.240.207.217:26656,ff9dbc6bb53227ef94dc75ab1ddcaeb2404e1b0b@178.170.47.171:26656,47ad94a6abc97d4810e2f2be1711d6356c04a83b@135.125.246.102:26656,329227cf8632240914511faa9b43050a34aa863e@43.131.13.84:26656,42cd9d7a33f8250ad2dbe04634e7c7c23fca6657@5.9.80.214:26656,d35102679b876be785a2e03d932300e3a8123086@95.217.85.149:46656"
 sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.initia/config/config.toml
-seeds="2eaa272622d1ba6796100ab39f58c75d458b9dbc@34.142.181.82:26656,c28827cb96c14c905b127b92065a3fb4cd77d7f6@testnet-seeds.whispernode.com:25756"
+seeds="2eaa272622d1ba6796100ab39f58c75d458b9dbc@34.142.181.82:26656"
 sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.initia/config/config.toml
 sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.15uinit,0.01uusdc\"|" $HOME/.initia/config/app.toml
 ```
@@ -96,6 +96,11 @@ sed -i \
 $HOME/.initia/config/app.toml
 ```
 
+### Indexer Off
+
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.initia/config/config.toml
+```
 
 ### create service file and start node
 
@@ -135,10 +140,6 @@ sudo journalctl -u initiad -f -o cat
   <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
 </a>
 
-### Statesync
-<a href="https://service.vinjan.xyz/testnet/initia/statesync" target="_blank">
-  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Statesync</button>
-</a>
 
 ### Create Validator
 
