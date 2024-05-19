@@ -1,0 +1,159 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: initia
+chain: initiation-1
+version: v0.2.15
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Usefull Command
+```
+initiad status 2>&1 | jq .sync_info
+```
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+initiad keys add wallet
+```
+
+Recover Wallet
+```
+initiad keys add wallet --recover
+```
+
+List Wallet
+```
+initiad keys list
+```
+
+Delete Wallet
+```
+initiad keys delete wallet
+```
+
+Check Wallet Balance
+```
+initiad q bank balances $(initiad keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+
+```
+initiad tx mstaking create-validator \
+--amount 99900000uinit \
+--pubkey $(initiad tendermint show-validator) \
+--moniker "MONIKER" \
+--identity "Keybase_ID" \
+--details "" \
+--website "" \
+--chain-id initiation-1 \
+--commission-rate 0.05 \
+--commission-max-rate 0.20 \
+--commission-max-change-rate 0.05 \
+--from wallet \
+--gas-adjustment 1.4 \
+--gas auto \
+--gas-prices 0.15uinit \
+-y
+```
+
+Unjail Validator
+```
+initiad tx slashing unjail --from wallet --chain-id initiation-1 --gas-adjustment 1.4 --gas auto --gas-prices 0.15uinit -y
+```
+
+Check Jailed Reason
+```
+initiad query slashing signing-info $(initiad tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+initiad tx distribution withdraw-all-rewards --from wallet --chain-id initiation-1 --gas-adjustment 1.4 --gas auto --gas-prices 0.15uinit -y
+```
+
+Withdraw Rewards with Comission
+```
+initiad tx distribution withdraw-rewards $(initiad keys show wallet --bech val -a) --commission --from wallet --chain-id initiation-1 --gas-adjustment 1.4 --gas auto --gas-prices 0.15uinit -y
+```
+
+Delegate Token to your own validator
+```
+initiad tx staking delegate $(initiad keys show wallet --bech val -a) 1000000uinit --from wallet --chain-id initiation-1 --gas-adjustment 1.4 --gas auto --gas-prices 0.15uinit -y
+```
+
+Delegate Token to other validator
+```
+initiad staking redelegate $(initiad keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uinit --from wallet --chain-id initiation-1 --gas-adjustment 1.4 --gas auto --gas-prices 0.15uinit -y
+```
+
+Unbond Token from your validator
+```
+initiad tx staking unbond $(initiad keys show wallet --bech val -a) 1000000uinit --from wallet --chain-id initiation-1 --gas-adjustment 1.4 --gas auto --gas-prices 0.15uinit -y
+```
+
+Send Token to another wallet
+```
+initiad tx bank send wallet <TO_WALLET_ADDRESS> 1000000uinit --from wallet --chain-id initiation-1 --gas-adjustment 1.4 --gas auto --gas-prices 0.15uinit -y
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=20` To any other ports
+
+- PORT=38
+
+```
+sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:38657\"%" $HOME/.initia/config/client.toml
+```
+```
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:37658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:37657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:37060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:37656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":37660\"%" $HOME/.initia/config/config.toml
+sed -i.bak -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:37317\"%; s%^address = \"localhost:9090\"%address = \"localhost:37090\"%" $HOME/.initia/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.initia/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.initia/config/config.toml
+```
+
+Reset Chain Data
+```
+initiad tendermint unsafe-reset-all --home $HOME/.initia --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop initiad
+sudo systemctl disable initiad
+sudo rm /etc/systemd/system/initiad.service
+sudo systemctl daemon-reload
+rm -f $(which initiad)
+rm -rf .initia
+rm -rf initia
+```
