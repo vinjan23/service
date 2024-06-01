@@ -6,7 +6,7 @@ icon: initia
 chain: initiation-1
 version: v0.2.15
 ---
-( Block 552750 ) (58 GB)
+( Block 565659 ) (63 GB)
 ```
 sudo apt update
 sudo apt install lz4
@@ -17,7 +17,7 @@ sudo systemctl stop initiad
 initiad tendermint unsafe-reset-all --home $HOME/.initia --keep-addr-book
 ```
 ```
-curl -L https://snapshot.vinjan.xyz./initia/initia-snapshot-20240601.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.initia
+curl -L https://snapshot.vinjan.xyz./initia/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.initia
 mv $HOME/.initia/priv_validator_state.json.backup $HOME/.initia/data/priv_validator_state.json
 ```
 ```
