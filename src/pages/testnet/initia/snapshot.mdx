@@ -6,20 +6,32 @@ icon: initia
 chain: initiation-1
 version: v0.2.15
 ---
-( Block 610272 ) 
+( Block 613110 ) 
 ```
 sudo apt update
 sudo apt install lz4
 ```
+- Stop Node
+```
+sudo systemctl stop initiad
+```
+- Optional
 ```
 cp $HOME/.initia/data/priv_validator_state.json $HOME/.initia/data/priv_validator_state.json.backup
-sudo systemctl stop initiad
+```
+- Reset Data
+```
 initiad tendermint unsafe-reset-all --home $HOME/.initia --keep-addr-book
 ```
+- Download Snapshot
 ```
-curl -L https://snapshot.vinjan.xyz./initia/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.initia
+curl -L https://snapshot.vinjan.xyz./initia/latest-20240602.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.initia
+```
+- Optional
+```
 mv $HOME/.initia/priv_validator_state.json.backup $HOME/.initia/data/priv_validator_state.json
 ```
+- Start
 ```
 sudo systemctl restart initiad
 sudo journalctl -u initiad -f -o cat
