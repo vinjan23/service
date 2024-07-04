@@ -4,15 +4,15 @@ title: Installation Node
 network: Testnet
 icon: initia
 chain: initiation-1
-version: v0.2.11
+version: v0.2.21
 ---
 
 ### Hardware requirements
 
 The following requirements are recommended for running Warden:
 
-- 8 or more physical CPU cores
-- At least 500GB of SSD disk storage
+- 16 or more physical CPU cores
+- At least 1 TB of SSD disk storage
 - At least 32GB of memory (RAM)
 - At least 100mbps network bandwidth
 
@@ -45,7 +45,7 @@ go version
 cd $HOME
 git clone https://github.com/initia-labs/initia.git
 cd initia
-git checkout v0.2.15
+git checkout v0.2.21
 make install
 ```
 
@@ -89,7 +89,10 @@ sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.15uinit,0.01uusdc
 
 ```
 sed -i \
--e 's|^pruning *=.*|pruning = "nothing"|' \
+-e 's|^pruning *=.*|pruning = "custom"|' \
+-e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "100"|' \
+-e 's|^pruning-keep-every *=.*|pruning-keep-every = ""|' \
+-e 's|^pruning-interval *=.*|pruning-interval = "10"|' \
 $HOME/.initia/config/app.toml
 ```
 
