@@ -1,0 +1,174 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: empe
+chain: empe-testnet-2
+version: v0.1.0
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+emped keys add wallet
+```
+
+Recover Wallet
+```
+emped keys add wallet --recover
+```
+
+List Wallet
+```
+emped keys list
+```
+
+Delete Wallet
+```
+emped keys delete wallet
+```
+
+Check Wallet Balance
+```
+emped q bank balances $(emped keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+```
+emped tx staking create-validator \
+--amount=10000000uempe \
+--moniker="" \
+--identity="" \
+--details="" \
+--website="" \
+--pubkey=$(emped tendermint show-validator) \
+--chain-id=empe-testnet-2 \
+--commission-rate="0.10" \
+--commission-max-rate="0.20" \
+--commission-max-change-rate="0.01" \
+--min-self-delegation="1000000" \
+--from=wallet \
+--gas="auto" \
+--fees=20000uempe \
+-y
+```
+
+Edit Validator
+```
+emped tx staking edit-validator \
+--new-moniker="" \
+--identity="" \
+--details="" \
+--website="" \
+--chain-id=empe-testnet-2 \
+--from=wallet \
+--gas="auto" \
+--fees=20000uempe \
+-y
+```
+
+
+Unjail Validator
+```
+emped  tx slashing unjail --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+```
+
+Check Jailed Reason
+```
+emped query slashing signing-info $(emped tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+emped tx distribution withdraw-all-rewards --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+```
+
+Withdraw Rewards with Comission
+```
+emped tx distribution withdraw-rewards $(emped keys show wallet --bech val -a) --commission --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+```
+
+Delegate Token to your own validator
+```
+emped tx staking delegate $(emped keys show wallet --bech val -a) 10000000uempe --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+```
+
+Delegate Token to other validator
+```
+emped tx staking redelegate $(emped keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 10000000uempe --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+```
+
+Unbond Token from your validator
+```
+emped tx staking unbond $(emped keys show wallet --bech val -a) 10000000uempe --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+```
+
+Send Token to another wallet
+```
+emped tx bank send wallet <TO_WALLET_ADDRESS> 10000000uempe --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+emped tx gov vote 1 yes --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=44` To any other ports
+```
+PORT=20
+emped config node tcp://localhost:${PORT}657
+```
+```
+sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:${PORT}658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:${PORT}657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:${PORT}060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:${PORT}656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":${PORT}660\"%" $HOME/.empe-chain/config/config.toml
+sed -i -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:${PORT}317\"%; s%^address = \":8080\"%address = \":${PORT}080\"%; s%^address = \"localhost:9090\"%address = \"localhost:${PORT}090\"%; s%^address = \"localhost:9091\"%address = \"localhost:${PORT}091\"%" $HOME/.empe-chain/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.empe-chain/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.empe-chain/config/config.toml
+```
+
+Reset Chain Data
+```
+emped tendermint unsafe-reset-all --home $HOME/.empe-chain --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop emped
+sudo systemctl disable emped
+sudo rm /etc/systemd/system/emped.service
+sudo systemctl daemon-reload
+rm -f $(which emped)
+rm -rf .empe-chain
+```
