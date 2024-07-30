@@ -1,0 +1,173 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: symphony
+chain: symphony-testnet-2
+version: v0.2.1
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+symphonyd keys add wallet
+```
+
+Recover Wallet
+```
+symphonyd keys add wallet --recover
+```
+
+List Wallet
+```
+symphonyd keys list
+```
+
+Delete Wallet
+```
+symphonyd keys delete wallet
+```
+
+Check Wallet Balance
+```
+symphonyd q bank balances $(symphonyd keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+```
+symphonyd tx staking create-validator \
+--amount=1000000note \
+--moniker="$MONIKER" \
+--identity="" \
+--details="" \
+--website="" \
+--from $WALLET \
+--commission-rate 0.05 \
+--commission-max-rate 0.2 \
+--commission-max-change-rate 0.05 \
+--min-self-delegation 1 \
+--pubkey $(symphonyd tendermint show-validator) \
+--chain-id symphony-testnet-2 \
+--gas=auto \
+-y
+```
+
+Edit Validator
+```
+symphonyd tx staking edit-validator \
+--new-moniker="" \
+--identity="" \
+--details="" \
+--website="" \
+--chain-id=symphony-testnet-2 \
+--from=wallet \
+--gas=auto \
+-y
+```
+
+
+Unjail Validator
+```
+symphonyd  tx slashing unjail --from wallet --chain-id symphony-testnet-2 --gas=auto -y
+```
+
+Check Jailed Reason
+```
+symphonyd query slashing signing-info $(symphonyd tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+symphonyd tx distribution withdraw-all-rewards --from wallet --chain-id symphony-testnet-2 --gas=auto -y
+```
+
+Withdraw Rewards with Comission
+```
+symphonyd tx distribution withdraw-rewards $(symphonyd keys show wallet --bech val -a) --commission --from wallet --chain-id symphony-testnet-2 --gas=auto -y
+```
+
+Delegate Token to your own validator
+```
+symphonyd tx staking delegate $(symphonyd keys show wallet --bech val -a) 1000000note --from wallet --chain-id symphony-testnet-2 --gas=auto -y
+```
+
+Delegate Token to other validator
+```
+symphonyd tx staking redelegate $(symphonyd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000note --from wallet --chain-id symphony-testnet-2 --gas=auto -y
+```
+
+Unbond Token from your validator
+```
+symphonyd tx staking unbond $(symphonyd keys show wallet --bech val -a) 1000000note --from wallet --chain-id symphony-testnet-2 --gas=auto -y
+```
+
+Send Token to another wallet
+```
+symphonyd tx bank send wallet <TO_WALLET_ADDRESS> 1000000note --from wallet ---chain-id symphony-testnet-2 --gas=auto -y
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+symphonyd tx gov vote 1 yes --from wallet --chain-id symphony-testnet-2 --gas=auto -y
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=44` To any other ports
+```
+PORT=21
+symphonyd config node tcp://localhost:${PORT}657
+```
+```
+sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:${PORT}658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:${PORT}657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:${PORT}060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:${PORT}656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":${PORT}660\"%" $HOME/.symphonyd/config/config.toml
+sed -i -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:${PORT}317\"%; s%^address = \":8080\"%address = \":${PORT}080\"%; s%^address = \"localhost:9090\"%address = \"localhost:${PORT}090\"%; s%^address = \"localhost:9091\"%address = \"localhost:${PORT}091\"%; s%^address = \"0.0.0.0:8545\"%address = \"0.0.0.0:${PORT}545\"%; s%^ws-address = \"0.0.0.0:8546\"%ws-address = \"0.0.0.0:${PORT}546\"%" $HOME/.symphonyd/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.symphonyd/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.symphonyd/config/config.toml
+```
+
+Reset Chain Data
+```
+symphonyd tendermint unsafe-reset-all --home $HOME/.symphonyd --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop symphonyd
+sudo systemctl disable symphonyd
+sudo rm /etc/systemd/system/symphonyd.service
+sudo systemctl daemon-reload
+rm -f $(which symphonyd)
+rm -rf .symphonyd
+rm -rf symphony
+```
