@@ -60,7 +60,7 @@ symphonyd tx staking create-validator \
 --min-self-delegation 1 \
 --pubkey $(symphonyd tendermint show-validator) \
 --chain-id symphony-testnet-2 \
---gas=auto \
+--fees=800note \
 -y
 ```
 
@@ -73,14 +73,14 @@ symphonyd tx staking edit-validator \
 --website="" \
 --chain-id=symphony-testnet-2 \
 --from=wallet \
---gas=auto \
+--fees=800note \
 -y
 ```
 
 
 Unjail Validator
 ```
-symphonyd  tx slashing unjail --from wallet --chain-id symphony-testnet-2 --gas=auto -y
+symphonyd  tx slashing unjail --from wallet --chain-id symphony-testnet-2 --fees 800note -y
 ```
 
 Check Jailed Reason
@@ -92,32 +92,32 @@ symphonyd query slashing signing-info $(symphonyd tendermint show-validator)
 
 Withdraw Rewards
 ```
-symphonyd tx distribution withdraw-all-rewards --from wallet --chain-id symphony-testnet-2 --gas=auto -y
+symphonyd tx distribution withdraw-all-rewards --from wallet --chain-id symphony-testnet-2 --fees 800note -y
 ```
 
 Withdraw Rewards with Comission
 ```
-symphonyd tx distribution withdraw-rewards $(symphonyd keys show wallet --bech val -a) --commission --from wallet --chain-id symphony-testnet-2 --gas=auto -y
+symphonyd tx distribution withdraw-rewards $(symphonyd keys show wallet --bech val -a) --commission --from wallet --chain-id symphony-testnet-2 --fees 800note -y
 ```
 
 Delegate Token to your own validator
 ```
-symphonyd tx staking delegate $(symphonyd keys show wallet --bech val -a) 1000000note --from wallet --chain-id symphony-testnet-2 --gas=auto -y
+symphonyd tx staking delegate $(symphonyd keys show wallet --bech val -a) 1000000note --from wallet --chain-id symphony-testnet-2 --fees 800note -y
 ```
 
 Delegate Token to other validator
 ```
-symphonyd tx staking redelegate $(symphonyd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000note --from wallet --chain-id symphony-testnet-2 --gas=auto -y
+symphonyd tx staking redelegate $(symphonyd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000note --from wallet --chain-id symphony-testnet-2 --fees 800note -y
 ```
 
 Unbond Token from your validator
 ```
-symphonyd tx staking unbond $(symphonyd keys show wallet --bech val -a) 1000000note --from wallet --chain-id symphony-testnet-2 --gas=auto -y
+symphonyd tx staking unbond $(symphonyd keys show wallet --bech val -a) 1000000note --from wallet --chain-id symphony-testnet-2 --fees 800note -y
 ```
 
 Send Token to another wallet
 ```
-symphonyd tx bank send wallet <TO_WALLET_ADDRESS> 1000000note --from wallet ---chain-id symphony-testnet-2 --gas=auto -y
+symphonyd tx bank send wallet <TO_WALLET_ADDRESS> 1000000note --from wallet ---chain-id symphony-testnet-2 --fees 800note -y
 ```
 
 ### Governance 
@@ -126,7 +126,7 @@ Vote
 You can change the value of `yes` to `no`,`abstain`,`nowithveto`
 
 ```
-symphonyd tx gov vote 1 yes --from wallet --chain-id symphony-testnet-2 --gas=auto -y
+symphonyd tx gov vote 1 yes --from wallet --chain-id symphony-testnet-2 --fees 800note -y
 ```
 
 ### Other
