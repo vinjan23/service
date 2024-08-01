@@ -6,14 +6,14 @@ icon: symphony
 chain: symphony-testnet-2
 version: v0.2.1
 ---
-(Height 152500 )
+(Height 186660 )(866 MB)
 ---
 ```
 sudo apt update
 sudo apt install lz4
 sudo systemctl stop symphonyd
 symphonyd tendermint unsafe-reset-all --home $HOME/.symphonyd --keep-addr-book
-curl -L https://snap-t.vinjan.xyz/symphony/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.symphonyd
+curl -L https://snapshot.vinjan.xyz./symphony/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.symphonyd
 sudo systemctl restart symphonyd
 sudo journalctl -u symphonyd -f -o cat
 ```
