@@ -82,7 +82,7 @@ emped tx staking edit-validator \
 
 Unjail Validator
 ```
-emped  tx slashing unjail --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+emped  tx slashing unjail --from wallet --chain-id empe-testnet-2 --fees=20000uempe -y
 ```
 
 Check Jailed Reason
@@ -94,32 +94,32 @@ emped query slashing signing-info $(emped tendermint show-validator)
 
 Withdraw Rewards
 ```
-emped tx distribution withdraw-all-rewards --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+emped tx distribution withdraw-all-rewards --from wallet --chain-id empe-testnet-2 --fees=20000uempe -y
 ```
 
 Withdraw Rewards with Comission
 ```
-emped tx distribution withdraw-rewards $(emped keys show wallet --bech val -a) --commission --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+emped tx distribution withdraw-rewards $(emped keys show wallet --bech val -a) --commission --from wallet --chain-id empe-testnet-2 --fees=20000uempe -y
 ```
 
 Delegate Token to your own validator
 ```
-emped tx staking delegate $(emped keys show wallet --bech val -a) 10000000uempe --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+emped tx staking delegate $(emped keys show wallet --bech val -a) 10000000uempe --from wallet --chain-id empe-testnet-2 --fees=20000uempe -y
 ```
 
 Delegate Token to other validator
 ```
-emped tx staking redelegate $(emped keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 10000000uempe --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+emped tx staking redelegate $(emped keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 10000000uempe --from wallet --chain-id empe-testnet-2 --fees=20000uempe -y
 ```
 
 Unbond Token from your validator
 ```
-emped tx staking unbond $(emped keys show wallet --bech val -a) 10000000uempe --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+emped tx staking unbond $(emped keys show wallet --bech val -a) 10000000uempe --from wallet --chain-id empe-testnet-2 --fees=20000uempe -y
 ```
 
 Send Token to another wallet
 ```
-emped tx bank send wallet <TO_WALLET_ADDRESS> 10000000uempe --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+emped tx bank send wallet <TO_WALLET_ADDRESS> 10000000uempe --from wallet --chain-id empe-testnet-2 --fees=20000uempe -y
 ```
 
 ### Governance 
@@ -128,7 +128,7 @@ Vote
 You can change the value of `yes` to `no`,`abstain`,`nowithveto`
 
 ```
-emped tx gov vote 1 yes --from wallet --chain-id empe-testnet-2 --gas=auto --fees=20000uempe -y
+emped tx gov vote 1 yes --from wallet --chain-id empe-testnet-2 --fees=20000uempe -y
 ```
 
 ### Other
