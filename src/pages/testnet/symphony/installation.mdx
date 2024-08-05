@@ -128,6 +128,8 @@ sudo journalctl -u symphonyd -f -o cat
 ```
 
 - Check Sync ( If False than go to create validator )
+- Use Snapshot to faster sync
+
 ```
 symphonyd status 2>&1 | jq .SyncInfo
 ```
