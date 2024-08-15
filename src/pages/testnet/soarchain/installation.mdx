@@ -29,7 +29,7 @@ We are gonna use GO Version 1.21.7
 If you already have GO installed you can skip this 
 
 ```
-ver="1.21.7"
+ver="1.22.3"
 cd $HOME
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
@@ -44,13 +44,14 @@ go version
 
 ```
 cd $HOME
-curl -s https://raw.githubusercontent.com/soar-robotics/testnet-binaries/main/v0.2.9/ubuntu22.04/soarchaind > soarchaind
-chmod +x soarchaind
-mkdir -p $HOME/go/bin/
-mv soarchaind $HOME/go/bin/
+git clone https://github.com/soar-robotics/mainnet-rehearsal.git
+cd mainnet-rehearsal/binary
+tar -xvf $HOME/mainnet-rehearsal/binary/ubuntu22.04/soarchaind.tar.gz
+sudo mv soarchaind /usr/local/go/bin
 ```
 ```
-sudo wget -P /usr/lib https://github.com/CosmWasm/wasmvm/releases/download/v1.3.0/libwasmvm.x86_64.so
+wget https://github.com/CosmWasm/wasmvm/releases/download/v1.5.2/libwasmvm.x86_64.so
+sudo mv libwasmvm.x86_64.so /usr/lib/
 ```
 
 Verify that you've installed soarchaind successfully
@@ -64,9 +65,7 @@ soarchaind version
 Please change `<MONIKER>` To your own Moniker.
 
 ```
-soarchaind init $MONIKER --chain-id soarchaintestnet
-soarchaind config chain-id soarchaintestnet
-soarchaind config keyring-backend test
+soarchaind init <MONIKER> --chain-id soarchaintestnet-1 --default-denom utsoar
 ```
 
 ### Download Genesis file and addrbook
@@ -74,7 +73,7 @@ soarchaind config keyring-backend test
 - Genesis
 
 ```
-curl -L https://snapshots-testnet.nodejumper.io/soarchain-testnet/genesis.json > $HOME/.soarchain/config/genesis.json
+wget -O $HOME/.soarchain/config/genesis.json "https://raw.githubusercontent.com/soar-robotics/mainnet-rehearsal/main/network/genesis.json"
 ```
 - Addrbook
 ```
@@ -84,8 +83,8 @@ curl -L https://snapshots-testnet.nodejumper.io/soarchain-testnet/genesis.json >
 ### Configure Seeds and Peers
 
 ```
-seed="3f472746f46493309650e5a033076689996c8881@soarchain-testnet.rpc.kjnodes.com:17259"
-sed -i.bak -e "s/^seed *=.*/seed = \"$seed\"/" ~/.soarchain/config/config.toml
+peers="915b6fdd5a070e09bbf3c236a40bf408865fd97f@5.9.151.56:25256"
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.soarchain/config/config.toml
 sed -i -e 's|^minimum-gas-prices *=.*|minimum-gas-prices = "0utsoar"|' $HOME/.soarchain/config/app.toml
 ```
 
