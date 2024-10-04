@@ -11,9 +11,9 @@ version: v0.9.0
 
 The following requirements are recommended for running Defund:
 
-- 4 or more physical CPU cores
-- At least 200GB of SSD disk storage
-- At least 8GB of memory (RAM)
+- 8 or more physical CPU cores
+- At least 1TB of SSD disk storage
+- At least 32GB of memory (RAM)
 - At least 100mbps network bandwidth
 
 
@@ -25,11 +25,11 @@ sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang p
 
 ### Install go
 
-We are gonna use GO Version 1.19.7
+We are gonna use GO Version 1.22.2
 If you already have GO installed you can skip this 
 
 ```
-ver="1.19.7"
+ver="1.22.2"
 cd $HOME
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
@@ -46,7 +46,7 @@ go version
 cd $HOME
 git clone https://github.com/elys-network/elys
 cd elys
-git checkout v0.9.0
+git checkout v0.47.0
 make install
 ```
 
@@ -71,8 +71,11 @@ wget -O $HOME/.elys/config/genesis.json https://raw.githubusercontent.com/elys-n
 ### Configure Seeds and Peers
 
 ```
-sed -i 's/seeds = ""/seeds = "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0@testnet-seeds.polkachu.com:22056"/' ~/.elys/config/config.toml
-sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0uelys\"|" $HOME/.elys/config/app.toml
+seeds=""
+sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.elys/config/config.toml
+peers=""
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.elys/config/config.toml
+sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.0018ibc/2180E84E20F5679FCC760D8C165B60F42065DEF7F46A72B447CFF1B7DC6C0A65,0.00025ibc/E2D2F6ADCC68AA3384B2F5DFACCA437923D137C14E86FB8A10207CF3BED0C8D4,0.00025uelys\"|" $HOME/.elys/config/app.toml
 ```
 
 ### config pruning
