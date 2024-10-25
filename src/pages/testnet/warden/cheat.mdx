@@ -3,8 +3,8 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Node CLI Cheatsheet
 network: Testnet
 icon: warden
-chain: alfama
-version: v0.2.0
+chain: chiado_10010-1
+version: v0.5.2
 ---
 
 ### CLI Cheatsheet
@@ -53,16 +53,16 @@ Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOU
 Create Validator (Staking)
 - Check Your Pubkey
 ```
-wardend comet show-validator
+wardend tendermint show-validator
 ```
 - Make File validator.json
 ```
-nano $HOME/validator.json
+nano /root/.warden/validator.json
 ```
 ```
 {
   "pubkey": {"#pubkey"},
-  "amount": "1000000uward",
+  "amount": "1000000000000000000award",
   "moniker": "",
   "identity": "",
   "website": "",
@@ -75,15 +75,16 @@ nano $HOME/validator.json
 }
 ```
 ```
-wardend tx staking create-validator validator.json \
+wardend tx staking create-validator $HOME/.warden/validator.json \
     --from=wallet \
-    --chain-id=buenavista-1 \
-    --fees=1000uward
+    --chain-id=chiado_10010-1 \
+    --gas auto --gas-adjustment 1.6 \
+    --fees 250000000000000award
 ```
 
 Unjail Validator
 ```
-wardend tx slashing unjail --from Wallet_name --chain-id buenavista-1 --fees 1000uward -y
+wardend tx slashing unjail --from Wallet --chain-id chiado_10010-1  --gas auto --gas-adjustment 1.6 --fees 250000000000000award
 ```
 
 Check Jailed Reason
@@ -95,32 +96,32 @@ wardend query slashing signing-info $(wardend tendermint show-validator)
 
 Withdraw Rewards
 ```
-wardend tx distribution withdraw-all-rewards --from Wallet_Name --chain-id buenavista-1 --fees 1000uward -y
+wardend tx distribution withdraw-all-rewards --from Wallet --chain-id chiado_10010-1  --gas auto --gas-adjustment 1.6 --fees 250000000000000award
 ```
 
 Withdraw Rewards with Comission
 ```
-wardend tx distribution withdraw-rewards $(wardend keys show wallet --bech val -a) --commission --from wallet --chain-id buenavista-1  --fees 1000uward -y
+wardend tx distribution withdraw-rewards $(wardend keys show wallet --bech val -a) --commission --from wallet --chain-id chiado_10010-1  --gas auto --gas-adjustment 1.6 --fees 250000000000000award
 ```
 
 Delegate Token to your own validator
 ```
-wardend tx staking delegate $(wardend keys show wallet --bech val -a) 1000000uward --from wallet --chain-id buenavista-1 --fees 1000uward -y
+wardend tx staking delegate $(wardend keys show wallet --bech val -a) 1000000000000000000award --from wallet --chain-id chiado_10010-1  --gas auto --gas-adjustment 1.6 --fees 250000000000000award
 ```
 
 Delegate Token to other validator
 ```
-wardend staking redelegate $(wardend keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uward --from wallet --chain-id buenavista-1 --fees 1000uward -y
+wardend staking redelegate $(wardend keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000000000000000award --from wallet --chain-id chiado_10010-1  --gas auto --gas-adjustment 1.6 --fees 250000000000000award
 ```
 
 Unbond Token from your validator
 ```
-wardend tx staking unbond $(wardend keys show wallet --bech val -a) 1000000uward --from wallet ---chain-id buenavista-1  --fees 1000uward -y
+wardend tx staking unbond $(wardend keys show wallet --bech val -a) 1000000000000000000award --from wallet --chain-id chiado_10010-1  --gas auto --gas-adjustment 1.6 --fees 250000000000000award
 ```
 
 Send Token to another wallet
 ```
-wardend tx bank send wallet <TO_WALLET_ADDRESS> 1000000uward --from wallet --chain-id buenavista-1 --fees 1000uward
+wardend tx bank send wallet <TO_WALLET_ADDRESS> 1000000000000000000award --from wallet --chain-id chiado_10010-1  --gas auto --gas-adjustment 1.6 --fees 250000000000000award
 ```
 
 ### Other
@@ -128,12 +129,11 @@ wardend tx bank send wallet <TO_WALLET_ADDRESS> 1000000uward --from wallet --cha
 Set Your own Custom Ports
 You can change value `CUSTOM_PORT=20` To any other ports
 ```
-PORT=51
-wardend config node tcp://localhost:${PORT}657
+sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:24657\"%" $HOME/.warden/config/client.toml
 ```
 ```
-sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:${PORT}658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:${PORT}657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:${PORT}060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:${PORT}656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":${PORT}660\"%" $HOME/.selfchain/config/config.toml
-sed -i -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:${PORT}317\"%; s%^address = \":8080\"%address = \":${PORT}080\"%; s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:${PORT}090\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:${PORT}091\"%; s%^address = \"0.0.0.0:8545\"%address = \"0.0.0.0:${PORT}545\"%; s%^ws-address = \"0.0.0.0:8546\"%ws-address = \"0.0.0.0:${PORT}546\"%" $HOME/.selfchain/config/app.toml
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:24658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:24657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:24060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:24656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":24660\"%" $HOME/.warden/config/config.toml
+sed -i.bak -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:24317\"%; s%^address = \"localhost:9090\"%address = \"localhost:24090\"%" $HOME/.warden/config/app.toml
 ```
 
 Enable Indexing usually enabled by default
