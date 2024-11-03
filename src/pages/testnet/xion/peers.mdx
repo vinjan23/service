@@ -1,0 +1,14 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Live Peers
+network: Testnet
+icon: xion
+chain: xion-testnet-1
+version: v14.0.0
+---
+Live Peers 
+
+```
+peers="6bb70718db6af0a473c9d76e82d9ade33618b20d@xion-testnet-1.burnt.com:32656,0f2ccb6d7e8f233c03f91dee690f5ff714319fba@xion-testnet-1.burnt.com:33656,f684e3873191d62a74e5431202581d99fe3439b7@xion-testnet-1.burnt.com:34656"
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.xiond/config/config.toml
+```
