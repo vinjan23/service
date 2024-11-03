@@ -1,0 +1,22 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Snapshot
+network: Testnet
+icon: xion
+chain: xion-testnet-1
+version: v14.0.0
+---
+```
+Snapshot Info : Every Day
+```
+
+```
+sudo apt install lz4 -y
+sudo systemctl stop xiond
+cp ~/.xiond/data/priv_validator_state.json  ~/.xiond/priv_validator_state.json
+xiond tendermint unsafe-reset-all --home $HOME/.xiond --keep-addr-book
+curl -L https://snapshot.vinjan.xyz./xion/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.xiond
+cp ~/.xiond/priv_validator_state.json  ~/.xiond/data/priv_validator_state.json
+sudo systemctl restart wardend
+journalctl -fu wardend -o cat
+```
