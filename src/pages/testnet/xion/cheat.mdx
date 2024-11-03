@@ -1,0 +1,163 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: xion
+chain: xion-testnet-1
+version: v14.0.0
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Usefull Command
+```
+wardend status 2>&1 | jq .sync_info
+```
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+xiond keys add wallet
+```
+
+Recover Wallet
+```
+xiond keys add wallet --recover
+```
+
+List Wallet
+```
+xiond keys list
+```
+
+Delete Wallet
+```
+xiond keys delete wallet
+```
+
+Check Wallet Balance
+```
+xiond q bank balances $(xiond keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+- Check Your Pubkey
+```
+xiond tendermint show-validator
+```
+- Make File validator.json
+```
+nano /root/.xiond/validator.json
+```
+```
+{
+  "pubkey": {"#pubkey"},
+  "amount": "1000000uxxion",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.2",
+  "min-self-delegation": "1"
+}
+```
+```
+xiond tx staking create-validator $HOME/.xiond/validator.json --from wallet  --chain-id xion-testnet-1 --gas auto --gas-adjustment 1.4 --gas-prices 0uxion -y
+```
+
+Unjail Validator
+```
+xiond tx slashing unjail --from wallet --chain-id xion-testnet-1 --gas auto --gas-adjustment 1.4 --gas-prices 0uxion -y
+```
+
+Check Jailed Reason
+```
+xiond query slashing signing-info $(xiond tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+xiond tx distribution withdraw-all-rewards --from wallet --chain-id xion-testnet-1 --gas auto --gas-adjustment 1.4 --gas-prices 0uxion -y
+```
+
+Withdraw Rewards with Comission
+```
+xiond tx distribution withdraw-rewards $(xiond keys show wallet --bech val -a) --commission --from wallet --chain-id xion-testnet-1 --gas auto --gas-adjustment 1.4 --gas-prices 0uxion -y
+```
+
+Delegate Token to your own validator
+```
+xiond tx staking delegate $(xiond keys show wallet --bech val -a) 1000000uxion --from wallet --chain-id xion-testnet-1 --gas auto --gas-adjustment 1.4 --gas-prices 0uxion -y
+```
+
+Delegate Token to other validator
+```
+xiond staking redelegate $(xiond keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uxion --from wallet --chain-id xion-testnet-1 --gas auto --gas-adjustment 1.4 --gas-prices 0uxion -y
+```
+
+Unbond Token from your validator
+```
+xiond tx staking unbond $(xiond keys show wallet --bech val -a) 1000000uxion --from wallet --chain-id xion-testnet-1 --gas auto --gas-adjustment 1.4 --gas-prices 0uxion -y
+```
+
+Send Token to another wallet
+```
+xiond tx bank send wallet <TO_WALLET_ADDRESS> 1000000uxion --from wallet --chain-id xion-testnet-1 --gas auto --gas-adjustment 1.4 --gas-prices 0uxion -y
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=20` To any other ports
+```
+sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:34657\"%" $HOME/.xiond/config/client.toml
+```
+```
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:34658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:34657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:34060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:34656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":34660\"%" $HOME/.xiond/config/config.toml
+sed -i.bak -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:34317\"%; s%^address = \"localhost:9090\"%address = \"localhost:34090\"%" $HOME/.xiond/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.xiond/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.xiond/config/config.toml
+```
+
+Reset Chain Data
+```
+xiond tendermint unsafe-reset-all --home $HOME/.xiond --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop xiond
+sudo systemctl disable xiond
+sudo rm /etc/systemd/system/xiond.service
+sudo systemctl daemon-reload
+rm -f $(which xiond)
+rm -rf .xiond
+rm -rf xion
+```
