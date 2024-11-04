@@ -7,16 +7,16 @@ chain: chiado_10010-1
 version: v0.5.2
 ---
 ```
-Snapshot Info
-Block Hight: 
-Time: Sat 2024
+Snapshot Info : Update
+
 ```
 
 ```
-sudo apt install lz4 -y
 sudo systemctl stop wardend
-wardend tendermint unsafe-reset-all --home $HOME/.warden --keep-addr-book
-curl -L https://snapshot.vinjan.xyz./warden/warden-snapshot-20240509.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.warden
+cp $HOME/.warden/data/priv_validator_state.json $HOME/.warden/priv_validator_state.json.backup
+rm -rf $HOME/.warden/data $HOME/.warden/wasm
+curl -L https://snapshot.vinjan.xyz./warden/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.warden
+mv $HOME/.warden/priv_validator_state.json.backup $HOME/.warden/data/priv_validator_state.json
 sudo systemctl restart wardend
 journalctl -fu wardend -o cat
 ```
