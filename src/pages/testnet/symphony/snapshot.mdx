@@ -6,8 +6,14 @@ icon: symphony
 chain: symphony-testnet-3
 version: v0.3.0
 ---
-soon
+Height : 1503221 (6,7 GB)
 ---
 ```
-
+sudo systemctl stop symphonyd
+cp $HOME/.symphonyd/data/priv_validator_state.json $HOME/.symphonyd/priv_validator_state.json.backup
+rm -rf $HOME/.symphonyd/data $HOME/.symphonyd/wasm
+curl -L https://snap.vinjan.xyz/symphony/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.symphon
+mv $HOME/.symphonyd/priv_validator_state.json.backup $HOME/.symphonyd/data/priv_validator_state.json
+sudo systemctl restart symphonyd
+sudo journalctl -u symphonyd -f -o cat
 ```
