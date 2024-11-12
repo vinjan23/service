@@ -40,11 +40,7 @@ go version
 ### Install binary
 
 ```
-cd $HOME
-git clone https://github.com/Orchestra-Labs/symphony.git
-cd symphony
-git checkout v0.4.0
-make install
+
 ```
 
 ### Initialize Node
@@ -60,21 +56,17 @@ symphonyd init (MONIKER) --chain-id symphony-testnet-4
 - Genesis
 
 ```
-wget -O $HOME/.symphonyd/config/genesis.json https://raw.githubusercontent.com/Orchestra-Labs/symphony/refs/heads/main/networks/symphony-testnet-4/genesis.json
+
 ```
 - Addrbook
 ```
-wget -O $HOME/.symphonyd/config/addrbook.json https://raw.githubusercontent.com/vinjan23/Testnet.Guide/refs/heads/main/Symphony/addrbook.json
+
 ```
 
 ### Configure Seeds and Peers
 
 ```
-seeds="748effb9aa965681ef481572d838bfeb33b531c7@94.130.143.184:21656,4660f4c136d4cf916d65b952a1ab67095fe1311f@65.21.234.111:25656"
-sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.symphonyd/config/config.toml
-peers="eea2dc7e9abfd18787d4cc2c728689ad658cd3a2@104.154.135.225:26656"
-sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.symphonyd/config/config.toml
-sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"800note\"/" $HOME/.symphonyd/config/app.toml
+
 ```
 
 ### config pruning
