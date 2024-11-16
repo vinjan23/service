@@ -3,8 +3,8 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Node CLI Cheatsheet
 network: Testnet
 icon: symphony
-chain: symphony-testnet-3
-version: v0.3.0
+chain: symphony-testnet-4
+version: v0.4.1
 ---
 
 ### CLI Cheatsheet
@@ -46,22 +46,35 @@ symphonyd q bank balances $(symphonyd keys show wallet -a)
 Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
 
 Create Validator (Staking)
+
 ```
-symphonyd tx staking create-validator \
---amount=1000000note \
---moniker="$MONIKER" \
---identity="" \
---details="" \
---website="" \
---from $WALLET \
---commission-rate 0.05 \
---commission-max-rate 0.2 \
---commission-max-change-rate 0.05 \
---min-self-delegation 1 \
---pubkey $(symphonyd tendermint show-validator) \
---chain-id symphony-testnet-3 \
---fees=800note \
--y
+symphonyd tendermint show-validator
+```
+```
+nano /root/.symphonyd/validator.json
+```
+```
+{
+  "pubkey": (Pubkey_xxx),
+  "amount": "5000000note",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.01",
+  "min-self-delegation": "1"
+}
+```
+```
+symphonyd tx staking create-validator $HOME/.symphonyd/validator.json \
+--from=wallet \
+--chain-id=symphony-testnet-4 \
+--gas-adjustment 1.5 \
+--gas-prices 0.025note \
+--gas auto
 ```
 
 Edit Validator
@@ -71,16 +84,17 @@ symphonyd tx staking edit-validator \
 --identity="" \
 --details="" \
 --website="" \
---chain-id=symphony-testnet-3 \
+--chain-id=symphony-testnet-4 \
 --from=wallet \
---fees=800note \
--y
+--gas-adjustment 1.5 \
+--gas-prices 0.025note \
+--gas auto
 ```
 
 
 Unjail Validator
 ```
-symphonyd  tx slashing unjail --from wallet --chain-id symphony-testnet-3 --fees 800note -y
+symphonyd  tx slashing unjail --from wallet --chain-id symphony-testnet-4 --gas-adjustment 1.5 --gas-prices 0.025note --gas auto
 ```
 
 Check Jailed Reason
@@ -92,32 +106,32 @@ symphonyd query slashing signing-info $(symphonyd tendermint show-validator)
 
 Withdraw Rewards
 ```
-symphonyd tx distribution withdraw-all-rewards --from wallet --chain-id symphony-testnet-3 --fees 800note -y
+symphonyd tx distribution withdraw-all-rewards --from wallet --chain-id symphony-testnet-4 --gas-adjustment 1.5 --gas-prices 0.025note --gas auto
 ```
 
 Withdraw Rewards with Comission
 ```
-symphonyd tx distribution withdraw-rewards $(symphonyd keys show wallet --bech val -a) --commission --from wallet --chain-id symphony-testnet-3 --fees 800note -y
+symphonyd tx distribution withdraw-rewards $(symphonyd keys show wallet --bech val -a) --commission --from wallet --chain-id symphony-testnet-4 --gas-adjustment 1.5 --gas-prices 0.025note --gas auto
 ```
 
 Delegate Token to your own validator
 ```
-symphonyd tx staking delegate $(symphonyd keys show wallet --bech val -a) 1000000note --from wallet --chain-id symphony-testnet-3 --fees 800note -y
+symphonyd tx staking delegate $(symphonyd keys show wallet --bech val -a) 1000000note --from wallet --chain-id symphony-testnet-4 --gas-adjustment 1.5 --gas-prices 0.025note --gas auto
 ```
 
 Delegate Token to other validator
 ```
-symphonyd tx staking redelegate $(symphonyd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000note --from wallet --chain-id symphony-testnet-3 --fees 800note -y
+symphonyd tx staking redelegate $(symphonyd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000note --from wallet --chain-id symphony-testnet-4 --gas-adjustment 1.5 --gas-prices 0.025note --gas auto
 ```
 
 Unbond Token from your validator
 ```
-symphonyd tx staking unbond $(symphonyd keys show wallet --bech val -a) 1000000note --from wallet --chain-id symphony-testnet-3 --fees 800note -y
+symphonyd tx staking unbond $(symphonyd keys show wallet --bech val -a) 1000000note --from wallet --chain-id symphony-testnet-4 --gas-adjustment 1.5 --gas-prices 0.025note --gas auto
 ```
 
 Send Token to another wallet
 ```
-symphonyd tx bank send wallet <TO_WALLET_ADDRESS> 1000000note --from wallet ---chain-id symphony-testnet-3 --fees 800note -y
+symphonyd tx bank send wallet <TO_WALLET_ADDRESS> 1000000note --from wallet ---chain-id symphony-testnet-4 --gas-adjustment 1.5 --gas-prices 0.025note --gas auto
 ```
 
 ### Governance 
