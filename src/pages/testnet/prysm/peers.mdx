@@ -1,0 +1,12 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Live Peers
+network: Testnet
+icon: prysm
+chain: prysm-devnet-1
+version: v0.1.0-devnet
+---
+```
+peers="b377fd0b14816eef8e12644340845c127d1e7d93@dns.kleomed.es:26656,271fe43e9a393cc47e288e80aa5b1ec1452fa0e7@88.99.149.170:29656"
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.prysm/config/config.toml
+```
