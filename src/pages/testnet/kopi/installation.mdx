@@ -1,0 +1,145 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Installation Node
+network: Testnet
+icon: kopi
+chain: kopi-test-5
+version: v0.6.4.1
+---
+
+### Hardware requirements
+
+The following requirements are recommended for running :
+
+- 4 or more physical CPU cores
+- At least 200GB of SSD disk storage
+- At least 8GB of memory (RAM)
+- At least 100mbps network bandwidth
+
+
+### Install dependencies Required
+
+```
+sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool -y
+```
+
+### Install go
+
+```
+ver="1.22.2"
+cd $HOME
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+rm "go$ver.linux-amd64.tar.gz"
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+source ~/.bash_profile
+go version
+```
+
+### Install binary
+
+```
+cd $HOME
+rm -rf kopi
+git clone --quiet --depth 1 --branch v0.6.4.1 https://github.com/kopi-money/kopi.git
+cd kopi
+make install
+```
+
+### Initialize Node
+
+Please change `<MONIKER>` To your own Moniker.
+
+```
+kopid init (MONIKER) --chain-id kopi-test-5
+```
+
+### Download Genesis file and addrbook
+
+- Genesis
+
+```
+wget -q https://data.kopi.money/genesis-test-5.json -O ~/.kopid/config/genesis.json
+```
+
+- Addrbook
+```
+curl -L https://snap-t.vinjan.xyz/kopi/addrbook.json > $HOME/.kopid/config/addrbook.json
+```
+
+### Configure Seeds and Peers
+
+```
+seeds="db38ce21eb11a9d9d45cfac6fa7694e79e7336ca@95.217.154.60:26656"
+sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.kopid/config/config.toml
+sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0ukopi\"/;" ~/.kopid/config/app.toml
+```
+
+### config pruning
+
+```
+sed -i \
+-e 's|^pruning *=.*|pruning = "custom"|' \
+-e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "100"|' \
+-e 's|^pruning-keep-every *=.*|pruning-keep-every = ""|' \
+-e 's|^pruning-interval *=.*|pruning-interval = "19"|' \
+$HOME/.kopid/config/app.toml
+```
+
+### Indexer Off
+
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.kopid/config/config.toml
+```
+
+### create service file and start node
+
+Create service file
+
+```
+sudo tee /etc/systemd/system/kopid.service > /dev/null << EOF
+[Unit]
+Description=kopi
+After=network-online.target
+[Service]
+User=$USER
+ExecStart=$(which kopid) start
+Restart=always
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+- Enable Service and Start Node
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable kopid
+sudo systemctl restart kopid
+sudo journalctl -u kopid -f -o cat
+```
+
+- Check Sync ( If False than go to create validator )
+- Use Snapshot to faster sync
+
+```
+symphonyd status 2>&1 | jq .sync_info
+```
+
+
+### Snapshot
+<a href="https://service.vinjan.xyz/testnet/kopi/snapshot" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
+</a>
+
+### Create Validator
+
+Heads up to the Cheat Sheets to create validator
+
+<a href="https://service.vinjan.xyz/testnet/kopi/cheat" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">CLI Cheatsheets</button>
+</a>
