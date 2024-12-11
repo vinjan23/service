@@ -4,7 +4,7 @@ title: Installation Node
 network: Mainnet
 icon: sge
 chain: sgenet-1
-version: v1.1.0
+version: v1.7.4
 ---
 
 ### Hardware requirements
@@ -25,11 +25,11 @@ sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang p
 
 ### Install go
 
-We are gonna use GO Version 1.19.5
+We are gonna use GO Version 1.23.3
 If you already have GO installed you can skip this 
 
 ```
-ver="1.20.4"
+ver="1.23.3"
 cd $HOME
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
@@ -46,7 +46,7 @@ go version
 cd $HOME
 git clone https://github.com/sge-network/sge
 cd sge
-git checkout v1.1.0
+git checkout v1.7.4
 make install
 ```
 
