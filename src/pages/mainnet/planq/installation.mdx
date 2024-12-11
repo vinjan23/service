@@ -4,7 +4,7 @@ title: Installation Node
 icon: planq
 network: Mainnet
 chain: planq_7070-2
-version: v1.0.7
+version: v2.0.4
 ---
 
 ### Hardware requirements
@@ -25,11 +25,11 @@ sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang p
 
 ### Install go
 
-We are gonna use GO Version 1.19.5
+We are gonna use GO Version 1.23.3
 If you already have GO installed you can skip this 
 
 ```
-ver="1.19.5"
+ver="1.23.3"
 cd $HOME
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
@@ -44,12 +44,11 @@ go version
 
 ```
 cd $HOME
-rm -rf planq/
+rm -rf planq
 git clone https://github.com/planq-network/planq.git
-cd planq/
-git fetch
-git checkout v1.0.7
-make build
+cd planq
+git checkout v2.0.4
+make install
 ```
 
 ### Initialize Node
@@ -94,7 +93,7 @@ sed -i -e "s/prometheus = false/prometheus = true/" $HOME/.planqd/config/config.
 pruning="custom"
 pruning_keep_recent="100"
 pruning_keep_every="0"
-pruning_interval="10"
+pruning_interval="19"
 sed -i -e "s/^pruning *=.*/pruning = \"$pruning\"/" $HOME/.planqd/config/app.toml
 sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"$pruning_keep_recent\"/" $HOME/.planqd/config/app.toml
 sed -i -e "s/^pruning-keep-every *=.*/pruning-keep-every = \"$pruning_keep_every\"/" $HOME/.planqd/config/app.toml
