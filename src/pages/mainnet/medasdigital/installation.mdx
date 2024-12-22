@@ -1,0 +1,130 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Installation Node
+icon: medas
+network: Mainnet
+chain: medasdigital-2
+version: 1.0.0
+---
+
+### Hardware requirements
+
+The following requirements are recommended for running Defund:
+
+- 4 or more physical CPU cores
+- At least 200GB of SSD disk storage
+- At least 8GB of memory (RAM)
+- At least 100mbps network bandwidth
+
+
+### Install dependencies Required
+
+```
+sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool -y
+```
+
+### Install go
+
+We are gonna use GO Version 1.23.3
+If you already have GO installed you can skip this 
+
+```
+ver="1.23.3"
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+rm "go$ver.linux-amd64.tar.gz"
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+source ~/.bash_profile
+go version
+```
+### Install Cosmwasm
+```
+rm /usr/lib/libwasmvm.x86_64.so
+wget -P /usr/lib https://github.com/CosmWasm/wasmvm/releases/download/v2.1.2/libwasmvm.x86_64.so
+sudo ldconfig
+```
+
+### Install binary
+
+```
+cd $HOME
+wget https://github.com/oxygene76/medasdigital-2/releases/download/v1.0.0/medasdigitald
+chmod +x medasdigitald
+mv medasdigitald $HOME/go/bin/
+```
+
+### Init `Change <MONIKER> with ur Name`
+
+```
+medasdigitald init <MONIKER> --chain-id medasdigital-2
+```
+
+### Download Genesis file and addrbook
+
+- Genesis
+
+```
+wget -O $HOME/.medasdigital/config/genesis.json https://raw.githubusercontent.com/oxygene76/medasdigital-2/refs/heads/main/genesis/mainnet/config/genesis.json
+```
+- Addrbook
+
+```
+wget -O $HOME/.medasdigital/config/addrbook.json https://raw.githubusercontent.com/vinjan23/Mainnet/refs/heads/main/Medas/addrbook.json
+```
+
+### Configure Peers & Gas
+
+```
+peers="51ca3b0a3663af88566b32ecfd77948e55000bcc@88.205.101.195:26656,90be2e9f0a279372d2931e38f15025db9a847dbd@88.205.101.196:26656,0e567c9efe6e6d15f9b3257679398368c2ab04bb@88.205.101.197:26656,669d1b9f9c4bb99df594abaee4b13ae1b14d37a6@64.251.18.192:26656,cbfcd111ee19483dbbfed0919ac0d23119c5f0fe@67.207.180.166:26656"
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.medasdigital/config/config.toml
+sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.025umedas\"|" $HOME/.medasdigital/config/app.toml
+```
+
+### Config pruning
+
+```
+sed -i \
+-e 's|^pruning *=.*|pruning = "custom"|' \
+-e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "100"|' \
+-e 's|^pruning-keep-every *=.*|pruning-keep-every = "0"|' \
+-e 's|^pruning-interval *=.*|pruning-interval = "19"|' \
+$HOME/.medasdigital/config/app.toml
+```
+### Indexer Off
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.medasdigital/config/config.toml
+```
+
+### create service file and start node
+
+```
+sudo tee /etc/systemd/system/medasdigitald.service > /dev/null << EOF
+[Unit]
+Description=medasdigital
+After=network-online.target
+[Service]
+User=$USER
+ExecStart=$(which medasdigitald) start
+Restart=always
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+- Enable Service and Start Node
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable medasdigitald
+sudo systemctl restart medasdigitald
+sudo journalctl -u medasdigitald -f -o cat
+```
+
+### Create Validator
+<a href="https://service.vinjan.xyz/mainnet/medasdigital/cheat" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">CLI Cheatsheets</button>
+</a>
