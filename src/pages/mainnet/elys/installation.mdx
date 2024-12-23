@@ -1,0 +1,125 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Installation Node
+icon: elys
+network: Mainnet
+chain: elys-1
+version: 1.0.0
+---
+
+### Hardware requirements
+
+The following requirements are recommended for running Defund:
+
+- 4 or more physical CPU cores
+- At least 200GB of SSD disk storage
+- At least 8GB of memory (RAM)
+- At least 100mbps network bandwidth
+
+
+### Install dependencies Required
+
+```
+sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool -y
+```
+
+### Install go
+
+We are gonna use GO Version 1.23.3
+If you already have GO installed you can skip this 
+
+```
+ver="1.23.3"
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+rm "go$ver.linux-amd64.tar.gz"
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+source ~/.bash_profile
+go version
+```
+
+### Install binary
+
+```
+cd $HOME
+git clone https://github.com/elys-network/elys
+cd elys
+git checkout v1.4.0
+make install
+```
+
+### Init `Change <MONIKER> with ur Name`
+
+```
+elysd init <MONIKER> --chain-id elys-1
+```
+
+### Download Genesis file and addrbook
+
+- Genesis
+
+```
+wget -O $HOME/.elys/config/genesis.json https://raw.githubusercontent.com/elys-network/networks/refs/heads/main/mainnet/genesis.json
+```
+- Addrbook
+
+```
+wget -O $HOME/.elys/config/addrbook.json https://raw.githubusercontent.com/vinjan23/Mainnet/refs/heads/main/Elys/addrbook.json
+```
+
+### Configure Peers & Gas
+
+```
+peers="949ee3582bab917fc4dd89829871bd46c8b366d8@162.55.245.228:46656,d95bdf717eb751667586b5e31083770630742038@65.109.58.158:22156,380048bb45143b2b87c540c772886f5a08bae344@86.90.185.145:26156,1d079e8b757b21b390f3eca0880ca03f7f90d8f0@95.217.143.167:20656,a0d2b6ed5911c830666cb5ff6df17a0438758e69@38.242.153.88:26656,d71d3bce45274bf8354298042674a08c778f6d27@202.61.243.56:22056"
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.elys/config/config.toml
+sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.00025uelys\"|" $HOME/.elys/config/app.toml
+```
+
+### Config pruning
+
+```
+sed -i \
+-e 's|^pruning *=.*|pruning = "custom"|' \
+-e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "100"|' \
+-e 's|^pruning-keep-every *=.*|pruning-keep-every = ""|' \
+-e 's|^pruning-interval *=.*|pruning-interval = "19"|' \
+$HOME/.elys/config/app.toml
+```
+### Indexer Off
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.elys/config/config.toml
+```
+
+### create service file and start node
+
+```
+sudo tee /etc/systemd/system/elysd.service > /dev/null << EOF
+[Unit]
+Description=elys
+After=network-online.target
+[Service]
+User=$USER
+ExecStart=$(which elysd) start
+Restart=always
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+- Enable Service and Start Node
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable elysd
+sudo systemctl restart elysd
+sudo journalctl -u elysd -f -o cat
+```
+
+### Create Validator
+<a href="https://service.vinjan.xyz/mainnet/ely/cheat" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">CLI Cheatsheets</button>
+</a>
