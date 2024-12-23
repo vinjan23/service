@@ -1,0 +1,184 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Mainnet
+icon: elys
+chain: elys-1
+version: v1.4.0
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+elysd keys add <wallet>
+```
+
+Recover Wallet
+```
+elysd keys add <wallet> --recover
+```
+
+List Wallet
+```
+elysd keys list
+```
+
+Delete Wallet
+```
+elysd keys delete <wallet>
+```
+
+Check Wallet Balance
+```
+elysd q bank balances $(elysd keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+```
+elysd tendermint show-validator
+```
+```
+nano /root/.elys/validator.json
+```
+```
+{
+  "pubkey": {"@type":"/cosmos.crypto.ed25519.PubKey","key":""},
+  "amount": "1000000uelys",
+  "moniker": "",
+  "identity": "",
+  "website": "https://service.vinjan.xyz",
+  "security": "",
+  "details": "Staking Provider",
+  "commission-rate": "0.1",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.05",
+  "min-self-delegation": "1"
+}
+```
+```
+elysd tx staking create-validator $HOME/.elys/validator.json \
+--from wallet \
+--chain-id elys-1 \
+--gas auto \
+--gas-adjustment 1.2 \
+--fees 100uelys
+```
+
+Edit Validator
+```
+elysd tx staking edit-validator \
+--new-moniker="Vinjan.Inc" \
+--identity="7C66E36EA2B71F68" \
+--commission-rate="0.05" \
+--chain-id elys-1 \
+--from wallet \
+--gas auto \
+--gas-adjustment 1.2 \
+--fees 1000uelys
+```
+
+
+Unjail Validator
+```
+elysd tx slashing unjail --from <wallet> --chain-id elys-1 --gas-adjustment 1.2 --gas auto --fees 100uely
+```
+
+Check Jailed Reason
+```
+elysd query slashing signing-info $(elysd tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+elysd tx distribution withdraw-all-rewards --from wallet --chain-id elys-1 --gas-adjustment 1.2 --gas auto --fees 100uely
+```
+
+Withdraw Rewards with Comission
+```
+elysd tx distribution withdraw-rewards $(elysd keys show wallet --bech val -a) --commission --from wallet --chain-id elys-1 --gas-adjustment 1.2 --gas auto --fees 100uely
+```
+
+Delegate Token to your own validator
+```
+elysd tx staking delegate $(elysd keys show wallet --bech val -a) 1000000uelys --from wallet --chain-id elys-1 --gas-adjustment 1.2 --gas auto --fees 100uely
+```
+
+Delegate Token to other validator
+```
+elysd tx staking redelegate $(elysd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uelys --from wallet --chain-id elys-1 --gas-adjustment 1.2 --gas auto --fees 100uely
+```
+
+Unbond Token from your validator
+```
+elysd tx staking unbond $(elysd keys show wallet --bech val -a) 1000000uelys --from wallet --chain-id elys-1 --gas-adjustment 1.2 --gas auto --fees 100uely
+```
+
+Send Token to another wallet
+```
+elysd tx bank send wallet <TO_WALLET_ADDRESS> 1000000uelys --from wallet --chain-id elys-1 --gas-adjustment 1.2 --gas auto --fees 100uely
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+elysd tx gov vote 1 yes --from wallet --chain-id elys-1 --gas-adjustment 1.2 --gas auto --fees 100uely
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=44` To any other ports
+```
+sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:16657\"%" $HOME/.elys/config/client.toml
+```
+```
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:16658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:16657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:16060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:16656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":16660\"%" $HOME/.elys/config/config.toml
+sed -i.bak -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:16317\"%; s%^address = \"localhost:9090\"%address = \"localhost:16090\"%" $HOME/.elys/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i -e 's|^indexer *=.*|indexer = "kv"|' $HOME/.elys/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i -e 's|^indexer *=.*|indexer = "null"|' $HOME/.elys/config/config.toml
+```
+
+Reset Chain Data
+```
+elysd tendermint unsafe-reset-all --home $HOME/.elys --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop elysd && \
+sudo systemctl disable elysd && \
+rm /etc/systemd/system/elysd.service && \
+sudo systemctl daemon-reload && \
+cd $HOME && \
+rm -rf .elys && \
+rm -rf $(which elysd)
+```
