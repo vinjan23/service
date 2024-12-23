@@ -4,7 +4,7 @@ title: Live Peers
 network: Mainnet
 icon: kopi
 chain: luwak-1
-version: v0.6.5
+version: v0.6.5.2
 ---
 ```
 peers="$(curl -sS https://rpc-kopid.vinjan.xyz:443/net_info | jq -r '.result.peers[] | "\(.node_info.id)@\(.remote_ip):\(.node_info.listen_addr)"' | awk -F ':' '{print $1":"$(NF)}' | sed -z 's|\n|,|g;s|.$||')"
