@@ -1,0 +1,132 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Installation Node
+icon: medas
+network: Mainnet
+chain: diamond-1
+version: 5.5.0
+---
+
+### Hardware requirements
+
+The following requirements are recommended for running Defund:
+
+- 4 or more physical CPU cores
+- At least 200GB of SSD disk storage
+- At least 8GB of memory (RAM)
+- At least 100mbps network bandwidth
+
+
+### Install dependencies Required
+
+```
+sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool -y
+```
+
+### Install go
+
+We are gonna use GO Version 1.23.3
+If you already have GO installed you can skip this 
+
+```
+ver="1.23.3"
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+rm "go$ver.linux-amd64.tar.gz"
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+source ~/.bash_profile
+go version
+```
+
+### Install binary
+
+```
+cd $HOME
+mkdir -p /root/go/bin/
+wget https://snapshot.vinjan.xyz./zenrock/zenrockd
+chmod +x zenrockd
+mv zenrockd /root/go/bin/
+```
+
+### Init `Change <MONIKER> with ur Name`
+
+```
+zenrockd init <MONIKER> --chain-id diamond-1
+```
+```
+zenrockd config set client chain-id diamond-1
+```
+
+### Download Genesis file and addrbook
+
+- Genesis
+
+```
+curl -Ls https://snapshot.vinjan.xyz./zenrock/genesis.json > $HOME/.zrchain/config/genesis.json
+```
+- Addrbook
+
+```
+curl -Ls https://snapshot.vinjan.xyz./zenrock/addrbook.json > $HOME/.zrchain/config/addrbook.json
+```
+
+### Configure Peers & Gas
+
+```
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.01urock\"/" $HOME/.zrchain/config/app.toml
+peers="b42caab1a764eda0a945b614ef5033cb0736129d@65.21.234.111:18656"
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.zrchain/config/config.toml
+seeds=""
+sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.zrchain/config/config.toml
+sed -i -e "s/^filter_peers *=.*/filter_peers = \"true\"/" $HOME/.zrchain/config/config.toml
+```
+
+### Config pruning
+
+```
+sed -i \
+-e 's|^pruning *=.*|pruning = "custom"|' \
+-e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "100"|' \
+-e 's|^pruning-keep-every *=.*|pruning-keep-every = "0"|' \
+-e 's|^pruning-interval *=.*|pruning-interval = "19"|' \
+$HOME/.zrchain/config/app.toml
+```
+### Indexer Off
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.zrchain/config/config.toml
+```
+
+### create service file and start node
+
+```
+sudo tee /etc/systemd/system/zenrockd.service > /dev/null <<EOF
+[Unit]
+Description=Zenrock
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which zenrockd) start
+Restart=always
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+- Enable Service and Start Node
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable zenrockd
+sudo systemctl restart zenrockd
+sudo journalctl -u zenrockd -f -o cat
+```
+
+### Create Validator
+<a href="https://service.vinjan.xyz/mainnet/zenrock/cheat" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">CLI Cheatsheets</button>
+</a>
