@@ -1,0 +1,175 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Mainnet
+icon: synternet
+chain: synternet-1
+version: v0.19.1
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+syntd  keys add wallet
+```
+
+Recover Wallet
+```
+syntd  keys add wallet --recover
+```
+
+List Wallet
+```
+syntd keys list
+```
+
+Delete Wallet
+```
+syntd keys delete wallet
+```
+
+Check Wallet Balance
+```
+syntd q bank balances $(syntd keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+
+```
+syntd tx staking create-validator \
+--amount=17000000usynt \
+--pubkey=$(syntd tendermint show-validator) \
+--moniker="" \
+--identity="" \
+--website="" \
+--details="" \
+--chain-id=synternet-1 \
+--commission-rate="0.05" \
+--commission-max-rate="0.20" \
+--commission-max-change-rate="0.01" \
+--min-self-delegation 1 \
+--gas="auto" \
+--gas-adjustment="1.3" \
+--gas-prices="0.01usynt" \
+--from=wallet
+```
+
+Edit Validator
+```
+syntd tx staking edit-validator \
+--new-moniker="" \
+--identity="" \
+--details="" \
+--website="" \
+--chain-id=synternet-1 \
+--from=wallet
+```
+
+
+Unjail Validator
+```
+syntd tx slashing unjail --from wallet --chain-id synternet-1 --gas-adjustment=1.3 --gas-prices=0.01usynt --gas=auto
+```
+
+Check Jailed Reason
+```
+syntd query slashing signing-info $(syntd tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+syntd tx distribution withdraw-all-rewards --from wallet --chain-id synternet-1 --gas-adjustment=1.3 --gas-prices=0.01usynt --gas=auto
+```
+
+Withdraw Rewards with Comission
+```
+syntd tx distribution withdraw-rewards $(syntd keys show wallet --bech val -a) --commission --from wallet --chain-id synternet-1 --gas-adjustment=1.3 --gas-prices=0.01usynt --gas=auto
+```
+
+Delegate Token to your own validator
+```
+syntd tx staking delegate $(syntd keys show wallet --bech val -a) 1000000usynt --from wallet ---chain-id synternet-1 --gas-adjustment=1.3 --gas-prices=0.01usynt --gas=auto
+```
+
+Delegate Token to other validator
+```
+syntd tx staking redelegate $(syntd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000usynt --from wallet --chain-id synternet-1 --gas-adjustment=1.3 --gas-prices=0.01usynt --gas=auto
+```
+
+Unbond Token from your validator
+```
+syntd tx staking unbond $(syntd keys show wallet --bech val -a) 1000000usynt --from wallet --chain-id synternet-1 --gas-adjustment=1.3 --gas-prices=0.01usynt --gas=auto
+```
+
+Send Token to another wallet
+```
+syntd tx bank send wallet <TO_WALLET_ADDRESS> 1000000usynt --from wallet --chain-id synternet-1 --gas-adjustment=1.3 --gas-prices=0.01usynt --gas=auto
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+syntd tx gov vote 1 yes --from wallet --chain-id synternet-1 --gas-adjustment=1.3 --gas-prices=0.01usynt --gas=auto
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=44` To any other ports
+
+- PORT=31
+```  
+PORT=31
+syntd config node tcp://localhost:${PORT}657
+```
+```
+sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:${PORT}658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:${PORT}657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:${PORT}060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:${PORT}656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":${PORT}660\"%" $HOME/.amber/config/config.toml
+sed -i -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:${PORT}317\"%; s%^address = \":8080\"%address = \":${PORT}080\"%; s%^address = \"localhost:9090\"%address = \"localhost:${PORT}090\"%; s%^address = \"localhost:9091\"%address = \"localhost:${PORT}091\"%" $HOME/.amber/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.amber/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.amber/config/config.toml
+```
+
+Reset Chain Data
+```
+syntd tendermint unsafe-reset-all --home $HOME/.amber --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop syntd
+sudo systemctl disable syntd
+sudo rm /etc/systemd/system/syntd.service
+sudo systemctl daemon-reload
+rm -f $(which syntd)
+rm -rf .amber
+rm -rf synternet
+```
