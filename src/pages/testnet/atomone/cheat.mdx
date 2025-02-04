@@ -1,0 +1,173 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: atone
+chain: atomone-testnet-1
+version: v1.0.0
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+atomoned keys add wallet
+```
+
+Recover Wallet
+```
+atomoned keys add wallet --recover
+```
+
+List Wallet
+```
+atomoned keys list
+```
+
+Delete Wallet
+```
+atomoned keys delete wallet
+```
+
+Check Wallet Balance
+```
+atomoned q bank balances $(atomoned keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+```
+atomoned tx staking create-validator \
+--amount=1000000uatone \
+--pubkey=$(atomoned tendermint show-validator) \
+--moniker="" \
+--identity="" \
+--website="" \
+--details="" \
+--chain-id=atomone-testnet-1 \
+--commission-rate="0.02" \
+--commission-max-rate="0.20" \
+--commission-max-change-rate="0.02" \
+--min-self-delegation=1 \
+--from=wallet \
+--gas=auto
+```
+
+
+Edit Validator
+```
+atomoned tx staking edit-validator \
+--new-moniker="Vinjan.Inc" \
+--identity="7C66E36EA2B71F68" \
+--website="https://service.vinjan.xyz" \
+--details="Stake Provider & IBC Relayer" \
+--chain-id=atomone-testnet-1 \
+--commission-rate="0.07" \
+--from=wallet \
+--gas=auto
+```
+
+Unjail Validator
+```
+atomoned tx slashing unjail --from wallet --chain-id atomone-testnet-1 --gas auto
+```
+
+Check Jailed Reason
+```
+atomoned query slashing signing-info $(atomoned tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+atomoned tx distribution withdraw-all-rewards --from wallet --chain-id atomone-testnet-1 --gas auto
+```
+
+Withdraw Rewards with Comission
+```
+atomoned tx staking delegate $(atomoned keys show wallet --bech val -a) 1000000uatone --from wallet --chain-id atomone-testnet-1 --gas auto
+```
+
+Delegate Token to your own validator
+```
+atomoned tx staking delegate $(atomoned keys show wallet --bech val -a) 1000000uatone --from wallet --chain-id atomone-testnet-1 --gas auto
+```
+
+Delegate Token to other validator
+```
+atomoned tx staking redelegate $(atomoned keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uatone --from wallet --chain-id atomone-testnet-1 --gas auto
+```
+
+Unbond Token from your validator
+```
+atomoned tx staking unbond $(atomoned keys show wallet --bech val -a) 1000000uatone --from wallet --chain-id atomone-testnet-1 --gas auto
+```
+
+Send Token to another wallet
+```
+atomoned tx bank send wallet <TO_WALLET_ADDRESS> 1000000uatone --from wallet --chain-id atomone-testnet-1 --gas auto
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+atomoned tx gov vote 2 yes --from wallet --chain-id atomone-testnet-1 --gas auto
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=44` To any other ports
+
+- PORT=14
+```  
+sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:14657\"%" $HOME/.atomone/config/client.toml
+```
+```
+sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:${PORT}658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://0.0.0.0:${PORT}657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:${PORT}060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:${PORT}656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":${PORT}660\"%" $HOME/.atomone/config/config.toml
+sed -i -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:${PORT}317\"%; s%^address = \":8080\"%address = \":${PORT}080\"%; s%^address = \"localhost:9090\"%address = \"localhost:${PORT}090\"%; s%^address = \"localhost:9091\"%address = \"localhost:${PORT}091\"%" $HOME/.atomone/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.atomone/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.atomone/config/config.toml
+```
+
+Reset Chain Data
+```
+atomoned tendermint unsafe-reset-all --home $HOME/.atomone --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop atomoned
+sudo systemctl disable atomoned
+sudo rm /etc/systemd/system/atomoned.service
+sudo systemctl daemon-reload
+rm -f $(which atomoned)
+rm -rf .atomone
+rm -rf atomone
+```
