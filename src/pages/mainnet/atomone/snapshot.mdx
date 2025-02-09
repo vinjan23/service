@@ -6,12 +6,14 @@ icon: atone
 chain: atomone-1
 version: v1.0.1
 ---
-( Block 147993 )
+(Update Every 6 Hours)
 ```
 sudo apt install lz4 -y
 sudo systemctl stop atomoned
-atomoned tendermint unsafe-reset-all --home $HOME/.atomone --keep-addr-book
-curl -L https://snapshot.vinjan.xyz./atomone/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.atomone
+cp $HOME/.atomone/data/priv_validator_state.json $HOME/.atomone/priv_validator_state.json.backup
+rm -rf $HOME/.atomone/data
+curl -L https://snap.vinjan.xyz./atomone/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.atomone
+mv $HOME/.atomone/priv_validator_state.json.backup $HOME/.atomone/data/priv_validator_state.json
 sudo systemctl restart atomoned
 sudo journalctl -u atomoned -f -o cat
 ```
