@@ -4,7 +4,7 @@ title: Node CLI Cheatsheet
 network: Mainnet
 icon: atone
 chain: atomone-1
-version: v1.0.1
+version: v1.1.1
 ---
 
 ### CLI Cheatsheet
@@ -60,7 +60,9 @@ atomoned tx staking create-validator \
 --commission-max-change-rate="0.02" \
 --min-self-delegation=1 \
 --from=wallet \
---gas=auto
+--gas=auto \
+--gas-adjustment=1.2 \
+--gas-prices="0.025uatone"
 ```
 
 
@@ -74,12 +76,14 @@ atomoned tx staking edit-validator \
 --chain-id=atomone-1 \
 --commission-rate="0.07" \
 --from=wallet \
---gas=auto
+--gas=auto \
+--gas-adjustment=1.2 \
+--gas-prices="0.025uatone"
 ```
 
 Unjail Validator
 ```
-atomoned tx slashing unjail --from wallet --chain-id atomone-1
+atomoned tx slashing unjail --from wallet --chain-id atomone-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025uatone"
 ```
 
 Check Jailed Reason
@@ -91,32 +95,32 @@ atomoned query slashing signing-info $(atomoned tendermint show-validator)
 
 Withdraw Rewards
 ```
-atomoned tx distribution withdraw-all-rewards --from wallet --chain-id atomone-1
+atomoned tx distribution withdraw-all-rewards --from wallet --chain-id atomone-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025uatone"
 ```
 
 Withdraw Rewards with Comission
 ```
-atomoned tx staking delegate $(atomoned keys show wallet --bech val -a) 1000000uatone --from wallet --chain-id atomone-1
+atomoned tx staking delegate $(atomoned keys show wallet --bech val -a) 1000000uatone --from wallet --chain-id atomone-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025uatone"
 ```
 
 Delegate Token to your own validator
 ```
-atomoned tx staking delegate $(atomoned keys show wallet --bech val -a) 1000000uatone --from wallet --chain-id atomone-1
+atomoned tx staking delegate $(atomoned keys show wallet --bech val -a) 1000000uatone --from wallet --chain-id atomone-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025uatone"
 ```
 
 Delegate Token to other validator
 ```
-atomoned tx staking redelegate $(atomoned keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uatone --from wallet --chain-id atomone-1
+atomoned tx staking redelegate $(atomoned keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uatone --from wallet --chain-id atomone-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025uatone"
 ```
 
 Unbond Token from your validator
 ```
-atomoned tx staking unbond $(atomoned keys show wallet --bech val -a) 1000000uatone --from wallet --chain-id atomone-1
+atomoned tx staking unbond $(atomoned keys show wallet --bech val -a) 1000000uatone --from wallet --chain-id atomone-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025uatone"
 ```
 
 Send Token to another wallet
 ```
-atomoned tx bank send wallet <TO_WALLET_ADDRESS> 1000000uatone --from wallet --chain-id atomone-1
+atomoned tx bank send wallet <TO_WALLET_ADDRESS> 1000000uatone --from wallet --chain-id atomone-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025uatone"
 ```
 
 ### Governance 
@@ -125,7 +129,7 @@ Vote
 You can change the value of `yes` to `no`,`abstain`,`nowithveto`
 
 ```
-atomoned tx gov vote 2 yes --from wallet --chain-id atomone-1
+atomoned tx gov vote 2 yes --from wallet --chain-id atomone-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025uatone"
 ```
 
 ### Other
