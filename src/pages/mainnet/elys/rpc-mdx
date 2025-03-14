@@ -4,7 +4,7 @@ title: RPC Endpoint
 network: Mainnet
 icon: elys
 chain: elys-1
-version: v1.4.0
+version: v2.3.0
 ---
 ```
 https://rpc-elys.vinjan.xyz/
