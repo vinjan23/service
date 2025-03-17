@@ -44,26 +44,33 @@ realio-networkd q bank balances $(realio-networkd keys show wallet -a)
 ### Validator Management
 
 Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
-
-Create Validator (Staking)
 ```
-realio-networkd tx staking create-validator \
---amount=1000000ario \
---pubkey=$(realio-networkd tendermint show-validator) \
---moniker="YOUR_MONIKER_NAME" \
---identity="YOUR_KEYBASE_ID" \
---details="YOUR_DETAILS" \
---website="YOUR_WEBSITE_URL" \
---chain-id=realionetwork_3301-1 \
---commission-rate=0.05 \
---commission-max-rate=0.20 \
---commission-max-change-rate=0.01 \
---min-self-delegation=1 \
---from=wallet \
---gas-adjustment=1.4 \
---gas=auto \
---gas-prices=0ario \
--y
+realio-networkd tendermint show-validator
+```
+```
+nano /root/.realio-network/validator.json
+```
+```
+{
+  "pubkey": ,
+  "amount": "1000000000000000000ario",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "r",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.05",
+  "min-self-delegation": "1"
+}
+```
+```
+realio-networkd tx staking create-validator $HOME/.realio-network/validator.json \
+--from wallet \
+--chain-id realionetwork_3301-1 \
+--gas 800000 \
+--fees 5000000000000000ario
 ```
 
 Edit Validator
@@ -75,13 +82,10 @@ realio-networkd tx staking edit-validator \
 --website="YOUR_WEBSITE_URL"
 --chain-id realionetwork_3301-1 \
 --commission-rate=0.05 \
---from=<wallet> \
---gas-adjustment="1.15" \
---gas="1000000" \
---gas-prices="30000000000ario" \
--y
+--from=wallet \
+--gas 800000 \
+--fees 5000000000000000ario
 ```
-
 
 Unjail Validator
 ```
