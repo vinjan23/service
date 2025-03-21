@@ -3,15 +3,15 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Snapshot
 network: Testnet
 icon: airchain
-chain: junction
-version: v0.1.0
+chain: varanasi-1
+version: v0.3.1
 ---
 ( Block 42800 )
 ```
 sudo apt install lz4 -y
 sudo systemctl stop junctiond
 junctiond tendermint unsafe-reset-all --home $HOME/.junction --keep-addr-book
-curl -L https://snapshot.vinjan.xyz./airchain/airchain-snapshot-20240511.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.junction
+
 sudo systemctl restart junctiond
 journalctl -fu junctiond -o cat
 ```
