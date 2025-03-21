@@ -3,13 +3,13 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Statesync
 network: Testnet
 icon: airchain
-chain: junction
-version: v0.1.0
+chain: varanasi-1
+version: v0.3.1
 ---
 
 ```
 sudo systemctl stop junctiond
-junctiond tendermint unsafe-reset-all --home $HOME/.junction --keep-addr-book
+junctiond tendermint unsafe-reset-all --home $HOME/.junctiond --keep-addr-book
 SNAP_RPC="https://rpc-airchain.vinjan.xyz:443"
 LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
 BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000)); \
@@ -18,7 +18,7 @@ echo $LATEST_HEIGHT $BLOCK_HEIGHT $TRUST_HASH
 sed -i.bak -E "s|^(enable[[:space:]]+=[[:space:]]+).*$|\1true| ; \
 s|^(rpc_servers[[:space:]]+=[[:space:]]+).*$|\1\"$SNAP_RPC,$SNAP_RPC\"| ; \
 s|^(trust_height[[:space:]]+=[[:space:]]+).*$|\1$BLOCK_HEIGHT| ; \
-s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"|" $HOME/.junction/config/config.toml
+s|^(trust_hash[[:space:]]+=[[:space:]]+).*$|\1\"$TRUST_HASH\"|" $HOME/.junctiond/config/config.toml
 sudo systemctl restart junctiond
 sudo journalctl -u junctiond -f -o cat
 ```
