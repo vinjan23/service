@@ -4,5 +4,173 @@ title: Node CLI Cheatsheet
 network: Testnet
 icon: intento
 chain: intento-ics-test-1
-version: v0.9.0-beta2
+version: v0.9.2-r1
 ---
+
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Usefull Command
+```
+intentod status 2>&1 | jq .sync_info
+```
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+intentod keys add wallet
+```
+
+Recover Wallet
+```
+intentod keys add wallet --recover
+```
+
+List Wallet
+```
+intentod keys list
+```
+
+Delete Wallet
+```
+intentod keys delete wallet
+```
+
+Check Wallet Balance
+```
+intentod q bank balances $(intentod keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+- Check Your Pubkey
+```
+intentod tendermint show-validator
+```
+- Make File validator.json
+```
+nano $HOME/.intento/validator.json
+```
+```
+{
+  "pubkey": {"#pubkey"},
+  "amount": "9990000uinto",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.2",
+  "min-self-delegation": "1"
+}
+```
+```
+intentod tx staking create-validator $HOME/.intento/validator.json \
+--from=wallet \
+--chain-id=intento-ics-test-1 \
+--gas-adjustment 1.2 \
+--gas-prices=0.001uinto \
+--gas=auto
+
+```
+
+Unjail Validator
+```
+intentod tx slashing unjail --from wallet --chain-id intento-ics-test-1 --gas-adjustment 1.2 --gas-prices=0.001uinto --gas=auto
+```
+
+Check Jailed Reason
+```
+intentod query slashing signing-info $(intentod tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+intentod tx distribution withdraw-all-rewards --from wallet --chain-id intento-ics-test-1 --gas-adjustment 1.2 --gas-prices=0.001uinto --gas=auto
+```
+
+Withdraw Rewards with Comission
+```
+intentod tx distribution withdraw-rewards $(intentod keys show wallet --bech val -a) --commission --from wallet --chain-id intento-ics-test-1 --gas-adjustment 1.2 --gas-prices=0.001uinto --gas=auto 
+```
+
+Delegate Token to your own validator
+```
+intentod tx staking delegate $(intentod keys show wallet --bech val -a) 1000000uinto --from wallet --chain-id intento-ics-test-1 --gas-adjustment 1.2 --gas-prices=0.001uinto --gas=auto
+```
+
+Delegate Token to other validator
+```
+intentod staking redelegate $(intentod keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uinto --from wallet --chain-id intento-ics-test-1 --gas-adjustment 1.2 --gas-prices=0.001uinto --gas=auto
+```
+
+Unbond Token from your validator
+```
+intentod tx staking unbond $(intentod keys show wallet --bech val -a) 1000000uinto --from wallet --chain-id intento-ics-test-1 --gas-adjustment 1.2 --gas-prices=0.001uinto --gas=auto
+```
+
+Send Token to another wallet
+```
+intentod tx bank send wallet <TO_WALLET_ADDRESS> 1000000uinto --from wallet --chain-id intento-ics-test-1 --gas-adjustment 1.2 --gas-prices=0.001uinto --gas=auto
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=20` To any other ports
+
+- PORT=13
+
+```
+sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:13657\"%" $HOME/.intento/config/client.toml
+```
+```
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:13658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:13657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:13060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:13656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":13660\"%" $HOME/.intento/config/config.toml
+sed -i.bak -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:13317\"%; s%^address = \"localhost:9090\"%address = \"0.0.0.0:13090\"%" $HOME/.intento/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.intento/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.intento/config/config.toml
+```
+
+Reset Chain Data
+```
+intentod tendermint unsafe-reset-all --home $HOME/.intento --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop intentod
+sudo systemctl disable intentod
+rm /etc/systemd/system/intentod.service
+sudo systemctl daemon-reload
+rm -rf .intento
+rm -rf intento
+rm -rf .gaia
+rm -rf gaia
+rm -rf $(which intentod)
+```
