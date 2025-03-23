@@ -43,13 +43,18 @@ go version
 ### Install binary
 
 ```
-
+cd $HOME
+rm -rf intento
+git clone https://github.com/trstlabs/intento.git
+cd intento
+git checkout v0.9.2-r1
+make install
 ```
 
 ### Init `Change <MONIKER> with ur Name`
 
 ```
-
+intentod init <MONIKER> --chain-id intento-ics-test-1
 ```
 
 ### Download Genesis file and addrbook
@@ -57,39 +62,72 @@ go version
 - Genesis
 
 ```
-
+curl -o $HOME/.intento/config/genesis.json https://raw.githubusercontent.com/trstlabs/networks/main/testnet/intento-ics-test-1/genesis.json
 ```
 - Addrbook
 
 ```
-
+curl -L https://snap-test.vinjan.xyz/intento/addrbook.json > $HOME/.intento/config/addrbook.json
 ```
 
 ### Configure Seeds and Peers
 
 ```
-
+sed -i -E "s|minimum-gas-prices = \".*\"|minimum-gas-prices = \"0.001uinto,0.001ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2\"|g" ~/.intento/config/app.toml
+seeds="9b5597722409cc937e668dc8d51eff1dc5eac046@88.99.162.99:13656"
+sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.intento/config/config.toml
+peers=""
+sed -i -E "s|persistent_peers = \".*\"|persistent_peers = \"$peers\"|g" $HOME/.intento/config/config.toml
+sed -i -E '/\[api\]/,/^enable = .*$/ s/^enable = .*$/enable = true/' $HOME/.intento/config/app.toml
+sed -i -E 's|swagger = .*|swagger = true|g' $HOME/.intento/config/app.toml
+sed -i -E "s|localhost|0.0.0.0|g" $HOME/.intento/config/app.toml
+sed -i -E 's|unsafe-cors = .*|unsafe-cors = true|g' $HOME/.intento/config/app.toml
+sed -i -E "s|chain-id = \".*\"|chain-id = \"intento-ics-test-1\"|g" $HOME/.intento/config/client.toml
+sed -i -E "s|keyring-backend = \"os\"|keyring-backend = \"test\"|g" $HOME/.intento/config/client.toml
 ```
 
 ### Config pruning
 
 ```
-
+sed -i \
+-e 's|^pruning *=.*|pruning = "custom"|' \
+-e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "100"|' \
+-e 's|^pruning-keep-every *=.*|pruning-keep-every = ""|' \
+-e 's|^pruning-interval *=.*|pruning-interval = "19"|' \
+$HOME/.intento/config/app.toml
 ```
 ### Indexer Off
 ```
-
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.intento/config/config.toml
 ```
 
 ### create service file and start node
 
 ```
+sudo tee /etc/systemd/system/intentod.service > /dev/null <<EOF
+[Unit]
+Description=intento
+After=network-online.target
 
+[Service]
+User=$USER
+ExecStart=$(which intentod) start
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
 ```
 
 - Enable Service and Start Node
 
 ```
+sudo systemctl daemon-reload
+sudo systemctl enable intentod
+sudo systemctl restart intentod
+sudo journalctl -u intentod -f -o cat
 
 ```
 
