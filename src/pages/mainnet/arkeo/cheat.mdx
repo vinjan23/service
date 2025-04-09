@@ -1,0 +1,188 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Mainnet
+icon: arkeo
+chain: arkeo-main-v1
+version: v1.0.9
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+arkeod keys add wallet
+```
+
+Recover Wallet
+```
+arkeod keys add wallet --recover
+```
+
+List Wallet
+```
+arkeod keys list
+```
+
+Delete Wallet
+```
+arkeod keys delete wallet
+```
+
+Check Wallet Balance
+```
+arkeod q bank balances $(arkeod keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+```
+arkeod tendermint show-validator
+```
+```
+nano /root/.arkeo/validator.json
+```
+```
+{
+  "pubkey": ,
+  "amount": "100000000uarkeo",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.01",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.01",
+  "min-self-delegation": "1"
+}
+```
+```
+arkeod tx staking create-validator $HOME/.arkeo/validator.json \
+--from wallet \
+--chain-id arkeo-main-v1 \
+--gas-prices=0.01uarkeo \
+--gas-adjustment=1.5 \
+--gas=auto
+```
+
+
+Edit Validator
+```
+arkeod tx staking edit-validator \
+--new-moniker="" \
+--identity="" \
+--website="" \
+--details="" \
+--chain-id=arkeo-main-v1 \
+--commission-rate="0.02" \
+--from=wallet \
+--gas=auto \
+--gas-adjustment=1.5 \
+--gas-prices=0.01uarkeo
+```
+
+Unjail Validator
+```
+arkeod tx slashing unjail --from wallet --chain-id arkeo-main-v1 --gas-adjustment=1.5 --gas=auto --gas-prices="0.01uarkeo"
+```
+
+Check Jailed Reason
+```
+arkeod query slashing signing-info $(arkeod tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+arkeod tx distribution withdraw-all-rewards --from wallet --chain-id arkeo-main-v1 --gas-adjustment=1.5 --gas=auto --gas-prices="0.0uarkeo"
+```
+
+Withdraw Rewards with Comission
+```
+arkeod tx staking delegate $(arkeod keys show wallet --bech val -a) 1000000uarkeo --from wallet --chain-id arkeo-main-v1 --gas-adjustment=1.5 --gas=auto --gas-prices="0.0uarkeo"
+```
+
+Delegate Token to your own validator
+```
+arkeod tx staking delegate $(arkeod keys show wallet --bech val -a) 1000000uarkeo --from wallet --chain-id arkeo-main-v1 --gas-adjustment=1.5 --gas=auto --gas-prices="0.0uarkeo"
+```
+
+Delegate Token to other validator
+```
+arkeod tx staking redelegate $(arkeod keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uarkeo --from wallet --chain-id arkeo-main-v1 --gas-adjustment=1.5 --gas=auto --gas-prices="0.0uarkeo"
+```
+
+Unbond Token from your validator
+```
+arkeod tx staking unbond $(arkeod keys show wallet --bech val -a) 1000000uarkeo --from wallet --chain-id arkeo-main-v1 --gas-adjustment=1.5 --gas=auto --gas-prices="0.0uarkeo"
+```
+
+Send Token to another wallet
+```
+arkeod tx bank send wallet <TO_WALLET_ADDRESS> 1000000uarkeo --from wallet --chain-id arkeo-main-v1 --gas-adjustment=1.5 --gas=auto --gas-prices="0.0uarkeo"
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+arkeod tx gov vote 1 yes --from wallet --chain-id arkeo-main-v1 --gas-adjustment=1.5 --gas=auto --gas-prices="0.0uarkeo"
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=44` To any other ports
+
+- PORT=24
+```  
+sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:24657\"%" $HOME/.arkeo/config/client.toml
+```
+```
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:24658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://0.0.0.0:24657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:24060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:24656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":24660\"%" $HOME/.arkeo/config/config.toml
+sed -i.bak -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:24317\"%; s%^address = \"localhost:9090\"%address = \"0.0.0.0:24090\"%" $HOME/.arkeo/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.arkeo/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.arkeo/config/config.toml
+```
+
+Reset Chain Data
+```
+arkeod tendermint unsafe-reset-all --home $HOME/.arkeo --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop arkeod
+sudo systemctl disable arkeod
+sudo rm /etc/systemd/system/arkeod.service
+sudo systemctl daemon-reload
+rm -f $(which arkeod)
+rm -rf .arkeo
+rm -rf arkeo
+```
