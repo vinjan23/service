@@ -1,0 +1,170 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: odiseo
+chain: ithaca-1
+version: 
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Usefull Command
+```
+achillesd status 2>&1 | jq .sync_info
+```
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+achillesd keys add wallet
+```
+
+Recover Wallet
+```
+achillesd keys add wallet --recover
+```
+
+List Wallet
+```
+achillesd keys list
+```
+
+Delete Wallet
+```
+achillesd keys delete wallet
+```
+
+Check Wallet Balance
+```
+achillesd q bank balances $(achillesd keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+- Check Your Pubkey
+```
+achillesd tendermint show-validator
+```
+- Make File validator.json
+```
+nano $HOME/.achilles/validator.json
+```
+```
+{
+  "pubkey": ,
+  "amount": "100000000uodis",
+  "moniker": "Vinjan.Inc",
+  "identity": "7C66E36EA2B71F68",
+  "website": "https://service.vinjan.xyz",
+  "security": "",
+  "details": "Staking Provider-IBC Relayer",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.05",
+  "min-self-delegation": "1"
+}
+```
+```
+achillesd tx staking create-validator $HOME/.achilles/validator.json \
+--from wallet \
+--chain-id ithaca-1
+--gas-prices=0.25uodis \
+--gas-adjustment=1.5 \
+--gas=auto
+```
+
+Unjail Validator
+```
+achillesd tx slashing unjail --from wallet --chain-id ithaca-1 --gas-prices=0.25uodis --gas-adjustment=1.5 --gas=auto
+```
+
+Check Jailed Reason
+```
+achillesd query slashing signing-info $(achillesd tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+achillesd tx distribution withdraw-all-rewards --from wallet --chain-id ithaca-1 --gas-prices=0.25uodis --gas-adjustment=1.5 --gas=auto
+```
+
+Withdraw Rewards with Comission
+```
+achillesd tx distribution withdraw-rewards $(achillesd keys show wallet --bech val -a) --commission --from wallet --chain-id ithaca-1 --gas-prices=0.25uodis --gas-adjustment=1.5 --gas=auto
+```
+
+Delegate Token to your own validator
+```
+achillesd tx staking delegate $(achillesd keys show wallet --bech val -a) 1000000uodis --from wallet --chain-id ithaca-1 --gas-prices=0.25uodis --gas-adjustment=1.5 --gas=auto
+```
+
+Delegate Token to other validator
+```
+achillesd staking redelegate $(achillesd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uodis --from wallet --chain-id ithaca-1 --gas-prices=0.25uodis --gas-adjustment=1.5 --gas=auto
+```
+
+Unbond Token from your validator
+```
+achillesd tx staking unbond $(achillesd keys show wallet --bech val -a) 1000000uodis --from wallet --chain-id ithaca-1 --gas-prices=0.25uodis --gas-adjustment=1.5 --gas=auto
+```
+
+Send Token to another wallet
+```
+achillesd tx bank send wallet <TO_WALLET_ADDRESS> 1000000uodis --from wallet --chain-id ithaca-1 --gas-prices=0.25uodis --gas-adjustment=1.5 --gas=auto
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=20` To any other ports
+
+- PORT=28
+
+```
+sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:28657\"%" $HOME/.achilles/config/client.toml
+```
+```
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:28658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:28657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:28060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:28656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":28660\"%" $HOME/.achilles/config/config.toml
+sed -i.bak -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:28317\"%; s%^address = \"localhost:9090\"%address = \"localhost:28090\"%" $HOME/.achilles/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.achilles/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.achilles/config/config.toml
+```
+
+Reset Chain Data
+```
+achillesd tendermint unsafe-reset-all --home $HOME/.achilles --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop achillesd
+sudo systemctl disable achillesd
+sudo rm /etc/systemd/system/achillesd.service
+sudo systemctl daemon-reload
+rm -f $(which achillesd)
+rm -rf .achilles
+```
