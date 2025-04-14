@@ -4,7 +4,7 @@ title: Statesync
 network: Testnet
 icon: kiichain
 chain: kiichain3
-version: v2.0.0
+version: v3.0.0
 ---
 
 ```
@@ -25,3 +25,6 @@ sed -i.bak -e "s|^trust-hash *=.*|trust-hash = \"$SYNC_BLOCK_HASH\"|" $HOME/.kii
 sudo systemctl restart kiichaind
 sudo journalctl -u kiichaind -f -o cat
 ```
+
+
+
