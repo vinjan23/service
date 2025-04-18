@@ -44,9 +44,10 @@ go version
 
 ```
 cd $HOME
-wget https://snapshot-t.vinjan.xyz/odiseo/achillesd
-chmod +x achillesd
-mv achillesd /root/go/bin/
+rm -rf Achilles
+git clone https://github.com/daodiseomoney/Achilles.git
+cd achilles
+make install
 ```
 
 Verify that you've installed successfully
