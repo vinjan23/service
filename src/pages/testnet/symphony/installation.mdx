@@ -4,7 +4,7 @@ title: Installation Node
 network: Testnet
 icon: symphony
 chain: symphony-testnet-4
-version: v0.4.1
+version: v0.5.0
 ---
 
 ### Hardware requirements
@@ -40,11 +40,11 @@ go version
 ### Install binary
 
 ```
-cd $HOME || return
-rm -rf symphony
+cd $HOME 
+rm -rf symphony 
 git clone https://github.com/Orchestra-Labs/symphony.git
 cd symphony
-git checkout v0.4.1
+git checkout fix/change-upgrade-name-to-fix-testnet-migration
 make install
 ```
 
@@ -71,10 +71,8 @@ curl -L https://snapshot-t.vinjan.xyz/symphony/addrbook.json > $HOME/.symphonyd/
 ### Configure Seeds and Peers
 
 ```
-seeds="4660f4c136d4cf916d65b952a1ab67095fe1311f@65.21.234.111:25656"
+seeds="df754507ff1b7d906647754c40e808d4bfbcce39@88.99.149.170"
 sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.symphonyd/config/config.toml
-peers="eea2dc7e9abfd18787d4cc2c728689ad658cd3a2@104.154.135.225:26656,ed33b91ef0743a35206890044cbaac99c8241e26@94.130.143.184:21656"
-sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.symphonyd/config/config.toml
 sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.025note\"/" $HOME/.symphonyd/config/app.toml
 ```
 
