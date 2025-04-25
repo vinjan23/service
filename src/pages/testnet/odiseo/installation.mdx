@@ -46,7 +46,7 @@ go version
 cd $HOME
 rm -rf Achilles
 git clone https://github.com/daodiseomoney/Achilles.git
-cd achilles
+cd Achilles/achilles
 make install
 ```
 
@@ -69,17 +69,17 @@ achillesd init <MONIKER> --chain-id ithaca-1
 - Genesis
 
 ```
-curl -L https://snap-test.vinjan.xyz/odiseo/genesis.json > $HOME/.achilles/config/genesis.json
+curl -L https://snapshot-t.vinjan.xyz/odiseo/genesis.json > $HOME/.achilles/config/genesis.json
 ```
 - Addrbook
 ```
-curl -L https://snap-test.vinjan.xyz/odiseo/addrbook.json > $HOME/.achilles/config/addrbook.json
+curl -L https://snapshot-t.vinjan.xyz/odiseo/addrbook.json > $HOME/.achilles/config/addrbook.json
 ```
 
 ### Configure Peers and Gas
 
 ```
-seeds="abc8093da699c8f3c872b7dfcbb765ac8a751208@94.130.143.184:28656"
+seeds="da3827fe93b9232eb5a218d6c9c3a44de0b9578f@88.99.149.170:28656"
 sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.achilles/config/config.toml
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.25uodis\"/" $HOME/.achilles/config/app.toml
 ```
