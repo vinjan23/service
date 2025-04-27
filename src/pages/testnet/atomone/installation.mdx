@@ -4,7 +4,7 @@ title: Installation Node
 icon: atone
 network: Testnet
 chain: atomone-testnet-1
-version: 1.0.1
+version: v2.0.0-rc2
 ---
 
 ### Hardware requirements
@@ -44,9 +44,10 @@ go version
 
 ```
 cd $HOME
+rm -rf atomone
 git clone https://github.com/atomone-hub/atomone.git
 cd atomone
-git checkout v1.0.1
+git checkout v2.0.0-rc2
 make install
 ```
 
@@ -74,7 +75,7 @@ wget -O $HOME/.atomone/config/addrbook.json https://raw.githubusercontent.com/vi
 ### Configure Seeds and Peers
 
 ```
-sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0uatone\"|" $HOME/.atomone/config/app.toml
+sed -i -e "s|^minimum-gas-prices *=.*|minimum-gas-prices = \"0.025uatone,0.025uphoton\"|" $HOME/.atomone/config/app.toml
 ```
 
 ### Config pruning
