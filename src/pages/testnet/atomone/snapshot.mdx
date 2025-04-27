@@ -4,14 +4,14 @@ title: Snapshot
 network: Testnet
 icon: atone
 chain: atomone-testnet-1
-version: v1.0.1
+version: v2.0.0-rc2
 ---
 
 ```
 sudo apt install lz4 -y
 sudo systemctl stop atomoned
 atomoned tendermint unsafe-reset-all --home $HOME/.atomone --keep-addr-book
-curl -L https://snap.vinjan.xyz./atomone/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.atomone
+curl -L https://snapshot-t.vinjan.xyz./atomone-test/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.atomone
 sudo systemctl restart atomoned
 sudo journalctl -u atomoned -f -o cat
 ```
