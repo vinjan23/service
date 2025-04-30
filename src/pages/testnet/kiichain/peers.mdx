@@ -3,11 +3,11 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Live Peers
 network: Testnet
 icon: kiichain
-chain: kiichain3
-version: v2.0.0
+chain: oro_1336-1
+version: v1.2.0
 ---
 
 ```
 persistent_peers="$(curl -sS https://rpc-kiichain.vinjan.xyz:443/net_info | jq -r '.result.peers[] | "\(.node_info.id)@\(.remote_ip):\(.node_info.listen_addr)"' | awk -F ':' '{print $1":"$(NF)}' | sed -z 's|\n|,|g;s|.$||')"
-sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$persistent_peers\"/" $HOME/.kiichain3/config/config.toml
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$persistent_peers\"/" $HOME/.kiichain/config/config.toml
 ```
