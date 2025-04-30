@@ -3,8 +3,8 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Node CLI Cheatsheet
 network: Testnet
 icon: kiichain
-chain: kiichain
-version: v3.0.0
+chain: oro_1336-1
+version: v1.2.0
 ---
 
 ### CLI Cheatsheet
@@ -18,12 +18,12 @@ Add Wallet
 Specify the value `<wallet>` with your own wallet name
 
 ```
-kiichaind keys add wallet
+kiichaind keys add wallet --keyring-backend test --coin-type 118 --key-type secp256k1
 ```
 
 Recover Wallet
 ```
-kiichaind keys add wallet --recover
+kiichaind keys add wallet --keyring-backend test --recover --coin-type 118 --key-type secp256k1
 ```
 
 List Wallet
@@ -48,20 +48,20 @@ Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOU
 Create Validator (Staking)
 ```
 kiichaind tx staking create-validator \
---amount=1000000ukii \
+--amount=1000000uaii \
 --pubkey=$(kiichaind tendermint show-validator) \
 --moniker="MONIKER" \
 --identity="KEYBASE_ID" \
 --website="" \
 --details="" \
---chain-id=kiichain3 \
+--chain-id=oro_1336-1 \
 --commission-rate=0.05 \
 --commission-max-rate=0.25 \
 --commission-max-change-rate=0.05 \
 --min-self-delegation=1 \
 --gas="auto" \
 --gas-adjustment 1.3 \
---gas-prices="0.02ukii" \
+--gas-prices="0.02akii" \
 --from=wallet
 ```
 
@@ -73,17 +73,17 @@ kiichaind tx staking edit-validator \
 --identity="" \
 --details="" \
 --website="" \
---chain-id=kiichain3 \
+--chain-id=oro_1336-1 \
 --gas="auto" \
 --gas-adjustment 1.3 \
---gas-prices="0.02ukii" \
+--gas-prices="0.02akii" \
 --from=wallet
 ```
 
 
 Unjail Validator
 ```
-kiichaind tx slashing unjail --from wallet --chain-id kiichain3 --gas auto --gas-adjustment 1.3 --gas-prices=0.02ukii
+kiichaind tx slashing unjail --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
 ```
 
 Check Jailed Reason
@@ -95,32 +95,32 @@ kiichaind query slashing signing-info $(kiichaind tendermint show-validator)
 
 Withdraw Rewards
 ```
-kiichaind tx distribution withdraw-all-rewards --from wallet --chain-id kiichain3 --gas auto --gas-adjustment 1.3 --gas-prices=0.02ukii
+kiichaind tx distribution withdraw-all-rewards --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
 ```
 
 Withdraw Rewards with Comission
 ```
-kiichaind tx distribution withdraw-rewards $(kiichaind keys show wallet --bech val -a) --commission --from wallet --chain-id kiichain3 --gas auto --gas-adjustment 1.3 --gas-prices=0.02ukii
+kiichaind tx distribution withdraw-rewards $(kiichaind keys show wallet --bech val -a) --commission --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
 ```
 
 Delegate Token to your own validator
 ```
-kiichaind tx staking delegate $(kiichaind keys show wallet --bech val -a) 1000000ukii --from wallet --chain-id kiichain3 --gas auto --gas-adjustment 1.3 --gas-prices=0.02ukii
+kiichaind tx staking delegate $(kiichaind keys show wallet --bech val -a) 1000000akii --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
 ```
 
 Delegate Token to other validator
 ```
-kiichaind tx staking redelegate $(kiichaind keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000ukii --from wallet --chain-id kiichain3 --gas auto --gas-adjustment 1.3 --gas-prices=0.02ukii
+kiichaind tx staking redelegate $(kiichaind keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000akii --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
 ```
 
 Unbond Token from your validator
 ```
-kiichaind tx staking unbond $(kiichaind keys show wallet --bech val -a) 1000000ukii --from wallet --chain-id kiichain3 --gas auto --gas-adjustment 1.3 --gas-prices=0.02ukii
+kiichaind tx staking unbond $(kiichaind keys show wallet --bech val -a) 1000000akii --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
 ```
 
 Send Token to another wallet
 ```
-kiichaind tx bank send wallet <TO_WALLET_ADDRESS> 1000000ukii --from wallet --chain-id kiichain3 --gas auto --gas-adjustment 1.3 --gas-prices=0.02ukii
+kiichaind tx bank send wallet <TO_WALLET_ADDRESS> 1000000ukii --from wallet --chain-id oro_1336-1--gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
 ```
 
 ### Governance 
@@ -129,7 +129,7 @@ Vote
 You can change the value of `yes` to `no`,`abstain`,`nowithveto`
 
 ```
-kiichaind tx gov vote 1 yes --from wallet --chain-id kiichain3 --gas auto --gas-adjustment 1.3 --gas-prices=0.02ukii
+kiichaind tx gov vote 1 yes --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
 ```
 
 ### Other
@@ -139,26 +139,26 @@ You can change value `CUSTOM_PORT=44` To any other ports
 
 ```  
 PORT=19
-kiichaind config node tcp://localhost:${PORT}657
 ```
+sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:19657\"%" $HOME/.kiichain/config/client.toml
 ```
-sed -i -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:${PORT}658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:${PORT}657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:${PORT}060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:${PORT}656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":${PORT}660\"%" $HOME/.kiichain3/config/config.toml
-sed -i -e "s%^address = \"tcp://0.0.0.0:1317\"%address = \"tcp://0.0.0.0:${PORT}317\"%; s%^address = \":8080\"%address = \":${PORT}080\"%; s%^address = \"0.0.0.0:9090\"%address = \"0.0.0.0:${PORT}090\"%; s%^address = \"0.0.0.0:9091\"%address = \"0.0.0.0:${PORT}091\"%" $HOME/.kiichain3/config/app.toml
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:19658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:19657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:19060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:19656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":19660\"%" $HOME/.kiichain/config/config.toml
+sed -i.bak -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:19317\"%; s%^address = \"localhost:9090\"%address = \"localhost:19090\"%" $HOME/.kiichain/config/app.toml
 ```
 
 Enable Indexing usually enabled by default
 ```
-sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.kiichain3/config/config.toml
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.kiichain/config/config.toml
 ```
 
 Disable Indexing
 ```
-sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.kiichain3/config/config.toml
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.kiichain/config/config.toml
 ```
 
 Reset Chain Data
 ```
-kiichaind tendermint unsafe-reset-all --home $HOME/.kiichain3
+kiichaind tendermint unsafe-reset-all --home $HOME/.kiichain
 ```
 
 ### Delete Node
@@ -172,6 +172,6 @@ sudo systemctl disable kiichaind
 sudo rm /etc/systemd/system/kiichaind.service
 sudo systemctl daemon-reload
 rm -rf $(which kiichaind)
-rm -rf .kiichain3
+rm -rf .kiichain
 rm -rf kiichain
 ```
