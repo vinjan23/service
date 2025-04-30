@@ -47,24 +47,34 @@ Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOU
 
 Create Validator (Staking)
 ```
-kiichaind tx staking create-validator \
---amount=1000000uaii \
---pubkey=$(kiichaind tendermint show-validator) \
---moniker="MONIKER" \
---identity="KEYBASE_ID" \
---website="" \
---details="" \
---chain-id=oro_1336-1 \
---commission-rate=0.05 \
---commission-max-rate=0.25 \
---commission-max-change-rate=0.05 \
---min-self-delegation=1 \
---gas="auto" \
---gas-adjustment 1.3 \
---gas-prices="0.02akii" \
---from=wallet
+kiichaind tendermint show-validator
 ```
-
+```
+nano $HOME/.kiichain/validator.json
+```
+```
+{
+  "pubkey": ,
+  "amount": "1000000000000000000akii",
+  "moniker": "",
+  "identity": "7",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.05",
+  "min-self-delegation": "1"
+}
+```
+```
+kiichaind tx staking create-validator $HOME/.kiichain/validator.json \
+--from wallet \
+--chain-id oro_1336-1 \
+--gas-prices=1000000000akii \
+--gas-adjustment=1.5 \
+--gas=auto
+```
 
 Edit Validator
 ```
@@ -76,14 +86,14 @@ kiichaind tx staking edit-validator \
 --chain-id=oro_1336-1 \
 --gas="auto" \
 --gas-adjustment 1.3 \
---gas-prices="0.02akii" \
+--gas-prices="1000000000akii" \
 --from=wallet
 ```
 
 
 Unjail Validator
 ```
-kiichaind tx slashing unjail --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
+kiichaind tx slashing unjail --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=1000000000akii
 ```
 
 Check Jailed Reason
@@ -95,32 +105,32 @@ kiichaind query slashing signing-info $(kiichaind tendermint show-validator)
 
 Withdraw Rewards
 ```
-kiichaind tx distribution withdraw-all-rewards --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
+kiichaind tx distribution withdraw-all-rewards --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=1000000000akii
 ```
 
 Withdraw Rewards with Comission
 ```
-kiichaind tx distribution withdraw-rewards $(kiichaind keys show wallet --bech val -a) --commission --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
+kiichaind tx distribution withdraw-rewards $(kiichaind keys show wallet --bech val -a) --commission --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=1000000000akii
 ```
 
 Delegate Token to your own validator
 ```
-kiichaind tx staking delegate $(kiichaind keys show wallet --bech val -a) 1000000akii --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
+kiichaind tx staking delegate $(kiichaind keys show wallet --bech val -a) 1000000akii --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=1000000000akii
 ```
 
 Delegate Token to other validator
 ```
-kiichaind tx staking redelegate $(kiichaind keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000akii --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
+kiichaind tx staking redelegate $(kiichaind keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000akii --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=1000000000akii
 ```
 
 Unbond Token from your validator
 ```
-kiichaind tx staking unbond $(kiichaind keys show wallet --bech val -a) 1000000akii --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
+kiichaind tx staking unbond $(kiichaind keys show wallet --bech val -a) 1000000akii --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=1000000000akii
 ```
 
 Send Token to another wallet
 ```
-kiichaind tx bank send wallet <TO_WALLET_ADDRESS> 1000000ukii --from wallet --chain-id oro_1336-1--gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
+kiichaind tx bank send wallet <TO_WALLET_ADDRESS> 1000000ukii --from wallet --chain-id oro_1336-1--gas auto --gas-adjustment 1.3 --gas-prices=1000000000akii
 ```
 
 ### Governance 
@@ -129,7 +139,7 @@ Vote
 You can change the value of `yes` to `no`,`abstain`,`nowithveto`
 
 ```
-kiichaind tx gov vote 1 yes --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=0.02akii
+kiichaind tx gov vote 1 yes --from wallet --chain-id oro_1336-1 --gas auto --gas-adjustment 1.3 --gas-prices=1000000000akii
 ```
 
 ### Other
