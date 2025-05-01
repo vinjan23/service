@@ -1,0 +1,170 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: lumera
+chain: lumera-testnet-1
+version: v0.4.1
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Usefull Command
+```
+lumerad status 2>&1 | jq .sync_info
+```
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+lumerad keys add wallet
+```
+
+Recover Wallet
+```
+lumerad keys add wallet --recover
+```
+
+List Wallet
+```
+lumerad keys list
+```
+
+Delete Wallet
+```
+lumerad keys delete wallet
+```
+
+Check Wallet Balance
+```
+lumerad q bank balances $(lumerad keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+- Check Your Pubkey
+```
+lumerad tendermint show-validator
+```
+- Make File validator.json
+```
+nano $HOME/.lumera/validator.json
+```
+```
+{
+  "pubkey":  ,
+  "amount": "1000000ulume",
+  "moniker": "Vinjan.Inc",
+  "identity": "7C66E36EA2B71F68",
+  "website": "https://service.vinjan.xyz",
+  "security": "",
+  "details": "Staking Provider-IBC Relayer",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.05",
+  "min-self-delegation": "1"
+}
+```
+```
+lumerad tx staking create-validator $HOME/.lumera/validator.json \
+--from wallet \
+--chain-id lumera-testnet-1 \
+--gas-prices=0.025ulume \
+--gas-adjustment=1.5 \
+--gas=auto
+```
+
+Unjail Validator
+```
+lumerad tx slashing unjail --from wallet --chain-id lumera-testnet-1 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
+```
+
+Check Jailed Reason
+```
+lumerad query slashing signing-info $(lumerad tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+lumerad tx distribution withdraw-all-rewards --from wallet --chain-id lumera-testnet-1 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
+```
+
+Withdraw Rewards with Comission
+```
+lumerad tx distribution withdraw-rewards $(lumerad keys show wallet --bech val -a) --commission --from wallet --chain-id lumera-testnet-1 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
+```
+
+Delegate Token to your own validator
+```
+lumerad tx staking delegate $(lumerad keys show wallet --bech val -a) 1000000ulume --from wallet --chain-id lumera-testnet-1 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
+```
+
+Delegate Token to other validator
+```
+lumerad staking redelegate $(lumerad keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000ulume --from wallet --chain-id lumera-testnet-1 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
+```
+
+Unbond Token from your validator
+```
+lumerad tx staking unbond $(lumerad keys show wallet --bech val -a) 1000000ulume --from wallet --chain-id lumera-testnet-1 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
+```
+
+Send Token to another wallet
+```
+lumerad tx bank send wallet <TO_WALLET_ADDRESS> 1000000ulume --from wallet --chain-id lumera-testnet-1 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=20` To any other ports
+
+- PORT=17
+
+```
+sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:17657\"%" $HOME/.lumera/config/client.toml
+```
+```
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:17658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:17657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:17060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:17656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":17660\"%" $HOME/.lumera/config/config.toml
+sed -i.bak -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:17317\"%; s%^address = \"localhost:9090\"%address = \"localhost:17090\"%" $HOME/.lumera/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.lumera/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.lumera/config/config.toml
+```
+
+Reset Chain Data
+```
+lumerad tendermint unsafe-reset-all --home $HOME/.lumera --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop lumerad
+sudo systemctl disable lumerad
+sudo rm /etc/systemd/system/lumerad.service
+sudo systemctl daemon-reload
+rm -f $(which lumerad)
+rm -rf .lumera
+```
