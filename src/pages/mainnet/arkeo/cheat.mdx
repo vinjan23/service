@@ -111,7 +111,7 @@ arkeod tx distribution withdraw-all-rewards --from wallet --chain-id arkeo-main-
 
 Withdraw Rewards with Comission
 ```
-arkeod tx staking delegate $(arkeod keys show wallet --bech val -a) 1000000uarkeo --from wallet --chain-id arkeo-main-v1 --gas-adjustment=1.5 --gas=auto --gas-prices="0.0uarkeo"
+arkeod tx distribution withdraw-rewards $(hippod keys show wallet --bech val -a) 1000000uarkeo --from wallet --chain-id arkeo-main-v1 --gas-adjustment=1.5 --gas=auto --gas-prices="0.0uarkeo"
 ```
 
 Delegate Token to your own validator
