@@ -1,0 +1,36 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: RPC Endpoint
+network: Testnet
+icon: odiseo
+chain: ithaca-1
+version: v1.0.2
+---
+### Non Cosmovisor
+```
+cd $HOME
+rm -rf Achilles
+git clone https://github.com/daodiseomoney/Achilles.git
+cd Achilles/achilles
+git checkout v1.0.2
+make install
+```
+```
+sudo systemctl restart achillesd
+sudo journalctl -u achillesd -f -o cat
+```
+
+### Cosmovisor (auto-upgrade)
+```
+cd $HOME
+rm -rf Achilles
+git clone https://github.com/daodiseomoney/Achilles.git
+cd Achilles/achilles
+git checkout v1.0.2
+make build
+```
+```
+mkdir -p $HOME/.achilles/cosmovisor/upgrades/v1.0.2/bin
+mv build/achillesd $HOME/.achilles/cosmovisor/upgrades/v1.0.2/bin/
+rm -rf build
+```
