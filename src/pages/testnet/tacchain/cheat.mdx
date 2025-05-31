@@ -86,14 +86,14 @@ nano $HOME/.tacchaind/validator.json
 tacchaind tx staking create-validator $HOME/.tacchaind/validator.json \
 --from wallet \
 --chain-id tacchain_2391-1 \
---gas-prices=5000000000000utac \
+--gas-prices=4000000000000utac \
 --gas-adjustment=1.2 \
 --gas=auto
 ```
 
 Unjail Validator
 ```
-tacchaind tx slashing unjail --from wallet --chain-id tacchain_2391-1 --gas-prices=5000000000000utac --gas-adjustment=1.2 --gas=auto
+tacchaind tx slashing unjail --from wallet --chain-id tacchain_2391-1 --gas-prices=4000000000000utac --gas-adjustment=1.2 --gas=auto
 ```
 
 Check Jailed Reason
@@ -105,32 +105,32 @@ tacchaind query slashing signing-info $(tacchaind tendermint show-validator)
 
 Withdraw Rewards
 ```
-tacchaind tx distribution withdraw-all-rewards --from wallet --chain-id tacchain_2391-1 --gas-prices=5000000000000utac --gas-adjustment=1.2 --gas=auto
+tacchaind tx distribution withdraw-all-rewards --from wallet --chain-id tacchain_2391-1 --gas-prices=4000000000000utac --gas-adjustment=1.2 --gas=auto
 ```
 
 Withdraw Rewards with Comission
 ```
-tacchaind tx distribution withdraw-rewards $(tacchaind keys show wallet --bech val -a) --commission --from wallet --chain-id tacchain_2391-1 --gas-prices=5000000000000utac --gas-adjustment=1.2 --gas=auto
+tacchaind tx distribution withdraw-rewards $(tacchaind keys show wallet --bech val -a) --commission --from wallet --chain-id tacchain_2391-1 --gas-prices=4000000000000utac --gas-adjustment=1.2 --gas=auto
 ```
 
 Delegate Token to your own validator
 ```
-tacchaind tx staking delegate $(tacchaind keys show wallet --bech val -a) 1000000000000000000utac --from wallet --chain-id tacchain_2391-1 --gas-prices=5000000000000utac --gas-adjustment=1.2 --gas=auto
+tacchaind tx staking delegate $(tacchaind keys show wallet --bech val -a) 1000000000000000000utac --from wallet --chain-id tacchain_2391-1 --gas-prices=4000000000000utac --gas-adjustment=1.2 --gas=auto
 ```
 
 Delegate Token to other validator
 ```
-tacchaind staking redelegate $(tacchaind keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000000000000000utac --from wallet --chain-id tacchain_2391-1 --gas-prices=5000000000000utac --gas-adjustment=1.2 --gas=auto
+tacchaind staking redelegate $(tacchaind keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000000000000000utac --from wallet --chain-id tacchain_2391-1 --gas-prices=4000000000000utac --gas-adjustment=1.2 --gas=auto
 ```
 
 Unbond Token from your validator
 ```
-tacchaind tx staking unbond $(tacchaind keys show wallet --bech val -a) 1000000000000000000 --from wallet --chain-id tacchain_2391-1 --gas-prices=5000000000000utac --gas-adjustment=1.2 --gas=auto
+tacchaind tx staking unbond $(tacchaind keys show wallet --bech val -a) 1000000000000000000 --from wallet --chain-id tacchain_2391-1 --gas-prices=4000000000000utac --gas-adjustment=1.2 --gas=auto
 ```
 
 Send Token to another wallet
 ```
-tacchaind tx bank send wallet <TO_WALLET_ADDRESS> 1000000000000000000utac --from wallet --chain-id tacchain_2391-1 --gas-prices=5000000000000utac --gas-adjustment=1.2 --gas=auto
+tacchaind tx bank send wallet <TO_WALLET_ADDRESS> 1000000000000000000utac --from wallet --chain-id tacchain_2391-1 --gas-prices=4000000000000utac --gas-adjustment=1.2 --gas=auto
 ```
 
 ### Other
