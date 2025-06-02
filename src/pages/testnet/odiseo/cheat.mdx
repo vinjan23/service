@@ -82,6 +82,17 @@ achillesd tx staking create-validator $HOME/.achilles/validator.json \
 --gas-adjustment=1.5 \
 --gas=auto
 ```
+### Edit Validator
+```
+achillesd tx staking edit-validator \
+--new-moniker="" \
+--identity="" \
+--from wallet \
+--chain-id ithaca-1 \
+--gas-prices=0.025uodis \
+--gas-adjustment=1.5 \
+--gas=auto
+```
 
 Unjail Validator
 ```
