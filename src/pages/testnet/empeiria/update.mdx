@@ -1,0 +1,24 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: RPC Endpoint
+network: Testnet
+icon: empe
+chain: empe-testnet-2
+version: v0.4.0
+---
+```
+Upgrade Height 5215651
+```
+--------------
+
+```
+curl -LO https://github.com/empe-io/empe-chain-releases/raw/master/v0.4.0/emped_v0.4.0_linux_amd64.tar.gz
+tar -xvf emped_v0.4.0_linux_amd64.tar.gz
+chmod +x emped
+mv emped ~/go/bin
+rm -rf emped_v0.4.0_linux_amd64.tar.gz
+```
+```
+sudo systemctl restart emped
+sudo journalctl -u emped -f -o cat
+```
