@@ -4,15 +4,15 @@ title: Snapshot
 network: Testnet
 icon: empe
 chain: empe-testnet-2
-version: v0.2.2
+version: v0.4.0
 ---
-Height (848735)( 11 GB)
+
 ---
 ```
 sudo apt install lz4 -y
 sudo systemctl stop emped
 emped tendermint unsafe-reset-all --home $HOME/.empe-chain --keep-addr-book
-curl -L https://snapshot.vinjan.xyz/empeiria/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.empe-chain
+curl -L https://snapshot-t.vinjan.xyz/empeiria/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.empe-chain
 sudo systemctl restart emped
 sudo journalctl -u emped -f -o cat
 ```
