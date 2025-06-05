@@ -4,20 +4,19 @@ title: Update
 network: Testnet
 icon: tacchain
 chain: tacchain_2391-1
-version: v0.0.10
+version: v0.0.11
 ---
 ### Non Cosmovisor
 ```
+cd $HOME
+rm -rf tacchain
+git clone https://github.com/TacBuild/tacchain.git
+cd tacchain
+git checkout v0.0.11
+make install
+```
+```
+sudo systemctl restart tacchaind
+sudo journalctl -u tacchaind -f -o cat
+```
 
-```
-```
-
-```
-
-### Cosmovisor (auto-upgrade)
-```
-
-```
-```
-
-```
