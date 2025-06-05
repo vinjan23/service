@@ -4,7 +4,7 @@ title: Installation Node
 network: Testnet
 icon: empe
 chain: empe-testnet-2
-version: v0.2.2
+version: v0.4.0
 ---
 
 ### Hardware requirements
@@ -41,10 +41,11 @@ go version
 
 ```
 mkdir -p empe-chain && cd empe-chain
-curl -LO https://github.com/empe-io/empe-chain-releases/raw/master/v0.2.2/emped_v0.2.2_linux_amd64.tar.gz
-tar -xvf emped_v0.2.2_linux_amd64.tar.gz
-sudo mv emped ~/go/bin
-chmod u+x ~/go/bin/emped
+curl -LO https://github.com/empe-io/empe-chain-releases/raw/master/v0.4.0/emped_v0.4.0_linux_amd64.tar.gz
+tar -xvf emped_v0.4.0_linux_amd64.tar.gz
+chmod +x emped
+mv emped ~/go/bin
+rm -rf emped_v0.4.0_linux_amd64.tar.gz
 ```
 
 ### Initialize Node
