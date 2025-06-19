@@ -1,0 +1,74 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Oracle
+network: Mainnet
+icon: symphony
+chain: symphony-1
+version: v
+---
+
+### Install Oracle
+```
+
+```
+### If Update from v0.0.4r2
+```
+
+```
+
+### Make File
+```
+nano $HOME/symphony-oracle-voter/.env
+```
+### Edit with Ur Address and Valoper and Password
+```
+VALIDATOR_ADDRESS=symphonyvaloper************
+VALIDATOR_ACC_ADDRESS=symphony***************
+KEY_PASSWORD=********
+SYMPHONY_LCD = https://api-symphony.vinjan.xyz
+TENDERMINT_RPC= https://rpc-symphony.vinjan.xyz
+```
+### Install Python
+```
+sudo apt install python3.10
+sudo apt install python3.10-venv
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+deactivate
+```
+### Make System Service
+```
+sudo tee /etc/systemd/system/oracle.service > /dev/null << EOF
+[Unit]
+Description=Symphony Oracle
+After=network.target
+
+[Service]
+# Environment variables
+Environment="SYMPHONYD_PATH=/root/go/bin/symphonyd"
+Environment="PYTHON_ENV=production"
+Environment="LOG_LEVEL=INFO"
+Environment="DEBUG=false"
+
+# Service configuration
+Type=simple
+User=root
+WorkingDirectory=/root/symphony-oracle-voter
+ExecStart=/root/symphony-oracle-voter/venv/bin/python3 -u /root/symphony-oracle-voter/main.py
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+### Start
+```
+sudo systemctl daemon-reload
+sudo systemctl enable oracle.service
+sudo systemctl start oracle.service
+journalctl -u oracle.service -f
+```
