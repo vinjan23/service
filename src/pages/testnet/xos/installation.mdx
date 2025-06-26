@@ -1,0 +1,147 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Installation Node
+network: Testnet
+icon: xos
+chain: xos_1267-1
+version: v0.5.2
+---
+
+### Hardware requirements
+
+The following requirements are recommended:
+
+- 4 or more physical CPU cores
+- At least 200GB of SSD disk storage
+- At least 8GB of memory (RAM)
+- At least 100mbps network bandwidth
+
+
+### Install dependencies Required
+
+```
+sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool -y
+```
+
+### Install go
+
+We are gonna use GO Version 1.22.5
+If you already have GO installed you can skip this 
+
+```
+ver="1.22.5"
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+rm "go$ver.linux-amd64.tar.gz"
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+source ~/.bash_profile
+go version
+```
+
+
+### Install binary
+```
+wget https://github.com/xos-labs/node/releases/download/v0.5.2/node_0.5.2_Linux_amd64.tar.gz
+tar -xzf node_0.5.2_Linux_amd64.tar.gz
+sudo mv ./bin/xosd $HOME/go/bin
+chmod +x $HOME/go/bin/xosd
+rm -rf node_0.5.2_Linux_amd64.tar.gz
+```
+
+Verify that you've installed successfully
+
+```
+xosd version --long | grep -e version -e commit 
+```
+
+### Initialize Node
+
+Please change `<MONIKER>` To your own Moniker.
+
+```
+xosd init <moniker> --chain-id xos_1267-1
+```
+
+### Download Genesis file and addrbook
+
+- Genesis
+
+```
+sudo rm $HOME/.xosd/config/genesis.json
+curl -L https://snapshot-t.vinjan.xyz/xos/genesis.json > $HOME/.xosd/config/genesis.json 
+```
+- Addrbook
+```
+curl -L https://snapshot-t.vinjan.xyz/xos/addrbook.json > $HOME/.xosd/config/addrbook.json 
+```
+### Custom Port
+```
+sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:35657\"%" $HOME/.xosd/config/client.toml
+```
+```
+sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:35658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:35657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:35060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:35656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":35660\"%" $HOME/.xosd/config/config.toml
+sed -i.bak -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:35317\"%; s%^address = \"localhost:9090\"%address = \"localhost:35090\"%; s%:8545%:35545%; s%:8546%:35546%; s%:6065%:35065%" $HOME/.xosd/config/app.toml
+```
+### Config
+```
+sed -i -E "s|chain-id = \".*\"|chain-id = \"xos_1267-1\"|g" $HOME/.xosd/config/client.toml
+seeds="55599d3d4342dc48f78f5ee946a11f0503687451@94.130.143.184:35656"
+sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.xosd/config/config.toml
+```
+### Gas Prices
+```
+sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"80000000000axos\"/" $HOME/.xosd/config/app.toml
+```
+
+### Indexer Off
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.xosd/config/config.toml
+```
+
+### create service file and start node
+
+Create service file
+Create a `wardend.service` file in the `/etc/systemd/system` folder with the following code. 
+You can change `USER` with your Linux user name. You need sudo previlege to do this step.
+
+```
+sudo tee /etc/systemd/system/xosd.service > /dev/null <<EOF
+[Unit]
+Description=xos
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which xosd) start
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+- Enable Service and Start Node
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable xosd
+sudo systemctl restart xosd
+sudo journalctl -u xosd -f -o cat
+```
+
+### Snapshot
+<a href="https://service.vinjan.xyz/testnet/xos/snapshot" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
+</a>
+
+
+### Create Validator
+
+Heads up to the Cheat Sheets to create validator
+
+<a href="https://service.vinjan.xyz/testnet/xos/cheat" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">CLI Cheatsheets</button>
+</a>
