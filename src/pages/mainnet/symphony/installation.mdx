@@ -56,6 +56,13 @@ Please change `<MONIKER>` To your own Moniker.
 symphonyd init (MONIKER) --chain-id symphony-1
 ```
 
+### Custom Port
+```
+sed -i -e "s%:26657%:21657%" $HOME/.symphonyd/config/client.toml
+sed -i -e "s%:26658%:21658%; s%:26657%:21657%; s%:6060%:21060%; s%:26656%:21656%; s%:26660%:21660%" $HOME/.symphonyd/config/config.toml
+sed -i -e "s%:1317%:21317%; s%:9090%:21090%" $HOME/.symphonyd/config/app.toml
+```
+
 ### Download Genesis file and addrbook
 
 - Genesis
