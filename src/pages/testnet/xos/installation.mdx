@@ -91,6 +91,15 @@ sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.xosd/config/config.toml
 ```
 sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"80000000000axos\"/" $HOME/.xosd/config/app.toml
 ```
+### Prunning
+```
+sed -i \
+-e 's|^pruning *=.*|pruning = "custom"|' \
+-e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "100"|' \
+-e 's|^pruning-keep-every *=.*|pruning-keep-every = ""|' \
+-e 's|^pruning-interval *=.*|pruning-interval = "19"|' \
+$HOME/.xosd/config/app.toml
+```
 
 ### Indexer Off
 ```
