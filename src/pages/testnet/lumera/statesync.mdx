@@ -3,8 +3,8 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Statesync
 network: Testnet
 icon: lumera
-chain: lumera-testnet-1
-version: v1.0.1
+chain: lumera-testnet-2
+version: v1.6.0
 ---
 
 ```
@@ -14,7 +14,7 @@ lumerad tendermint unsafe-reset-all --home $HOME/.lumera --keep-addr-book
 ```
 ```
 SYNC_RPC="https://rpc-test.lumera.vinjan.xyz"
-SYNC_PEER="49e22975a1d6c5204072f25eb71c01faf54b4b92@88.99.149.170:17656"
+SYNC_PEER="3758fc85a35f8bf246959f9d76c883c8b9270340@88.99.149.170:17656"
 LATEST_HEIGHT=$(curl -s $SYNC_RPC/block | jq -r .result.block.header.height)
 BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000))
 TRUST_HASH=$(curl -s "$SYNC_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
