@@ -3,8 +3,8 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Node CLI Cheatsheet
 network: Testnet
 icon: lumera
-chain: lumera-testnet-1
-version: v1.0.1
+chain: lumera-testnet-2
+version: v1.6.0
 ---
 
 ### CLI Cheatsheet
@@ -63,11 +63,11 @@ nano $HOME/.lumera/validator.json
 {
   "pubkey":  ,
   "amount": "1000000ulume",
-  "moniker": "Vinjan.Inc",
-  "identity": "7C66E36EA2B71F68",
-  "website": "https://service.vinjan.xyz",
+  "moniker": "",
+  "identity": "",
+  "website": "",
   "security": "",
-  "details": "Staking Provider-IBC Relayer",
+  "details": ",
   "commission-rate": "0.05",
   "commission-max-rate": "0.2",
   "commission-max-change-rate": "0.05",
@@ -77,7 +77,7 @@ nano $HOME/.lumera/validator.json
 ```
 lumerad tx staking create-validator $HOME/.lumera/validator.json \
 --from wallet \
---chain-id lumera-testnet-1 \
+--chain-id lumera-testnet-2 \
 --gas-prices=0.025ulume \
 --gas-adjustment=1.5 \
 --gas=auto
@@ -85,7 +85,7 @@ lumerad tx staking create-validator $HOME/.lumera/validator.json \
 
 Unjail Validator
 ```
-lumerad tx slashing unjail --from wallet --chain-id lumera-testnet-1 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
+lumerad tx slashing unjail --from wallet --chain-id lumera-testnet-2 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
 ```
 
 Check Jailed Reason
@@ -97,32 +97,32 @@ lumerad query slashing signing-info $(lumerad tendermint show-validator)
 
 Withdraw Rewards
 ```
-lumerad tx distribution withdraw-all-rewards --from wallet --chain-id lumera-testnet-1 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
+lumerad tx distribution withdraw-all-rewards --from wallet --chain-id lumera-testnet-2 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
 ```
 
 Withdraw Rewards with Comission
 ```
-lumerad tx distribution withdraw-rewards $(lumerad keys show wallet --bech val -a) --commission --from wallet --chain-id lumera-testnet-1 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
+lumerad tx distribution withdraw-rewards $(lumerad keys show wallet --bech val -a) --commission --from wallet --chain-id lumera-testnet-2 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
 ```
 
 Delegate Token to your own validator
 ```
-lumerad tx staking delegate $(lumerad keys show wallet --bech val -a) 1000000ulume --from wallet --chain-id lumera-testnet-1 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
+lumerad tx staking delegate $(lumerad keys show wallet --bech val -a) 1000000ulume --from wallet --chain-id lumera-testnet-2 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
 ```
 
 Delegate Token to other validator
 ```
-lumerad staking redelegate $(lumerad keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000ulume --from wallet --chain-id lumera-testnet-1 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
+lumerad staking redelegate $(lumerad keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000ulume --from wallet --chain-id lumera-testnet-2 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
 ```
 
 Unbond Token from your validator
 ```
-lumerad tx staking unbond $(lumerad keys show wallet --bech val -a) 1000000ulume --from wallet --chain-id lumera-testnet-1 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
+lumerad tx staking unbond $(lumerad keys show wallet --bech val -a) 1000000ulume --from wallet --chain-id lumera-testnet-2 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
 ```
 
 Send Token to another wallet
 ```
-lumerad tx bank send wallet <TO_WALLET_ADDRESS> 1000000ulume --from wallet --chain-id lumera-testnet-1 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
+lumerad tx bank send wallet <TO_WALLET_ADDRESS> 1000000ulume --from wallet --chain-id lumera-testnet-2 --gas-prices=0.025ulume --gas-adjustment=1.5 --gas=auto
 ```
 
 ### Other
@@ -131,13 +131,10 @@ Set Your own Custom Ports
 You can change value `CUSTOM_PORT=20` To any other ports
 
 - PORT=17
-
 ```
-sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:17657\"%" $HOME/.lumera/config/client.toml
-```
-```
-sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:17658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:17657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:17060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:17656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":17660\"%" $HOME/.lumera/config/config.toml
-sed -i.bak -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:17317\"%; s%^address = \"localhost:9090\"%address = \"localhost:17090\"%" $HOME/.lumera/config/app.toml
+sed -i -e "s%:26657%:17657%" $HOME/.lumera/config/client.toml
+sed -i -e "s%:26658%:17658%; s%:26657%:17657%; s%:6060%:17060%; s%:26656%:17656%; s%:26660%:17660%" $HOME/.lumera/config/config.toml
+sed -i -e "s%:1317%:17317%; s%:9090%:17090%" $HOME/.lumera/config/app.toml
 ```
 
 Enable Indexing usually enabled by default
