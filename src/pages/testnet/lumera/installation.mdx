@@ -72,10 +72,12 @@ lumerad init <MONIKER> --chain-id lumera-testnet-2
 ```
 curl -L https://snapshot-t.vinjan.xyz/lumera/genesis.json > $HOME/.lumera/config/genesis.json
 ```
+
 - Addrbook
 ```
 curl -L https://snapshot-t.vinjan.xyz/lumera/addrbook.json > $HOME/.lumera/config/addrbook.json
 ```
+
 ### Custom Port
 ```
 sed -i -e "s%:26657%:17657%" $HOME/.lumera/config/client.toml
