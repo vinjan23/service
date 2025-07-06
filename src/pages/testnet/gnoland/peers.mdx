@@ -1,0 +1,28 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Live Peers
+network: Testnet
+icon: gnoland
+chain: test6.3
+version: 
+---
+
+
+`p2p.persistent_peers`
+```
+g1s0x78pl3c2xv2n7hp33lh4jkyqvhg5hlx6huh7@gno-core-sen-1.test6.testnets.gno.land:26656,g1jeta40dllwtrh293498hq0dh0cr3u4gw77h5rc@gno-core-sen-2.test6.testnets.gno.land:26656
+```
+`p2p.seeds`
+```
+g1s0x78pl3c2xv2n7hp33lh4jkyqvhg5hlx6huh7@gno-core-sen-1.test6.testnets.gno.land:26656,g1jeta40dllwtrh293498hq0dh0cr3u4gw77h5rc@gno-core-sen-2.test6.testnets.gno.land:26656
+```
+`consensus.timeout_commit` : `3s`
+
+`consensus.peer_gossip_sleep_duration` : `10ms`
+
+`p2p.max_num_outbound_peers` : `40`
+
+`p2p.pex` : `true`
+
+`p2p.flush_throttle_timeout` : `10ms`
+
