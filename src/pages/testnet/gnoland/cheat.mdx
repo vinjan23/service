@@ -1,0 +1,73 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: gnoland
+chain: test6.3
+version: 
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+gnokey add wallet
+```
+
+Recover Wallet
+```
+gnokey add wallet --recover
+```
+
+List Wallet
+```
+gnokey list
+```
+
+Delete Wallet
+```
+gnokey delete wallet
+```
+
+### Get Key 
+```
+gnoland secrets get validator_key
+```
+
+### Input your Validator Details
+##### Get Account Number and Sequence Sequence - Needs to be done everytime before making an transaction
+```
+gnokey query -remote "https://rpc.test6.testnets.gno.land" auth/accounts/<wallet_address>
+```
+##### Register Validator
+```
+gnokey maketx call -pkgpath "gno.land/r/gnoland/valopers" -func "Register"  -args "" -args "" -args "" -args "" -gas-fee 1000000ugnot -gas-wanted 5000000 -send "" <wallet_address> > call.tx
+```
+##### Replace the Value of $ACCOUNTNUMBER and $SEQUENCENUMBER  got from the above steps in the below command
+```
+gnokey sign -tx-path call.tx -chainid "test6" -account-number $ACCOUNTNUMBER -account-sequence $SEQUENCENUMBER <wallet_address>
+```
+#### Sign Tx
+```
+gnokey broadcast -remote "https://rpc.test6.testnets.gno.land" call.tx
+```
+
+### Stop & Delete
+```
+sudo systemctl stop gnoland
+sudo systemctl disable gnoland
+sudo systemctl daemon-reload
+rm -rf gno
+rm -rf gnoland-data
+```
+
+
+
+
