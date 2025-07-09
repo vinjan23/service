@@ -1,0 +1,138 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Installation Node
+network: Testnet
+icon: safro
+chain: safro-testnet-1
+version: v0.1.0
+---
+
+### Hardware requirements
+
+The following requirements are recommended for running Defund:
+
+- 4 or more physical CPU cores
+- At least 200GB of SSD disk storage
+- At least 8GB of memory (RAM)
+- At least 100mbps network bandwidth
+
+
+### Install dependencies Required
+
+```
+sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool -y
+```
+
+### Install go
+
+We are gonna use GO Version 1.23.4
+If you already have GO installed you can skip this 
+
+```
+ver="1.23.4"
+cd $HOME
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+rm "go$ver.linux-amd64.tar.gz"
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+source ~/.bash_profile
+go version
+```
+
+### Install binary
+
+```
+cd $HOME
+rm -rf safrochain-node
+git clone https://github.com/Safrochain-Org/safrochain-node.git
+cd safrochain-node
+git checkout v0.1.0
+make install
+```
+
+### Initialize Node
+
+Please change `<MONIKER>` To your own Moniker.
+
+```
+safrochaind init <MONIKER> --chain-id safro-testnet-1	
+```
+
+### Download Genesis file and addrbook
+
+- Genesis
+
+```
+curl -L https://snapshot-t.vinjan.xyz/safrochain/genesis.json > $HOME/.safrochain/config/genesis.json
+```
+- Addrbook
+
+```
+curl -L https://snapshot-t.vinjan.xyz/safrochain/addrbook.json > $HOME/.safrochain/config/addrbook.json
+```
+
+### Port
+```
+PORT=12
+sed -i -e "s%:26657%:${PORT}657%" $HOME/.safrochain/config/client.toml
+sed -i -e "s%:26658%:${PORT}658%; s%:26657%:${PORT}657%; s%:6060%:${PORT}060%; s%:26656%:${PORT}656%; s%:26660%:${PORT}660%" $HOME/.safrochain/config/config.toml
+sed -i -e "s%:1317%:${PORT}317%; s%:9090%:${PORT}090%" $HOME/.safrochain/config/app.toml
+```
+
+### Configure Seeds and Peers
+
+```
+seeds="d5944634c5d9b3f00a84a4640df3764b82f5a36b@94.130.143.184:12656"
+sed -i -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.safrochain/config/config.toml
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.001usaf\"/" $HOME/.safrochain/config/app.toml
+```
+
+### Indexer Off
+
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.safrochain/config/config.toml
+```
+
+
+### create service file and start node
+
+```
+sudo tee /etc/systemd/system/safrochaind.service > /dev/null <<EOF
+[Unit]
+Description=safrochain
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which safrochaind) start
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+- Enable Service and Start Node
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable safrochaind
+sudo systemctl restart safrochaind
+sudo journalctl -u safrochaind -f -o cat
+```
+
+### Create Validator
+
+Heads up to the Cheat Sheets to create validator
+
+<a href="https://service.vinjan.xyz/testnet/safro/cheat" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">CLI Cheatsheets</button>
+</a>
+
+### Snapshot
+<a href="https://service.vinjan.xyz/testnet/safro/snapshot" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
+</a>
