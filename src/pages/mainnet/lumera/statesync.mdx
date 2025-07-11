@@ -1,0 +1,21 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Statesync
+network: Mainnet
+icon: lumera
+chain: lumera-mainnet-1
+version: v1.5.0
+---
+
+```
+sudo systemctl stop lumerad
+cp $HOME/.lumera/data/priv_validator_state.json $HOME/.lumera/priv_validator_state.json.backup
+lumerad tendermint unsafe-reset-all --home $HOME/.lumera --keep-addr-book
+```
+```
+
+```
+```
+sudo systemctl restart lumerad
+sudo journalctl -u lumerad -f -o cat
+```
