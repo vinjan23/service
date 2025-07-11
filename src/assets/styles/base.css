@@ -59,3 +59,114 @@
 [data-aw-toggle-menu].expanded g > path:last-child {
   @apply rotate-45 translate-y-[-8px] translate-x-[14px];
 }
+
+/* Copy button styles */
+.copy-button {
+  @apply absolute top-2 right-2 flex items-center gap-1 px-2 py-2 text-xs font-medium text-gray-700 border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 opacity-100 z-10;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+}
+
+.dark .copy-button {
+  @apply text-gray-300 border-gray-600 hover:bg-gray-700 hover:text-gray-100;
+  background-color: rgba(31, 41, 55, 0.95);
+  backdrop-filter: blur(4px);
+}
+
+.copy-button.copied {
+  @apply text-green-600 border-green-300 bg-green-50;
+}
+
+.dark .copy-button.copied {
+  @apply text-green-400 border-green-500 bg-green-900;
+}
+
+.copy-icon {
+  @apply w-4 h-4 flex-shrink-0;
+}
+
+.copy-text {
+  @apply opacity-0 max-w-0 overflow-hidden transition-all duration-200 whitespace-nowrap;
+}
+
+/* Show text on hover */
+.copy-button:hover .copy-text {
+  @apply opacity-100 max-w-xs;
+}
+
+/* Show text when copied */
+.copy-button.copied .copy-text {
+  @apply opacity-100 max-w-xs;
+}
+
+/* Ensure pre elements have proper positioning for copy button */
+pre {
+  @apply relative;
+}
+
+/* Add some padding to the right of code blocks to make room for copy button */
+pre code {
+  @apply pr-12;
+}
+
+/* Style for code blocks in markdown */
+.prose pre {
+  @apply relative overflow-x-auto;
+}
+
+/* Desktop: Show copy button with subtle opacity, full opacity on hover */
+@media (min-width: 768px) {
+  .copy-button {
+    @apply opacity-80 hover:opacity-100;
+  }
+
+  pre:hover .copy-button {
+    @apply opacity-100 scale-105;
+  }
+
+  /* Expand button on hover to accommodate text */
+  .copy-button:hover {
+    @apply px-2;
+  }
+}
+
+/* Mobile: Always show copy button with full opacity */
+@media (max-width: 767px) {
+  .copy-button {
+    @apply opacity-100 px-2 py-2;
+  }
+
+  .copy-icon {
+    @apply w-5 h-5;
+  }
+
+  pre code {
+    @apply pr-12;
+  }
+
+  /* On mobile, show text on tap/active state */
+  .copy-button:active .copy-text {
+    @apply opacity-100 max-w-xs;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .copy-button {
+    @apply px-1.5 py-1.5 top-1 right-1;
+  }
+
+  pre code {
+    @apply pr-10;
+  }
+}
+
+/* Enhanced focus styles for accessibility */
+.copy-button:focus {
+  @apply ring-2 ring-blue-500 ring-offset-2 outline-none;
+}
+
+/* Show text when focused for accessibility */
+.copy-button:focus .copy-text {
+  @apply opacity-100 max-w-xs;
+}
