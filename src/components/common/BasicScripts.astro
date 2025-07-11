@@ -3,8 +3,6 @@ import { SITE } from '~/config.mjs';
 ---
 
 <script is:inline define:vars={{ defaultTheme: SITE.defaultTheme }}>
-  
-
   function attachEvent(selector, event, fn) {
     const matches = typeof selector === 'string' ? document.querySelectorAll(selector) : selector;
     if (matches && matches.length) {
@@ -29,7 +27,6 @@ import { SITE } from '~/config.mjs';
       if (defaultTheme.endsWith(':only')) {
         return;
       }
-      
     });
 
     attachEvent('[data-aw-social-share]', 'click', function (_, elem) {
@@ -63,6 +60,82 @@ import { SITE } from '~/config.mjs';
       newlink.target = '_blank';
       newlink.href = href;
       newlink.click();
+    });
+
+    // Copy button functionality for code blocks
+    function initializeCopyButtons() {
+      const codeBlocks = document.querySelectorAll('pre');
+
+      codeBlocks.forEach((pre) => {
+        if (pre.querySelector('.copy-button')) {
+          return; // Already has copy button
+        }
+
+        const code = pre.querySelector('code');
+        if (!code) return;
+
+        const copyButton = document.createElement('button');
+        copyButton.className = 'copy-button';
+        copyButton.innerHTML =
+          '<svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg><span class="copy-text">Copy</span>';
+        copyButton.title = 'Copy to clipboard';
+        copyButton.setAttribute('aria-label', 'Copy code to clipboard');
+
+        // Style the pre element to be relative
+        pre.style.position = 'relative';
+        pre.appendChild(copyButton);
+
+        copyButton.addEventListener('click', async () => {
+          try {
+            const textToCopy = code.textContent || code.innerText;
+            await navigator.clipboard.writeText(textToCopy);
+
+            // Show success state
+            copyButton.innerHTML =
+              '<svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg><span class="copy-text">Copied!</span>';
+            copyButton.classList.add('copied');
+
+            // Reset after 2 seconds
+            setTimeout(() => {
+              copyButton.innerHTML =
+                '<svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg><span class="copy-text">Copy</span>';
+              copyButton.classList.remove('copied');
+            }, 2000);
+          } catch (err) {
+            // Fallback for older browsers
+            const textArea = document.createElement('textarea');
+            textArea.value = code.textContent || code.innerText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+
+            // Show success state
+            copyButton.innerHTML =
+              '<svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg><span class="copy-text">Copied!</span>';
+            copyButton.classList.add('copied');
+
+            setTimeout(() => {
+              copyButton.innerHTML =
+                '<svg class="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg><span class="copy-text">Copy</span>';
+              copyButton.classList.remove('copied');
+            }, 2000);
+          }
+        });
+      });
+    }
+
+    // Initialize copy buttons after DOM is loaded
+    initializeCopyButtons();
+
+    // Re-initialize copy buttons for dynamically loaded content
+    const observer = new MutationObserver(() => {
+      initializeCopyButtons();
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
     });
 
     function appyHeaderStylesOnScroll() {
