@@ -1,0 +1,22 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Update Node
+network: Mainnet
+icon: elys
+chain: elys-1
+version: v6.4.0
+---
+### Cosmovisor
+```
+cd $HOME
+rm -rf elys
+git clone https://github.com/elys-network/elys
+cd elys
+git checkout v6.4.0
+make build
+```
+```
+mkdir -p $HOME/.elys/cosmovisor/upgrades/v6.4/bin
+mv build/elysd $HOME/.elys/cosmovisor/upgrades/v6.4/bin/
+rm -rf build
+```
