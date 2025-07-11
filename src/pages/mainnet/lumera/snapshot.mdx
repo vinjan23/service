@@ -1,0 +1,31 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Snapshot
+network: Mainnet
+icon: lumera
+chain: lumera-mainnet-1
+version: v1.5.0
+---
+
+```
+sudo apt install lz4 -y
+```
+```
+sudo systemctl stop lumerad
+```
+```
+cp $HOME/.lumera/data/priv_validator_state.json $HOME/.lumera/priv_validator_state.json.backup
+```
+```
+lumerad tendermint unsafe-reset-all --home $HOME/.lumera --keep-addr-book
+```
+```
+curl -L https://snapshot.vinjan.xyz/lumera/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.lumera
+```
+```
+mv $HOME/.lumera/priv_validator_state.json.backup $HOME/.lumera/data/priv_validator_state.json
+```
+```
+sudo systemctl restart lumerad
+sudo journalctl -u lumerad -f -o cat
+```
