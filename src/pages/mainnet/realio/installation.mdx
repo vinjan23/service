@@ -4,7 +4,7 @@ title: Installation Node
 network: Mainnet
 icon: realio
 chain: realionetwork_3301-1
-version: v1.2.0
+version: v1.3.0
 ---
 
 ### Hardware requirements
@@ -44,7 +44,7 @@ cd $HOME
 rm -rf realio-network
 git clone https://github.com/realiotech/realio-network.git
 cd realio-network
-git checkout v1.2.0
+git checkout v1.3.0
 make install
 ```
 
@@ -54,8 +54,6 @@ Please change `<YOUR_MONIKER>` To your own Moniker.
 
 ```
 realio-networkd init $MONIKER --chain-id realionetwork_3301-1
-realio-networkd config chain-id realionetwork_3301-1
-realio-networkd config keyring-backend file
 ```
 
 ### Download Genesis file and addrbook
