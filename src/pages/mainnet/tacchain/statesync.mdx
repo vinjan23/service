@@ -1,0 +1,33 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Statesync
+network: Mainnet
+icon: tacchain
+chain: tacchain_239-1
+version: v1.0.1
+---
+
+```
+sudo systemctl stop tacchaind
+cp $HOME/.tacchaind/data/priv_validator_state.json $HOME/.tacchaind/priv_validator_state.json.backup
+tacchaind tendermint unsafe-reset-all --home $HOME/.tacchaind --keep-addr-book
+```
+```
+SYNC_RPC="https://rpc-main.tacchain.vinjan.xyz"
+SYNC_PEER="6564d6181f597a147ac41debe2e4dca4f433b2a5@88.99.149.170:11356"
+LATEST_HEIGHT=$(curl -s $SYNC_RPC/block | jq -r .result.block.header.height)
+BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000))
+TRUST_HASH=$(curl -s "$SYNC_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+sed -i \
+-e "s|^enable *=.*|enable = true|" \
+-e "s|^rpc_servers *=.*|rpc_servers = \"$SYNC_RPC,$SYNC_RPC\"|" \
+-e "s|^trust_height *=.*|trust_height = $BLOCK_HEIGHT|" \
+-e "s|^trust_hash *=.*|trust_hash = \"$TRUST_HASH\"|" \
+-e "s|^persistent_peers *=.*|persistent_peers = \"$SYNC_PEER\"|" \
+$HOME/.tacchaind/config/config.toml
+mv $HOME/.tacchaind/priv_validator_state.json.backup $HOME/.tacchaind/data/priv_validator_state.json
+```
+```
+sudo systemctl restart tacchaind
+sudo journalctl -u tacchaind -f -o cat
+```
