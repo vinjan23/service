@@ -1,0 +1,32 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Snapshot
+network: Mainnet
+icon: tacchain
+chain: tacchain_239-1
+version: v1.0.1
+---
+END
+
+```
+sudo apt install lz4 -y
+```
+```
+sudo systemctl stop tacchaind
+```
+```
+cp $HOME/.tacchaind/data/priv_validator_state.json $HOME/.tacchaind/priv_validator_state.json.backup
+```
+```
+tacchaind tendermint unsafe-reset-all --home $HOME/.tacchaind --keep-addr-book
+```
+```
+curl -L https://snap.vinjan.xyz/tacchain/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.tacchaind
+```
+```
+mv $HOME/.tacchaind/priv_validator_state.json.backup $HOME/.tacchaind/data/priv_validator_state.json
+```
+```
+sudo systemctl restart tacchaind
+sudo journalctl -u tacchaind -f -o cat
+```
