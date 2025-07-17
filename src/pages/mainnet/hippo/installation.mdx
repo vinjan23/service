@@ -4,7 +4,7 @@ title: Installation Node
 icon: hippo
 network: Mainnet
 chain: hippo-protocol-1
-version: main
+version: v1.0.1
 ---
 
 ### Hardware requirements
@@ -44,16 +44,26 @@ go version
 
 ```
 cd $HOME
-git clone https://github.com/hippocrat-dao/hippo-protocol hippo
-cd hippo
-git checkout main
+rm -rf hippo
+git clone https://github.com/hippo-protocol/hippo-protocol.git
+cd hippo-protocol
+git checkout v1.0.1
 make install
 ```
 
 ### Init `Change <MONIKER> with ur Name`
 
 ```
-arkeod init <MONIKER> --chain-id hippo-protocol-1
+hippod init <MONIKER> --chain-id hippo-protocol-1
+```
+
+### Custom Port
+```
+PORT=115
+sed -i -e "s|^chain-id *=.*|chain-id = \"hippo-protocol-1\"|" $HOME/.hippo/config/client.toml
+sed -i -e "s%:26657%:${PORT}57%" $HOME/.hippo/config/client.toml
+sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:26656%:${PORT}56%; s%:26660%:${PORT}60%" $HOME/.hippo/config/config.toml
+sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%" $HOME/.hippo/config/app.toml
 ```
 
 ### Download Genesis file and addrbook
@@ -72,7 +82,7 @@ curl -L https://snapshot.vinjan.xyz./hippo/addrbook.json > $HOME/.hippo/config/a
 ### Configure Gas
 
 ```
-sed -i.bak -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"5000000000000ahp\"/;" ~/.hippo/config/app.toml
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"5000000000000ahp\"/;" ~/.hippo/config/app.toml
 ```
 
 ### Indexer Off
