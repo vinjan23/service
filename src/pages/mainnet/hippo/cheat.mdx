@@ -4,7 +4,7 @@ title: Node CLI Cheatsheet
 network: Mainnet
 icon: hippo
 chain: hippo-protocol-1
-version: main
+version: v1.0.1
 ---
 
 ### CLI Cheatsheet
@@ -144,16 +144,14 @@ hippod tx gov vote 1 yes --from wallet --chain-id hippo-protocol-1 --fees 100000
 ### Other
 
 Set Your own Custom Ports
-You can change value `CUSTOM_PORT=44` To any other ports
+```
+PORT=115
+sed -i -e "s|^chain-id *=.*|chain-id = \"hippo-protocol-1\"|" $HOME/.hippo/config/client.toml
+sed -i -e "s%:26657%:${PORT}57%" $HOME/.hippo/config/client.toml
+sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:26656%:${PORT}56%; s%:26660%:${PORT}60%" $HOME/.hippo/config/config.toml
+sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%" $HOME/.hippo/config/app.toml
+```
 
-- PORT=24
-```  
-sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:24657\"%" $HOME/.hippo/config/client.toml
-```
-```
-sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:24658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://0.0.0.0:24657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:24060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:24656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":24660\"%" $HOME/.hippo/config/config.toml
-sed -i.bak -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:24317\"%; s%^address = \"localhost:9090\"%address = \"0.0.0.0:24090\"%" $HOME/.hippo/config/app.toml
-```
 
 Enable Indexing usually enabled by default
 ```
