@@ -67,6 +67,8 @@ curl -L https://snapshot-t.vinjan.xyz/kiichain/addrbook.json > $HOME/.kiichain/c
 
 ### Configure Seed & Gas
 ```
+seeds="408ede05d42c077c7e6f069e9dede07074f40911@94.130.143.184:19656"
+sed -i.bak -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.kiichain/config/config.toml
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"1000000000akii\"/" $HOME/.kiichain/config/app.toml
 ```
 
