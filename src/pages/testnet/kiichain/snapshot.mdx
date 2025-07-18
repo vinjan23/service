@@ -18,10 +18,15 @@ sudo systemctl stop kiichaind
 cp $HOME/.kiichain/data/priv_validator_state.json $HOME/.kiichain/priv_validator_state.json.backup
 ```
 ```
+rm -rf $HOME/.kiichain/data
+rm -rf $HOME/.kiichain/wasm
+```
+```
 kiichaind tendermint unsafe-reset-all --home $HOME/.kiichain --keep-addr-book
 ```
 ```
-curl -L https://snapshot-t.vinjan.xyz/kiichain/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.kiichain
+SNAP_NAME=$(curl -s https://ss-t.kiichain.nodestake.org/ | egrep -o ">20.*\.tar.lz4" | tr -d ">")
+curl -o - -L https://ss-t.kiichain.nodestake.org/${SNAP_NAME}  | lz4 -c -d - | tar -x -C $HOME/.kiichain
 ```
 ```
 mv $HOME/.kiichain/priv_validator_state.json.backup $HOME/.kiichain/data/priv_validator_state.json
