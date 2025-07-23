@@ -3,8 +3,8 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Node CLI Cheatsheet
 network: Testnet
 icon: structs
-chain: structstestnet-88
-version: v0.2.0-beta
+chain: structstestnet-102
+version: v0.7.0-beta
 ---
 
 ### CLI Cheatsheet
@@ -77,13 +77,13 @@ nano $HOME/validator.json
 ```
 structsd tx staking create-validator $HOME/validator.json \
     --from=wallet \
-    --chain-id=structstestnet-88 \
+    --chain-id=structstestnet-102 \
     --gas=auto
 ```
 
 Unjail Validator
 ```
-structsd tx slashing unjail --from Wallet --chain-id structstestnet-88 --gas=auto
+structsd tx slashing unjail --from Wallet --chain-id structstestnet-102 --gas=auto
 ```
 
 Check Jailed Reason
@@ -95,47 +95,44 @@ structsd query slashing signing-info $(structsd tendermint show-validator)
 
 Withdraw Rewards
 ```
-structsd tx distribution withdraw-all-rewards --from Wallet --chain-id structstestnet-88 --gas=auto
+structsd tx distribution withdraw-all-rewards --from Wallet --chain-id structstestnet-102 --gas=auto
 ```
 
 Withdraw Rewards with Comission
 ```
-structsd tx distribution withdraw-rewards $(structsd keys show wallet --bech val -a) --commission --from wallet --chain-id structstestnet-88 --gas=auto
+structsd tx distribution withdraw-rewards $(structsd keys show wallet --bech val -a) --commission --from wallet --chain-id structstestnet-102 --gas=auto
 ```
 
 Delegate Token to your own validator
 ```
-structsd tx staking delegate $(structsd keys show wallet --bech val -a) 100alpha --from wallet --chain-id structstestnet-88 --gas=auto
+structsd tx staking delegate $(structsd keys show wallet --bech val -a) 100alpha --from wallet --chain-id structstestnet-102 --gas=auto
 ```
 
 Delegate Token to other validator
 ```
-structsd staking redelegate $(structsd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 10alpha --from wallet --chain-id structstestnet-88 --gas=auto
+structsd staking redelegate $(structsd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 10alpha --from wallet --chain-id structstestnet-102 --gas=auto
 ```
 
 Unbond Token from your validator
 ```
-structsd tx staking unbond $(structsd keys show wallet --bech val -a) 100alpha --from wallet --chain-id structstestnet-88 --gas=auto
+structsd tx staking unbond $(structsd keys show wallet --bech val -a) 100alpha --from wallet --chain-id structstestnet-102 --gas=auto
 ```
 
 Send Token to another wallet
 ```
-structsd tx bank send wallet <TO_WALLET_ADDRESS> 100alpha --from wallet --chain-id structstestnet-88 --gas=auto
+structsd tx bank send wallet <TO_WALLET_ADDRESS> 100alpha --from wallet --chain-id structstestnet-102 --gas=auto
 ```
 
 ### Other
 
 Set Your own Custom Ports
-You can change value `CUSTOM_PORT=20` To any other ports
-
-- PORT=38
 
 ```
-sed -i.bak -e  "s%^node = \"tcp://localhost:26657\"%node = \"tcp://localhost:38657\"%" $HOME/.structs/config/client.toml
-```
-```
-sed -i.bak -e "s%^proxy_app = \"tcp://127.0.0.1:26658\"%proxy_app = \"tcp://127.0.0.1:38658\"%; s%^laddr = \"tcp://127.0.0.1:26657\"%laddr = \"tcp://127.0.0.1:38657\"%; s%^pprof_laddr = \"localhost:6060\"%pprof_laddr = \"localhost:38060\"%; s%^laddr = \"tcp://0.0.0.0:26656\"%laddr = \"tcp://0.0.0.0:38656\"%; s%^prometheus_listen_addr = \":26660\"%prometheus_listen_addr = \":38660\"%" $HOME/.structs/config/config.toml
-sed -i.bak -e "s%^address = \"tcp://localhost:1317\"%address = \"tcp://localhost:38317\"%; s%^address = \"localhost:9090\"%address = \"localhost:38090\"%" $HOME/.structs/config/app.toml
+PORT=132
+sed -i -e "s%:26657%:${PORT}57%" $HOME/.structs/config/client.toml
+sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:26656%:${PORT}56%; s%:26660%:${PORT}61%" $HOME/.structs/config/config.toml
+sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%" $HOME/.structs/config/app.toml
+sed -i -e "s|chain-id = \".*\"|chain-id = \"structstestnet-102\"|g" $HOME/.structs/config/client.toml
 ```
 
 Enable Indexing usually enabled by default
