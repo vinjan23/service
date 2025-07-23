@@ -3,15 +3,10 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Snapshot
 network: Testnet
 icon: structs
-chain: structstestnet-88
-version: v0.2.0-beta
+chain: structstestnet-102
+version: v0.7.0-beta
 ---
-( Block 99100 )
+
 ```
-sudo apt install lz4 -y
-sudo systemctl stop structsd
-structs tendermint unsafe-reset-all --home $HOME/.structs --keep-addr-book
-curl -L https://snapshot.vinjan.xyz./structs/structs-snapshot-20240510.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.structs
-sudo systemctl restart structsd
-journalctl -fu structsd -o cat
+soon
 ```
