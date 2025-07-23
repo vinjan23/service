@@ -3,8 +3,8 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Installation Node
 network: Testnet
 icon: structs
-chain: structstestnet-88
-version: v0.2.0-beta
+chain: structstestnet-102
+version: v0.7.0-beta
 ---
 
 ### Hardware requirements
@@ -26,7 +26,7 @@ sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang p
 ### Install go
 
 ```
-ver="1.21.7"
+ver="1.22.5"
 cd $HOME
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
@@ -48,9 +48,12 @@ sudo mv ignite /usr/local/bin/
 ### Install binary
 
 ```
-git clone --branch v0.2.0-beta https://github.com/playstructs/structsd.git 
+cd $HOME
+rm -rf structsd
+git clone https://github.com/playstructs/structsd.git
 cd structsd
-ignite chain build 
+git checkout v0.7.0-beta
+ignite chain build
 ```
 
 ### Initialize Node
@@ -58,7 +61,7 @@ ignite chain build
 Please change `<MONIKER>` To your own Moniker.
 
 ```
-structsd init <MONIKER> --chain-id structstestnet-88
+structsd init <MONIKER> --chain-id structstestnet-102
 ```
 
 ### Download Genesis file and addrbook
@@ -66,18 +69,24 @@ structsd init <MONIKER> --chain-id structstestnet-88
 - Genesis
 
 ```
-wget -O $HOME/.structs/config/genesis.json https://raw.githubusercontent.com/playstructs/structs-networks/88b/genesis.json
+wget -O $HOME/.structs/config/genesis.json https://raw.githubusercontent.com/playstructs/structs-networks/refs/heads/main/genesis.json
 ```
 - Addrbook
 ```
-wget -O $HOME/.structs/config/addrbook.json https://raw.githubusercontent.com/vinjan23/Testnet.Guide/main/Structs/addrbook.json
+wget -O $HOME/.structs/config/addrbook.json https://raw.githubusercontent.com/playstructs/structs-networks/refs/heads/main/addrbook.json
 ```
 
-### Configure Gas and Peers
-
+### Custom Port
 ```
-peers="605886634736003095e841b03736a214f5111ffe@155.138.142.145:26656"
-sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" ~/.structs/config/config.toml
+PORT=132
+sed -i -e "s%:26657%:${PORT}57%" $HOME/.structs/config/client.toml
+sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:26656%:${PORT}56%; s%:26660%:${PORT}61%" $HOME/.structs/config/config.toml
+sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%" $HOME/.structs/config/app.toml
+sed -i -e "s|chain-id = \".*\"|chain-id = \"structstestnet-102\"|g" $HOME/.structs/config/client.toml
+```
+
+### Configure Gas
+```
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0ualpha\"/" $HOME/.structs/config/app.toml
 ```
 
@@ -126,16 +135,6 @@ sudo journalctl -u structsd -f -o cat
 
 - Check Sync ( If False than go to create validator )
 ```
-
-### Snapshot
-<a href="https://service.vinjan.xyz/testnet/structs/snapshot" target="_blank">
-  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
-</a>
-
-### Statesync
-<a href="https://service.vinjan.xyz/testnet/structs/statesync" target="_blank">
-  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Statesync</button>
-</a>
 
 ### Create Validator
 
