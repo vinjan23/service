@@ -1,0 +1,186 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Mainnet
+icon: bitbadges
+chain: bitbadges-1
+version: v11
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+bitbadgeschaind keys add wallet
+```
+
+Recover Wallet
+```
+bitbadgeschaind keys add wallet --recover
+```
+
+List Wallet
+```
+bitbadgeschaind keys list
+```
+
+Delete Wallet
+```
+bitbadgeschaind keys delete wallet
+```
+
+Check Wallet Balance
+```
+bitbadgeschaind q bank balances $(bitbadgeschaind keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+```
+bitbadgeschaind tendermint show-validator
+```
+```
+nano /root/.bitbadgeschain/validator.json
+```
+```
+{
+  "pubkey": ,
+  "amount": "1000000000ubadge",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.01",
+  "min-self-delegation": "1"
+}
+```
+```
+bitbadgeschaind tx staking create-validator $HOME/.bitbadgeschaind/validator.json \
+--from wallet \
+--chain-id bitbadges-1 \
+--gas-prices=0.025ubadge \
+--gas-adjustment=1.2 \
+--gas=auto
+```
+
+
+Edit Validator
+```
+bitbadgeschaind tx staking edit-validator \
+--new-moniker="" \
+--identity="" \
+--website="" \
+--details="" \
+--chain-id=bitbadges-1 \
+--commission-rate="0.02" \
+--from=wallet \
+--gas=auto \
+--gas-adjustment=1.2 \
+--gas-prices=0.025ubadge
+```
+
+Unjail Validator
+```
+bitbadgeschaind tx slashing unjail --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+```
+
+Check Jailed Reason
+```
+bitbadgeschaind query slashing signing-info $(bitbadgeschaind tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+bitbadgeschaind tx distribution withdraw-all-rewards --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+```
+
+Withdraw Rewards with Comission
+```
+bitbadgeschaind tx distribution withdraw-rewards $(bitbadgeschaind keys show wallet --bech val -a) --commission --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+```
+
+Delegate Token to your own validator
+```
+bitbadgeschaind tx staking delegate $(bitbadgeschaind keys show wallet --bech val -a) 1000000000ubadge --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+```
+
+Delegate Token to other validator
+```
+bitbadgeschaind tx staking redelegate $(bitbadgeschaind keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000000ubadge --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+```
+
+Unbond Token from your validator
+```
+bitbadgeschaind tx staking unbond $(bitbadgeschaind keys show wallet --bech val -a) 1000000000ubadge --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+```
+
+Send Token to another wallet
+```
+bitbadgeschaind tx bank send wallet <TO_WALLET_ADDRESS> 1000000000ubadge --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+bitbadgeschaind tx gov vote 1 yes --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=44` To any other ports
+
+- PORT=105
+```  
+PORT=135
+sed -i -e "s%:26657%:${PORT}57%" $HOME/.bitbadgeschain/config/client.toml
+sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:26656%:${PORT}56%; s%:26660%:${PORT}61%" $HOME/.bitbadgeschain/config/config.toml
+sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%" $HOME/.bitbadgeschain/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.bitbadgeschain/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.bitbadgeschain/config/config.toml
+```
+
+Reset Chain Data
+```
+bitbadgeschaind tendermint unsafe-reset-all --home $HOME/.bitbadgeschaind --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop bitbadgeschaind
+sudo systemctl disable bitbadgeschaind
+sudo rm /etc/systemd/system/bitbadgeschaind.service
+sudo systemctl daemon-reload
+rm -rf $(which bitbadgeschaind)
+rm -rf .bitbadgeschain
+```
