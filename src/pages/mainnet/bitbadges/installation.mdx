@@ -25,11 +25,11 @@ sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang p
 
 ### Install go
 
-We are gonna use GO Version 1.22.6
+We are gonna use GO Version 1.24.5
 If you already have GO installed you can skip this 
 
 ```
-ver="1.23.5"
+ver="1.24.5"
 cd $HOME
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
@@ -43,8 +43,9 @@ go version
 ### Install binary
 
 ```
-wget https://github.com/BitBadges/bitbadgeschain/releases/download/v11/bitbadgeschain-linux-amd64
-mv bitbadgeschain-linux-amd64 $HOME/go/bin/bitbadgeschaind
+cd $HOME
+mkdir -p $HOME/.bitbadgeschain
+wget https://github.com/BitBadges/bitbadgeschain/releases/download/v11/bitbadgeschain-linux-amd64 -O $HOME/go/bin/bitbadgeschaind
 chmod +x $HOME/go/bin/bitbadgeschaind
 ```
 
