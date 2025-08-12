@@ -4,7 +4,7 @@ title: Node CLI Cheatsheet
 network: Mainnet
 icon: bitbadges
 chain: bitbadges-1
-version: v11
+version: v12
 ---
 
 ### CLI Cheatsheet
@@ -89,12 +89,12 @@ bitbadgeschaind tx staking edit-validator \
 --from=wallet \
 --gas=auto \
 --gas-adjustment=1.2 \
---gas-prices=0.025ubadge
+--gas-prices=0.0025ubadge
 ```
 
 Unjail Validator
 ```
-bitbadgeschaind tx slashing unjail --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+bitbadgeschaind tx slashing unjail --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.0025ubadge"
 ```
 
 Check Jailed Reason
@@ -106,32 +106,32 @@ bitbadgeschaind query slashing signing-info $(bitbadgeschaind tendermint show-va
 
 Withdraw Rewards
 ```
-bitbadgeschaind tx distribution withdraw-all-rewards --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+bitbadgeschaind tx distribution withdraw-all-rewards --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.0025ubadge"
 ```
 
 Withdraw Rewards with Comission
 ```
-bitbadgeschaind tx distribution withdraw-rewards $(bitbadgeschaind keys show wallet --bech val -a) --commission --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+bitbadgeschaind tx distribution withdraw-rewards $(bitbadgeschaind keys show wallet --bech val -a) --commission --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.0025ubadge"
 ```
 
 Delegate Token to your own validator
 ```
-bitbadgeschaind tx staking delegate $(bitbadgeschaind keys show wallet --bech val -a) 1000000000ubadge --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+bitbadgeschaind tx staking delegate $(bitbadgeschaind keys show wallet --bech val -a) 1000000000ubadge --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.0025ubadge"
 ```
 
 Delegate Token to other validator
 ```
-bitbadgeschaind tx staking redelegate $(bitbadgeschaind keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000000ubadge --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+bitbadgeschaind tx staking redelegate $(bitbadgeschaind keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000000ubadge --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.0025ubadge"
 ```
 
 Unbond Token from your validator
 ```
-bitbadgeschaind tx staking unbond $(bitbadgeschaind keys show wallet --bech val -a) 1000000000ubadge --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+bitbadgeschaind tx staking unbond $(bitbadgeschaind keys show wallet --bech val -a) 1000000000ubadge --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.0025ubadge"
 ```
 
 Send Token to another wallet
 ```
-bitbadgeschaind tx bank send wallet <TO_WALLET_ADDRESS> 1000000000ubadge --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+bitbadgeschaind tx bank send wallet <TO_WALLET_ADDRESS> 1000000000ubadge --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.0025ubadge"
 ```
 
 ### Governance 
@@ -140,7 +140,7 @@ Vote
 You can change the value of `yes` to `no`,`abstain`,`nowithveto`
 
 ```
-bitbadgeschaind tx gov vote 1 yes --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.025ubadge"
+bitbadgeschaind tx gov vote 1 yes --from wallet --chain-id bitbadges-1 --gas-adjustment=1.2 --gas=auto --gas-prices="0.0025ubadge"
 ```
 
 ### Other
