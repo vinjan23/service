@@ -29,7 +29,7 @@ symphonyd tx oracle set-feeder <ur_address_feeder> --from wallet --chain-id symp
 ```
 nano $HOME/symphony-oracle-voter/.env
 ```
-### Copy and Edit with Ur wallet address , validator address,Feeder address, mnemonic phrase & key password  
+### Copy and Edit with Ur wallet address , validator address, Feeder address, feeder seed & SYMPHONY_LCD &  TENDERMINT_RPC & key password
 ```
 # Symphony Oracle Voter Configuration
 # Copy this file to .env and update with your actual values
@@ -61,10 +61,10 @@ FEEDER_SEED="Mnemonic_phrase"
 # =============================================================================
 
 # Symphony LCD endpoint - can use remote if needed
-SYMPHONY_LCD=https://api-symphony.vinjan.xyz
+SYMPHONY_LCD=https://api....
 
 # Tendermint RPC endpoint
-TENDERMINT_RPC=https://rpc-symphony.vinjan.xyz
+TENDERMINT_RPC=https://rpc.....
 
 # Chain ID - symphony-1 for mainnet, symphony-testnet-4 for testnet
 CHAIN_ID=symphony-1
