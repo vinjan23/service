@@ -45,14 +45,15 @@ go version
 ```
 cd $HOME
 mkdir -p $HOME/.bitbadgeschain
-wget https://github.com/BitBadges/bitbadgeschain/releases/download/v12/bitbadgeschain-linux-amd64 -O $HOME/go/bin/bitbadgeschaind
-chmod +x $HOME/go/bin/bitbadgeschaind
+wget https://github.com/BitBadges/bitbadgeschain/releases/download/v12/bitbadgeschain-linux-amd64 -O /usr/local/bin/bitbadgeschaind
+chmod +x /usr/local/bin/bitbadgeschaind
 ```
 ### Upgrade
 ```
 cd $HOME
-wget https://github.com/BitBadges/bitbadgeschain/releases/download/v13/bitbadgeschain-linux-amd64 -O $HOME/go/bin/bitbadgeschaind
-chmod +x $HOME/go/bin/bitbadgeschaind
+mkdir -p $HOME/.bitbadgeschain
+wget https://github.com/BitBadges/bitbadgeschain/releases/download/v13/bitbadgeschain-linux-amd64 -O /usr/local/bin/bitbadgeschaind
+chmod +x /usr/local/bin/bitbadgeschaind
 ```
 
 ### Init `Change <MONIKER> with ur Name`
