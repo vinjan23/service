@@ -1,0 +1,169 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Mainnet
+icon: paxi
+chain: paxi-mainnet
+version: v1.0.5
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Usefull Command
+```
+paxid status 2>&1 | jq .sync_info
+```
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+paxid keys add wallet
+```
+
+Recover Wallet
+```
+paxid keys add wallet --recover
+```
+
+List Wallet
+```
+paxid keys list
+```
+
+Delete Wallet
+```
+paxid keys delete wallet
+```
+
+Check Wallet Balance
+```
+paxid q bank balances $(paxid keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+- Check Your Pubkey
+```
+paxid tendermint show-validator
+```
+- Make File validator.json
+```
+nano ~/go/bin/paxi/validator.json
+```
+```
+{
+  "pubkey":  ,
+  "amount": "1000000upaxi",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": ",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.05",
+  "min-self-delegation": "1"
+}
+```
+```
+paxid tx staking create-validator ~/go/bin/paxi/validator.json \
+--from wallet \
+--chain-id paxi-mainnet \
+--gas-prices=0.05upaxi \
+--gas-adjustment=1.5 \
+--gas=auto
+```
+
+Unjail Validator
+```
+paxid tx slashing unjail --from wallet --chain-id paxi-mainnet --gas-prices=0.05upaxi --gas-adjustment=1.5 --gas=auto
+```
+
+Check Jailed Reason
+```
+paxid query slashing signing-info $(paxid tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+paxid tx distribution withdraw-all-rewards --from wallet --chain-id paxi-mainnet --gas-prices=0.05upaxi --gas-adjustment=1.5 --gas=auto
+```
+
+Withdraw Rewards with Comission
+```
+paxid tx distribution withdraw-rewards $(paxid keys show wallet --bech val -a) --commission --from wallet --chain-id paxi-mainnet --gas-prices=0.05upaxi --gas-adjustment=1.5 --gas=auto
+```
+
+Delegate Token to your own validator
+```
+paxid tx staking delegate $(paxid keys show wallet --bech val -a) 1000000upaxi --from wallet --chain-id paxi-mainnet --gas-prices=0.05upaxi --gas-adjustment=1.5 --gas=auto
+```
+
+Delegate Token to other validator
+```
+paxid staking redelegate $(paxid keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000upaxie --from wallet --chain-id paxi-mainnet --gas-prices=0.05upaxi --gas-adjustment=1.5 --gas=auto
+```
+
+Unbond Token from your validator
+```
+paxid tx staking unbond $(paxid keys show wallet --bech val -a) 1000000upaxi --from wallet --chain-id paxi-mainnet --gas-prices=0.05upaxi --gas-adjustment=1.5 --gas=auto
+```
+
+Send Token to another wallet
+```
+paxi tx bank send wallet <TO_WALLET_ADDRESS> 1000000upaxi --from wallet --chain-id paxi-mainnet --gas-prices=0.05upaxi --gas-adjustment=1.5 --gas=auto
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=17` To any other ports
+
+```
+sed -i -e "s%:26657%:11757%"  ~/go/bin/paxi/config/client.toml
+sed -i -e "s%:26658%:11758%; s%:26657%:11757%; s%:6060%:11760%; s%:26656%:11756%; s%:26660%:11761%"  ~/go/bin/paxi/config/config.toml
+sed -i -e "s%:1317%:11717%; s%:9090%:11790%" ~/go/bin/paxi/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i -e "s/^indexer *=.*/indexer = \"kv\"/" ~/go/bin/paxi/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i -e "s/^indexer *=.*/indexer = \"null\"/" ~/go/bin/paxi/config/config.toml
+```
+
+Reset Chain Data
+```
+paxid tendermint unsafe-reset-all --home ~/go/bin/paxi --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop paxid
+sudo systemctl disable paxid
+rm /etc/systemd/system/paxid.service
+sudo systemctl daemon-reload
+rm -rf $(which paxid)
+rm -rf paxi
+rm -rf paxid
+rm -rf  ~/go/bin/paxi
+```
+
