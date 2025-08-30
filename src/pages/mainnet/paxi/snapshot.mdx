@@ -1,0 +1,30 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Snapshot
+network: Mainnet
+icon: paxi
+chain: paxi-mainnet
+version: v1.0.5
+---
+### Update Everyday
+```
+sudo apt install lz4 -y
+```
+```
+sudo systemctl stop paxid
+```
+```
+cp ~/go/bin/paxi/data/priv_validator_state.json ~/go/bin/paxi/priv_validator_state.json.backup
+```
+```
+paxid tendermint unsafe-reset-all --home ~/go/bin/paxi --keep-addr-book
+```
+```
+curl -L https://snapshot-t.vinjan.xyz/paxi/latest.tar.lz4  | lz4 -dc - | tar -xf - -C ~/go/bin/paxi
+```
+```
+mv ~/go/bin/paxi/priv_validator_state.json.backup ~/go/bin/paxi/data/priv_validator_state.json
+```
+```
+sudo systemctl restart paxid && sudo journalctl -u paxid -fo cat
+```
