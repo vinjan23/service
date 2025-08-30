@@ -1,0 +1,147 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Installation Node
+network: Mainnet
+icon: paxi
+chain: paxi-mainnet
+version: v1.0.5
+---
+
+### Hardware requirements
+
+The following requirements are recommended:
+
+- 8 or more physical CPU cores
+- At least 800GB of SSD disk storage
+- At least 32GB of memory (RAM)
+- At least 100mbps network bandwidth
+
+
+### Install dependencies Required
+
+```
+sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool -y
+```
+
+### Install go
+
+We are gonna use GO Version 1.22.5
+If you already have GO installed you can skip this 
+
+```
+ver="1.24.5"
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+rm "go$ver.linux-amd64.tar.gz"
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+source ~/.bash_profile
+go version
+```
+
+
+### Install binary
+```
+cd $HOME
+git clone https://github.com/paxi-web3/paxi.git
+cd paxi
+git checkout v1.0.5
+make install
+cp ~/paxid/paxid ~/go/bin
+```
+
+Verify that you've installed successfully
+
+```
+paxid version
+```
+
+### Initialize Node
+
+Please change `<MONIKER>` To your own Moniker.
+
+```
+paxid init <MONIKER> --chain-id paxi-mainnet
+```
+
+### Download Genesis file and addrbook
+
+- Genesis
+
+```
+curl -Ls https://snapshot-t.vinjan.xyz/paxi/genesis.json > ~/go/bin/paxi/config/genesis.json
+```
+
+- Addrbook
+```
+curl -Ls https://snapshot-t.vinjan.xyz/paxi/addrbook.json >~/go/bin/paxi/config/addrbook.json
+```
+
+### Custom Port
+```
+sed -i -e "s%:26657%:11757%" ~/go/bin/paxi/config/client.toml
+sed -i -e "s%:26658%:11758%; s%:26657%:11757%; s%:6060%:11760%; s%:26656%:11756%; s%:26660%:11761%" ~/go/bin/paxi/config/config.toml
+sed -i -e "s%:1317%:11717%; s%:9090%:11790%" ~/go/bin/paxi/config/app.toml
+```
+
+### Configure Gas
+```
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.05upaxi\"/" ~/go/bin/paxi/config/app.toml
+```
+
+### Prunning
+```
+sed -i -e "s/^pruning *=.*/pruning = \"custom\"/" ~/go/bin/paxi/config/app.toml 
+sed -i -e "s/^pruning-keep-recent *=.*/pruning-keep-recent = \"100\"/" ~/go/bin/paxi/config/app.toml
+sed -i -e "s/^pruning-interval *=.*/pruning-interval = \"20\"/" ~/go/bin/paxi/config/app.toml
+```
+
+### Indexer Off
+```
+sed -i -e "s/^indexer *=.*/indexer = \"null\"/" ~/go/bin/paxi/config/config.toml
+```
+
+### create service file and start node
+
+Create service file
+Create a `wardend.service` file in the `/etc/systemd/system` folder with the following code. 
+You can change `USER` with your Linux user name. You need sudo previlege to do this step.
+
+```
+sudo tee /etc/systemd/system/paxid.service > /dev/null <<EOF
+[Unit]
+Description=paxi
+After=network-online.target
+[Service]
+User=$USER
+ExecStart=$(which paxid) start
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+- Enable Service and Start Node
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable paxid
+sudo systemctl restart paxid
+sudo journalctl -u paxid -f -o cat
+```
+
+### Snapshot/Statesync
+<a href="https://service.vinjan.xyz/mainnet/paxi/snapshot" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
+</a>
+
+
+### Create Validator
+
+Heads up to the Cheat Sheets to create validator
+
+<a href="https://service.vinjan.xyz/mainnety/paxi/cheat" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">CLI Cheatsheets</button>
+</a>
