@@ -13,7 +13,7 @@ cp ~/go/bin/paxi/data/priv_validator_state.json ~/go/bin/paxi/priv_validator_sta
 paxid tendermint unsafe-reset-all --home ~/go/bin/paxi --keep-addr-book
 ```
 ```
-SNAP_RPC="https://mainnet-rpc.paxinet.io:443"
+SNAP_RPC="https://rpc-paxi.vinjan.xyz:443"
 LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
 BLOCK_HEIGHT=$((LATEST_HEIGHT - 1000)); \
 TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
