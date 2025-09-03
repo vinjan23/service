@@ -78,14 +78,12 @@ nano ~/go/bin/paxi/validator.json
 paxid tx staking create-validator ~/go/bin/paxi/validator.json \
 --from wallet \
 --chain-id paxi-mainnet \
---gas-prices=0.05upaxi \
---gas-adjustment=1.5 \
---gas=auto
+--fees 10000upaxi
 ```
 
 Unjail Validator
 ```
-paxid tx slashing unjail --from wallet --chain-id paxi-mainnet --gas-prices=0.05upaxi --gas-adjustment=1.5 --gas=auto
+paxid tx slashing unjail --from wallet --chain-id paxi-mainnet --fees 10000upaxi
 ```
 
 Check Jailed Reason
@@ -97,32 +95,32 @@ paxid query slashing signing-info $(paxid tendermint show-validator)
 
 Withdraw Rewards
 ```
-paxid tx distribution withdraw-all-rewards --from wallet --chain-id paxi-mainnet --gas-prices=0.05upaxi --gas-adjustment=1.5 --gas=auto
+paxid tx distribution withdraw-all-rewards --from wallet --chain-id paxi-mainnet --fees 10000upaxi
 ```
 
 Withdraw Rewards with Comission
 ```
-paxid tx distribution withdraw-rewards $(paxid keys show wallet --bech val -a) --commission --from wallet --chain-id paxi-mainnet --gas-prices=0.05upaxi --gas-adjustment=1.5 --gas=auto
+paxid tx distribution withdraw-rewards $(paxid keys show wallet --bech val -a) --commission --from wallet --chain-id paxi-mainnet --fees 10000upaxi
 ```
 
 Delegate Token to your own validator
 ```
-paxid tx staking delegate $(paxid keys show wallet --bech val -a) 1000000upaxi --from wallet --chain-id paxi-mainnet --gas-prices=0.05upaxi --gas-adjustment=1.5 --gas=auto
+paxid tx staking delegate $(paxid keys show wallet --bech val -a) 1000000upaxi --from wallet --chain-id paxi-mainnet --fees 10000upaxi
 ```
 
 Delegate Token to other validator
 ```
-paxid staking redelegate $(paxid keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000upaxie --from wallet --chain-id paxi-mainnet --gas-prices=0.05upaxi --gas-adjustment=1.5 --gas=auto
+paxid staking redelegate $(paxid keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000upaxie --from wallet --chain-id paxi-mainnet --fees 10000upaxi
 ```
 
 Unbond Token from your validator
 ```
-paxid tx staking unbond $(paxid keys show wallet --bech val -a) 1000000upaxi --from wallet --chain-id paxi-mainnet --gas-prices=0.05upaxi --gas-adjustment=1.5 --gas=auto
+paxid tx staking unbond $(paxid keys show wallet --bech val -a) 1000000upaxi --from wallet --chain-id paxi-mainnet --fees 10000upaxi
 ```
 
 Send Token to another wallet
 ```
-paxi tx bank send wallet <TO_WALLET_ADDRESS> 1000000upaxi --from wallet --chain-id paxi-mainnet --gas-prices=0.05upaxi --gas-adjustment=1.5 --gas=auto
+paxi tx bank send wallet <TO_WALLET_ADDRESS> 1000000upaxi --from wallet --chain-id paxi-mainnet --fees 10000upaxi
 ```
 
 ### Other
