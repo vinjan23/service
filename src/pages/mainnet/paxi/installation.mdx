@@ -131,6 +131,11 @@ sudo systemctl enable paxid
 sudo systemctl restart paxid
 sudo journalctl -u paxid -f -o cat
 ```
+### Sync Wasm 
+```
+curl -sL https://raw.githubusercontent.com/vinjan23/Mainnet/refs/heads/main/Paxi/wasm |bash
+sudo systemctl restart paxid
+```
 
 ### Snapshot/Statesync
 <a href="https://service.vinjan.xyz/mainnet/paxi/snapshot" target="_blank">
