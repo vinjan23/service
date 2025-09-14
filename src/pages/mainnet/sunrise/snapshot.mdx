@@ -1,0 +1,32 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Snapshot
+network: Mainnet
+icon: sunrise
+chain: sunrise-1
+version: v1.1.0
+---
+Update Everyday ( 00 UTC )
+---
+```
+sudo apt install lz4 -y
+````
+```
+sudo systemctl stop sunrised
+```
+```
+cp $HOME/.sunrise/data/priv_validator_state.json $HOME/.sunrise/priv_validator_state.json.backup
+```
+```
+sunrised tendermint unsafe-reset-all --home $HOME/.sunrise --keep-addr-book
+```
+```
+curl -L https://snap.vinjan.xyz/sunrise/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.sunrise
+```
+```
+mv $HOME/.sunrise/priv_validator_state.json.backup $HOME/.sunrise/data/priv_validator_state.json
+```
+```
+sudo systemctl restart sunrised
+sudo journalctl -u sunrised -f -o cat
+```
