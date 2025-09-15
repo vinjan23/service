@@ -1,0 +1,184 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Mainnet
+icon: sunrise
+chain: sunrise-1
+version: v1.1.0
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+sunrised keys add wallet
+```
+
+Recover Wallet
+```
+sunrised keys add wallet --recover
+```
+
+List Wallet
+```
+sunrised keys list
+```
+
+Delete Wallet
+```
+sunrised keys delete wallet
+```
+
+Check Wallet Balance
+```
+sunrised q bank balances $(sunrised keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+
+```
+sunrised tendermint show-validator
+```
+```
+nano /root/.sunrise/validator.json
+```
+```
+{
+  "pubkey": {"@type":"/cosmos.crypto.ed25519.PubKey.......},
+  "amount": "1000000uvrise",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.01",
+  "min-self-delegation": "1"
+}
+```
+```
+sunrised tx staking create-validator $HOME/.sunrise/validator.json \
+--from=wallet \
+--chain-id=sunrise-1 \
+--fees 10000uusdrise \
+--gas auto
+```
+
+Edit Validator
+```
+sunrised tx staking edit-validator \
+--new-moniker="" \
+--identity="" \
+--details="" \
+--website="" \
+--chain-id=sunrise-1 \
+--from=wallet \
+--fees 1000uusdrise \
+--gas auto
+```
+
+
+Unjail Validator
+```
+sunrised  tx slashing unjail --from wallet --chain-id sunrise-1 --fees 1000uusdrise --gas auto
+```
+
+Check Jailed Reason
+```
+sunrised query slashing signing-info $(sunrised tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+sunrised tx distribution withdraw-all-rewards --from wallet --chain-id sunrise-1 --fees 1000uusdrise --gas auto
+```
+
+Withdraw Rewards with Comission
+```
+sunrised tx distribution withdraw-rewards $(sunrised keys show wallet --bech val -a) --commission --from wallet --chain-id sunrise-1 --fees 1000uusdrise --gas auto
+```
+
+Delegate Token to your own validator
+```
+sunrised tx staking delegate $(sunrised keys show wallet --bech val -a) 1000000uvrise --from wallet --chain-id sunrise-1 --fees 1000uusdrise --gas auto
+```
+
+Delegate Token to other validator
+```
+sunrised tx staking redelegate $(sunrised keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uvrise --from wallet --chain-id sunrise-1 --fees 1000uusdrise --gas auto
+```
+
+Unbond Token from your validator
+```
+sunrised tx staking unbond $(sunrised keys show wallet --bech val -a) 1000000uvrise --from wallet --chain-id sunrise-1 --fees 1000uusdrise --gas auto
+```
+
+Send Token to another wallet
+```
+sunrised tx bank send wallet <TO_WALLET_ADDRESS> 1000000uvrise --from wallet ---chain-id sunrise-1 --fees 10000uusdrise --gas auto
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+sunrised tx gov vote 1 yes --from wallet --chain-id sunrise-1 --fees 1000uusdrise --gas auto
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT` To any other ports
+
+```
+PORT=189
+sed -i -e "s%:26657%:${PORT}57%" $HOME/.sunrise/config/client.toml
+sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:26656%:${PORT}56%; s%:26660%:${PORT}61%" $HOME/.sunrise/config/config.toml
+sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%" $HOME/.sunrise/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.sunrise/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.sunrise/config/config.toml
+```
+
+Reset Chain Data
+```
+sunrised tendermint unsafe-reset-all --home $HOME/.sunrise --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop sunrised
+sudo systemctl disable sunrised
+sudo rm /etc/systemd/system/sunrised.service
+sudo systemctl daemon-reload
+rm -f $(which sunrised)
+rm -rf .sunrise
+rm -rf sunrise
+```
