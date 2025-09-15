@@ -1,0 +1,12 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Live Peers
+network: Mainnet
+icon: sunrise
+chain: sunrise-1
+version: v1.1.0
+---
+Automatically adding Live peers to your config.toml file
+```
+peers="$(curl -sS https://rpc-sunrise.vinjan.xyz:443/net_info | jq -r '.result.peers[] | "\(.node_info.id)@\(.remote_ip):\(.node_info.listen_addr)"' | awk -F ':' '{print $1":"$(NF)}' | sed -z 's|\n|,|g;s|.$||')"
+sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.sunrise/config/config.toml
