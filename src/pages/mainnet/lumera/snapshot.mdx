@@ -20,7 +20,7 @@ cp $HOME/.lumera/data/priv_validator_state.json $HOME/.lumera/priv_validator_sta
 lumerad tendermint unsafe-reset-all --home $HOME/.lumera --keep-addr-book
 ```
 ```
-curl -L https://snapshot.vinjan.xyz/lumera/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.lumera
+curl -L https://snap.vinjan.xyz/lumera/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.lumera
 ```
 ```
 mv $HOME/.lumera/priv_validator_state.json.backup $HOME/.lumera/data/priv_validator_state.json
