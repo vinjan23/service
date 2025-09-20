@@ -4,7 +4,7 @@ title: Installation Node
 network: Mainnet
 icon: lumera
 chain: lumera-mainnet-1
-version: v1.6.1
+version: v1.7.0
 ---
 
 ### Hardware requirements
@@ -25,11 +25,11 @@ sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang p
 
 ### Install go
 
-We are gonna use GO Version 1.22.5
+We are gonna use GO Version 1.24.5
 If you already have GO installed you can skip this 
 
 ```
-ver="1.22.5"
+ver="1.24.5"
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
 sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
@@ -42,11 +42,11 @@ go version
 
 ### Install binary
 ```
-wget https://github.com/LumeraProtocol/lumera/releases/download/v1.6.1/lumera_v1.6.1_linux_amd64.tar.gz
-tar xzvf lumera_v1.6.1_linux_amd64.tar.gz
+wget https://github.com/LumeraProtocol/lumera/releases/download/v1.7.0/lumera_v1.7.0_linux_amd64.tar.gz
+tar xzvf lumera_v1.7.0_linux_amd64.tar.gz
 chmod +x lumerad
 mv lumerad $HOME/go/bin/
-rm lumera_v1.6.1_linux_amd64.tar.gz
+rm lumera_v1.7.0_linux_amd64.tar.gz
 rm install.sh
 mv libwasmvm.x86_64.so /usr/lib/
 ```
