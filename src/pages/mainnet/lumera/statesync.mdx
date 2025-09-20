@@ -4,7 +4,7 @@ title: Statesync
 network: Mainnet
 icon: lumera
 chain: lumera-mainnet-1
-version: v1.6.1
+version: v1.7.0
 ---
 
 ```
@@ -13,7 +13,21 @@ cp $HOME/.lumera/data/priv_validator_state.json $HOME/.lumera/priv_validator_sta
 lumerad tendermint unsafe-reset-all --home $HOME/.lumera --keep-addr-book
 ```
 ```
-
+SYNC_RPC="https://rpc-lumera.vinjan.xyz:443"
+SYNC_PEER="669ff90285485ff8bfaf0811b7ebf547ec284533@65.21.234.111:17756"
+LATEST_HEIGHT=$(curl -s $SYNC_RPC/block | jq -r .result.block.header.height)
+BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000))
+TRUST_HASH=$(curl -s "$SYNC_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+sed -i \
+-e "s|^enable *=.*|enable = true|" \
+-e "s|^rpc_servers *=.*|rpc_servers = \"$SYNC_RPC,$SYNC_RPC\"|" \
+-e "s|^trust_height *=.*|trust_height = $BLOCK_HEIGHT|" \
+-e "s|^trust_hash *=.*|trust_hash = \"$TRUST_HASH\"|" \
+-e "s|^persistent_peers *=.*|persistent_peers = \"$SYNC_PEER\"|" \
+$HOME/.lumera/config/config.toml
+```
+```
+mv $HOME/.lumera/priv_validator_state.json.backup $HOME/.lumera/data/priv_validator_state.json
 ```
 ```
 sudo systemctl restart lumerad
