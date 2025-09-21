@@ -4,7 +4,7 @@ title: Installation Node
 icon: bitbadges
 network: Mainnet
 chain: bitbadges-1
-version: v14
+version: v15
 ---
 
 ### Hardware requirements
@@ -48,17 +48,17 @@ wget https://github.com/BitBadges/bitbadgeschain/releases/download/v14/bitbadges
 chmod +x /usr/local/bin/bitbadgeschaind
 ```
 
-### Upgrade v14
+### Upgrade v15
 ```
 cd $HOME
-wget https://github.com/BitBadges/bitbadgeschain/releases/download/v14/bitbadgeschain-linux-amd64 -O /usr/local/bin/bitbadgeschaind
+wget https://github.com/BitBadges/bitbadgeschain/releases/download/v15/bitbadgeschain-linux-amd64 -O /usr/local/bin/bitbadgeschaind
 chmod +x /usr/local/bin/bitbadgeschaind
 ```
 
 ### Init `Change <MONIKER> with ur Name`
 
 ```
-bitbadgeschaind init Vinjan.Inc --chain-id bitbadges-1
+bitbadgeschaind init <MONIKER> --chain-id bitbadges-1
 ```
 
 ### Download Genesis file and addrbook
@@ -96,7 +96,7 @@ sed -i \
 -e 's|^pruning *=.*|pruning = "custom"|' \
 -e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "100"|' \
 -e 's|^pruning-keep-every *=.*|pruning-keep-every = "0"|' \
--e 's|^pruning-interval *=.*|pruning-interval = "10"|' \
+-e 's|^pruning-interval *=.*|pruning-interval = "20"|' \
 $HOME/.bitbadgeschain/config/app.toml
 ```
 ### Indexer Off
