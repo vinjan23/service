@@ -84,7 +84,7 @@ axoned tx distribution withdraw-all-rewards --from wallet --chain-id axone-dendr
 
 Withdraw Rewards with Comission
 ```
-axoned tx distribution withdraw-rewards $(axoned keys show wallet --bech val -a) 1000000uaxone --from wallet --chain-id axone-dendrite-2 --gas-adjustment=1.5 --gas=auto --gas-prices="0.01uaxone"
+axoned tx distribution withdraw-rewards $(axoned keys show wallet --bech val -a) --commission --from wallet --chain-id axone-dendrite-2 --gas-adjustment=1.5 --gas=auto --gas-prices="0.01uaxone"
 ```
 
 Delegate Token to your own validator
