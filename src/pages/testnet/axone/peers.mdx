@@ -1,0 +1,17 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Live Peers
+network: Testnet
+icon: axone
+chain: axone-dendrite-2
+version: v12.0.0
+---
+Automatically adding Live peers to your config.toml file
+```
+peers="$(curl -sS https://rpc-test.axone.vinjan.xyz:443/net_info | jq -r '.result.peers[] | "\(.node_info.id)@\(.remote_ip):\(.node_info.listen_addr)"' | awk -F ':' '{print $1":"$(NF)}' | sed -z 's|\n|,|g;s|.$||')"
+sed -i -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.axoned/config/config.toml
+```
+Seed/Peer
+```
+2a768b6b5d3d83e08d278d0fbe2812ab48e0d89c@94.130.143.184:12556
+```
