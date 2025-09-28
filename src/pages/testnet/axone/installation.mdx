@@ -78,7 +78,7 @@ sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:2
 sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%" $HOME/.axoned/config/app.toml
 ```
 
-### Configure Seeds and Peers
+### Configure Gas Prices
 
 ```
 sed -i -e 's|^minimum-gas-prices *=.*|minimum-gas-prices = "0.01uaxone"|' $HOME/.axoned/config/app.toml
@@ -94,7 +94,9 @@ sed -i \
 -e 's|^pruning-interval *=.*|pruning-interval = "20"|' \
 $HOME/.axoned/config/app.toml
 ```
+
 ### Indexer Off
+
 ```
 sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.axoned/config/config.toml
 ```
@@ -126,6 +128,12 @@ sudo systemctl daemon-reload
 sudo systemctl enable axoned
 sudo systemctl restart axoned
 sudo journalctl -u axoned -f -o cat
+```
+
+- Check Sync 
+
+```
+axoned status 2>&1 | jq .sync_info
 ```
 
 ### Snapshot
