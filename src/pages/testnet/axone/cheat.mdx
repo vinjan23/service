@@ -1,0 +1,137 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: axone
+chain: axone-dendrite-2
+version: v12.0.0
+---
+
+### CLI Cheatsheet
+
+Check Wallet Balance
+```
+axoned q bank balances $(axoned keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+```
+axoned tendermint show-validator
+```
+```
+nano /root/.axoned/validator.json
+```
+```
+{
+  "pubkey": ,
+  "amount": "100000000uaxone",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.01",
+  "min-self-delegation": "1"
+}
+```
+```
+axoned tx staking create-validator $HOME/.axoned/validator.json \
+--from wallet \
+--chain-id axone-dendrite-2 \
+--gas-prices=0.01uaxone \
+--gas-adjustment=1.5 \
+--gas=auto
+```
+
+
+Edit Validator
+```
+axoned tx staking edit-validator \
+--new-moniker="" \
+--identity="" \
+--website="" \
+--details="" \
+--chain-id=axone-dendrite-2 \
+--commission-rate="0.02" \
+--from=wallet \
+--gas=auto \
+--gas-adjustment=1.5 \
+--gas-prices=0.01uaxone
+```
+
+Unjail Validator
+```
+axoned tx slashing unjail --from wallet --chain-id axone-dendrite-2 --gas-adjustment=1.5 --gas=auto --gas-prices="0.01uaxone"
+```
+
+Check Jailed Reason
+```
+axoned query slashing signing-info $(axoned tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+axoned tx distribution withdraw-all-rewards --from wallet --chain-id axone-dendrite-2 --gas-adjustment=1.5 --gas=auto --gas-prices="0.01uaxone"
+```
+
+Withdraw Rewards with Comission
+```
+axoned tx distribution withdraw-rewards $(axoned keys show wallet --bech val -a) 1000000uaxone --from wallet --chain-id axone-dendrite-2 --gas-adjustment=1.5 --gas=auto --gas-prices="0.01uaxone"
+```
+
+Delegate Token to your own validator
+```
+axoned tx staking delegate $(axoned keys show wallet --bech val -a) 1000000uaxone --from wallet --chain-id axone-dendrite-2 --gas-adjustment=1.5 --gas=auto --gas-prices="0.01uaxone"
+```
+
+Delegate Token to other validator
+```
+axoned tx staking redelegate $(axoned keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uaxone --from wallet --chain-id axone-dendrite-2 --gas-adjustment=1.5 --gas=auto --gas-prices="0.01uaxone"
+```
+
+Unbond Token from your validator
+```
+axoned tx staking unbond $(axoned keys show wallet --bech val -a) 1000000uaxone --from wallet --chain-id axone-dendrite-2 --gas-adjustment=1.5 --gas=auto --gas-prices="0.01uaxone"
+```
+
+Send Token to another wallet
+```
+axoned tx bank send wallet <TO_WALLET_ADDRESS> 1000000uaxone --from wallet --chain-id axone-dendrite-2 --gas-adjustment=1.5 --gas=auto --gas-prices="0.01uaxone"
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+axoned tx gov vote 1 yes --from wallet --chain-id axone-dendrite-2 --gas-adjustment=1.5 --gas=auto --gas-prices="0.01uaxone"
+```
+
+Reset Chain Data
+```
+axoned tendermint unsafe-reset-all --home $HOME/.axoned --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop axoned
+sudo systemctl disable axoned
+sudo rm /etc/systemd/system/axoned.service
+sudo systemctl daemon-reload
+rm -f $(which axoned)
+rm -rf .axoned
+rm -rf axone
+```
