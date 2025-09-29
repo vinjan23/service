@@ -20,7 +20,7 @@ cp ~/go/bin/paxi/data/priv_validator_state.json ~/go/bin/paxi/priv_validator_sta
 paxid tendermint unsafe-reset-all --home ~/go/bin/paxi --keep-addr-book
 ```
 ```
-curl -L https://snapshot-t.vinjan.xyz/paxi/latest.tar.lz4  | lz4 -dc - | tar -xf - -C ~/go/bin/paxi
+curl -L https://snap.vinjan.xyz/paxi/latest.tar.lz4  | lz4 -dc - | tar -xf - -C ~/go/bin/paxi
 ```
 ```
 mv ~/go/bin/paxi/priv_validator_state.json.backup ~/go/bin/paxi/data/priv_validator_state.json
