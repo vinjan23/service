@@ -1,0 +1,31 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Snapshot
+network: Testnet
+icon: safro
+chain: safro-testnet-1
+version: v0.1.0
+---
+Height : 3227550 ( 150 MB )
+```
+sudo apt install lz4 -y
+```
+```
+sudo systemctl stop safrochaind
+```
+```
+cp $HOME/.safrochain/data/priv_validator_state.json $HOME/.safrochain/priv_validator_state.json.backup
+```
+```
+safrochaind tendermint unsafe-reset-all --home $HOME/.safrochain --keep-addr-book
+```
+```
+curl -L https://snapshot-t.vinjan.xyz/safrochain/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.safrochain
+```
+```
+mv $HOME/.safrochain/priv_validator_state.json.backup $HOME/.safrochain/data/priv_validator_state.json
+```
+```
+sudo systemctl restart safrochaind
+sudo journalctl -u safrochaind -f -o cat
+```
