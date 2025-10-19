@@ -1,12 +1,11 @@
 ---
 layout: '~/layouts/MarkdownLayout.astro'
-title: Snapshot
+title: Statesync
 network: Mainnet
 icon: medas
 chain: medasdigital-2
 version: v1.0.0
 ---
-Update Everyday 00 UTC
 
 ```
 sudo systemctl stop medasdigitald
@@ -18,7 +17,14 @@ cp $HOME/.medasdigital/data/priv_validator_state.json $HOME/.medasdigital/priv_v
 medasdigitald tendermint unsafe-reset-all --home $HOME/.medasdigital --keep-addr-book
 ```
 ```
-curl -L https://snap.vinjan.xyz/medasdigital/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.medasdigital
+SNAP_RPC="https://rpc-medas.vinjan.xyz:443"
+LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
+BLOCK_HEIGHT=$((LATEST_HEIGHT - 1000)); \
+TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+sed -i "/\[statesync\]/, /^enable =/ s/=.*/= true/;\
+/^rpc_servers =/ s|=.*|= \"$SNAP_RPC,$SNAP_RPC\"|;\
+/^trust_height =/ s/=.*/= $BLOCK_HEIGHT/;\
+/^trust_hash =/ s/=.*/= \"$TRUST_HASH\"/" $HOME/.medasdigital/config/config.toml
 ```
 ```
 mv $HOME/.medasdigital/priv_validator_state.json.backup $HOME/.medasdigital/data/priv_validator_state.json
