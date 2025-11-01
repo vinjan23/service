@@ -83,9 +83,18 @@ sed -i -e "s%:1317%:${PORT}317%; s%:9090%:${PORT}090%" $HOME/.safrochain/config/
 ### Configure Seeds and Peers
 
 ```
-seeds="d5944634c5d9b3f00a84a4640df3764b82f5a36b@94.130.143.184:12656"
-sed -i -e "s/^seeds =.*/seeds = \"$seeds\"/" $HOME/.safrochain/config/config.toml
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.001usaf\"/" $HOME/.safrochain/config/app.toml
+```
+
+### Prunning
+
+```
+sed -i \
+-e 's|^pruning *=.*|pruning = "nothing"|' \
+-e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "0"|' \
+-e 's|^pruning-keep-every *=.*|pruning-keep-every = ""|' \
+-e 's|^pruning-interval *=.*|pruning-interval = "0"|' \
+$HOME/.safrochain/config/app.toml
 ```
 
 ### Indexer Off
