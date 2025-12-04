@@ -14,7 +14,7 @@ lumerad tendermint unsafe-reset-all --home $HOME/.lumera --keep-addr-book
 ```
 ```
 SYNC_RPC="https://rpc-lumera.vinjan.xyz:443"
-SYNC_PEER="669ff90285485ff8bfaf0811b7ebf547ec284533@65.21.234.111:17756"
+SYNC_PEER="92091bc58e7a450c334f2eb4238982004d05b1a7@65.21.234.111:17756"
 LATEST_HEIGHT=$(curl -s $SYNC_RPC/block | jq -r .result.block.header.height)
 BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000))
 TRUST_HASH=$(curl -s "$SYNC_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
