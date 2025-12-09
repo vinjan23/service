@@ -1,0 +1,32 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Snapshot
+network: Mainnet
+icon: lava
+chain: lava-mainnet-1
+version: v5.3.0
+---
+
+Update Everyday
+```
+sudo apt install lz4 -y
+```
+```
+sudo systemctl stop lava
+```
+```
+cp $HOME/.lava/data/priv_validator_state.json $HOME/.lava/priv_validator_state.json.backup
+```
+```
+lavad tendermint unsafe-reset-all --home $HOME/.lava --keep-addr-book
+```
+```
+curl -L https://snap.vinjan.xyz/lava/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.lava
+```
+```
+mv $HOME/.lava/priv_validator_state.json.backup $HOME/.lava/data/priv_validator_state.json
+```
+```
+sudo systemctl restart lavad
+sudo journalctl -u lavad -f -o cat
+```
