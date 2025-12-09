@@ -1,0 +1,33 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Statesync
+network: Mainnet
+icon: lava
+chain: lava-mainnet-1
+version: v5.3.0
+---
+
+```
+sudo systemctl stop lavad
+cp $HOME/.lava/data/priv_validator_state.json $HOME/.lava/priv_validator_state.json.backup
+lavad tendermint unsafe-reset-all --home $HOME/.lava --keep-addr-book
+```
+```
+SNAP_RPC="https://rpc-lava.vinjan.xyz:443"
+LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
+BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000)); \
+TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+sed -i \
+-e "s|^enable *=.*|enable = true|" \
+-e "s|^rpc_servers *=.*|rpc_servers = \"$SNAP_RPC,$SNAP_RPC\"|" \
+-e "s|^trust_height *=.*|trust_height = $BLOCK_HEIGHT|" \
+-e "s|^trust_hash *=.*|trust_hash = \"$TRUST_HASH\"|" \
+$HOME/.lava/config/config.toml
+```
+```
+mv $HOME/.lava/priv_validator_state.json.backup $HOME/.lava/data/priv_validator_state.json
+```
+```
+sudo systemctl restart lavad
+sudo journalctl -u lavad -f -o cat
+```
