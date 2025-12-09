@@ -1,0 +1,158 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Mainnet
+icon: lava
+chain: lava-mainnet-1
+version: v3.8.5
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Usefull Command
+```
+lavad  status 2>&1 | jq .SyncInfo
+```
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+lavad keys add wallet
+```
+
+Recover Wallet
+```
+lavad keys add wallet --recover
+```
+
+List Wallet
+```
+lavad keys list
+```
+
+Delete Wallet
+```
+lavad keys delete wallet
+```
+
+Check Wallet Balance
+```
+lavad q bank balances $(lavad keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+```
+lavad tx staking create-validator \
+--amount=1000000ulava \
+--pubkey=$(lavad tendermint show-validator) \
+--moniker="MONIKER" \
+--identity="keybase_id" \
+--website="" \
+--details="" \
+--chain-id=lava-mainnet-1 \
+--commission-rate="0.05" \
+--commission-max-rate="0.2" \
+--commission-max-change-rate="0.01" \
+--min-self-delegation=1 \
+--from=wallet \
+--gas-adjustment=1.5 \
+--gas-prices="0.000000005ulava" \
+--gas=auto
+```
+
+Unjail Validator
+```
+lavad tx slashing unjail --from wallet --chain-id lava-mainnet-1 --gas-prices=0.000000005ulava --gas-adjustment=1.5 --gas=auto
+```
+
+Check Jailed Reason
+```
+lavad query slashing signing-info $(lavad tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+lavad tx distribution withdraw-all-rewards --from wallet --chain-id lava-mainnet-1 --gas-prices=0.000000005ulava --gas-adjustment=1.5 --gas=auto
+```
+
+Withdraw Rewards with Comission
+```
+lavad tx distribution withdraw-rewards $(lavad keys show wallet --bech val -a) --commission --from wallet --chain-id lava-mainnet-1 --gas-prices=0.000000005ulava --gas-adjustment=1.5 --gas=auto
+```
+
+Delegate Token to your own validator
+```
+lavad tx staking delegate $(lavad keys show wallet --bech val -a) 1000000ulava --from wallet --chain-id lava-mainnet-1 --gas-prices=0.000000005ulava --gas-adjustment=1.5 --gas=auto
+```
+
+Delegate Token to other validator
+```
+lavad staking redelegate $(lavad keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000ulava --from wallet --chain-id lava-mainnet-1 --gas-prices=0.000000005ulava --gas-adjustment=1.5 --gas=auto
+```
+
+Unbond Token from your validator
+```
+lavad tx staking unbond $(lavad keys show wallet --bech val -a) 1000000ulava --from wallet --chain-id lava-mainnet-1 --gas-prices=0.000000005ulava --gas-adjustment=1.5 --gas=auto
+```
+
+Send Token to another wallet
+```
+lavad tx bank send wallet <TO_WALLET_ADDRESS> 1000000ulava --from wallet --chain-id lava-mainnet-1 --gas-prices=0.000000005ulava --gas-adjustment=1.5 --gas=auto
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=299` To any other ports
+
+```
+PORT=299
+sed -i -e "s%:26657%:${PORT}57%" $HOME/.lava/config/client.toml
+sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:26656%:${PORT}56%; s%:26660%:${PORT}61%" $HOME/.lava/config/config.toml
+sed -i -e "s%:1317%:${PORT}17%; s%:8080%:${PORT}80%; s%:9090%:${PORT}90%; s%:9091%:${PORT}91%" $HOME/.lava/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.lava/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.lava/config/config.toml
+```
+### Vote
+```
+lavad tx gov vote 1 yes --from wallet --chain-id lava-mainnet-1 --gas-prices=0.000000005ulava --gas-adjustment=1.5 --gas=auto
+```
+  
+Reset Chain Data
+```
+lavad tendermint unsafe-reset-all --home $HOME/.lava --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop lavad
+sudo systemctl disable lavad
+sudo rm /etc/systemd/system/lavad.service
+sudo systemctl daemon-reload
+rm -f $(which lavad)
+rm -rf .lava
+rm -rf lava  
+```
