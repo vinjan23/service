@@ -19,7 +19,7 @@ rm -rf $HOME/.cysicmintd/data
 cysicmintd tendermint unsafe-reset-all --home ~/.cysicmintd/ --keep-addr-book
 ```
 ```
-curl -L https://snap.vinjan.xyz./cysic/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.cysicmintd
+curl -L https://snapshot-t.vinjan.xyz/cysic/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.cysicmintd
 ```
 ```
 mv $HOME/.cysicmintd/priv_validator_state.json.backup $HOME/.cysicmintd/data/priv_validator_state.json
