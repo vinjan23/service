@@ -128,13 +128,6 @@ EOF
 ```
 sudo systemctl daemon-reload
 sudo systemctl enable paxid
-sudo systemctl restart paxid
-sudo journalctl -u paxid -f -o cat
-```
-### Sync Wasm 
-```
-curl -sL https://raw.githubusercontent.com/vinjan23/Mainnet/refs/heads/main/Paxi/wasm |bash
-sudo systemctl restart paxid
 ```
 
 ### Preffered Use statesync
@@ -143,6 +136,22 @@ sudo systemctl restart paxid
 <a href="https://service.vinjan.xyz/mainnet/paxi/statesync" target="_blank">
   <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Statesync</button>
 </a>
+
+### Snapshot
+
+<a href="https://service.vinjan.xyz/mainnet/paxi/snapshot" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
+</a>
+
+```
+sudo systemctl restart paxid
+sudo journalctl -u paxid -f -o cat
+```
+### Sync Wasm 
+```
+curl -sL https://raw.githubusercontent.com/vinjan23/Mainnet/refs/heads/main/Paxi/wasm |bash
+sudo systemctl restart paxid
+```
 
 ### Create Validator
 
