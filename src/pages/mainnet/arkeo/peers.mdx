@@ -4,10 +4,10 @@ title: Live Peers
 network: Mainnet
 icon: arkeo
 chain: arkeo-main-v1
-version: v1.0.14
+version: v1.0.16
 ---
 Automatically adding Live peers to your config.toml file
 ```
-peers="$(curl -sS https://rpc-arkeod.vinjan.xyz:443/net_info | jq -r '.result.peers[] | "\(.node_info.id)@\(.remote_ip):\(.node_info.listen_addr)"' | awk -F ':' '{print $1":"$(NF)}' | sed -z 's|\n|,|g;s|.$||')"
+peers="$(curl -sS https://rpc-arkeo.vinjan-inc.com:443/net_info | jq -r '.result.peers[] | "\(.node_info.id)@\(.remote_ip):\(.node_info.listen_addr)"' | awk -F ':' '{print $1":"$(NF)}' | sed -z 's|\n|,|g;s|.$||')"
 sed -i.bak -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.arkeo/config/config.toml
 ```
