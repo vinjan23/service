@@ -58,11 +58,11 @@ kiichaind init <MONIKER> --chain-id oro_1336-1
 
 ### Download Genesis file
 ```
-curl -L https://snapshot-t.vinjan.xyz/kiichain/genesis.json > $HOME/.kiichain/config/genesis.json
+curl -L https://snapshot-t.vinjan-inc.com/kiichain/genesis.json > $HOME/.kiichain/config/genesis.json
 ```
 ### Download Addrbook
 ```
-curl -L https://snapshot-t.vinjan.xyz/kiichain/addrbook.json > $HOME/.kiichain/config/addrbook.json
+curl -L https://snapshot-t.vinjan-inc.com/kiichain/addrbook.json > $HOME/.kiichain/config/addrbook.json
 ```
 
 ### Configure Gas
@@ -111,12 +111,6 @@ sudo systemctl restart kiichaind
 sudo journalctl -u kiichaind -f -o cat
 ```
 
-### Use Snapshot to faster sync
-
-<a href="https://service.vinjan.xyz/testnet/kiichain/snapshot" target="_blank">
-  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
-</a>
-
 ### Check Sync ( If False than go to create validator )
 
 ```
@@ -126,6 +120,6 @@ kiichaind status 2>&1 | jq .sync_info
 
 Heads up to the Cheat Sheets to create validator
 
-<a href="https://service.vinjan.xyz/testnet/kiichain/cheat" target="_blank">
+<a href="https://vinjan-inc.com/testnet/kiichain/cheat" target="_blank">
   <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">CLI Cheatsheets</button>
 </a>
