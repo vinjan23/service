@@ -21,7 +21,7 @@ cp $HOME/.dungeonchain/data/priv_validator_state.json $HOME/.dungeonchain/priv_v
 dungeond tendermint unsafe-reset-all --home $HOME/.dungeonchain --keep-addr-book
 ```
 ```
-curl -L https://snap.vinjan.xyz/dungeon/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.dungeonchain
+curl -L https://snapshot.vinjan-inc.com/dungeon/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.dungeonchain
 ```
 ```
 mv $HOME/.dungeonchain/priv_validator_state.json.backup $HOME/.dungeonchain/data/priv_validator_state.json
