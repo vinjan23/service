@@ -4,7 +4,7 @@ title: Installation Node
 network: Mainnet
 icon: symphony
 chain: symphony-1
-version: v1.0.8
+version: v1.0.9
 ---
 
 ### Hardware requirements
@@ -44,7 +44,7 @@ cd $HOME
 rm -rf symphony
 git clone https://github.com/Orchestra-Labs/symphony.git
 cd symphony
-git checkout v1.0.8
+git checkout v1.0.9
 make install
 ```
 
@@ -68,11 +68,11 @@ sed -i -e "s%:1317%:21317%; s%:9090%:21090%" $HOME/.symphonyd/config/app.toml
 - Genesis
 
 ```
-curl -L https://snap.vinjan.xyz/symphony/genesis.json > $HOME/.symphonyd/config/genesis.json
+curl -L https://snapshot.vinjan-inc.com/symphony/genesis.json > $HOME/.symphonyd/config/genesis.json
 ```
 - Addrbook
 ```
-curl -L https://snap.vinjan.xyz/symphony/addrbook.json > $HOME/.symphonyd/config/addrbook.json
+curl -L https://snapshot.vinjan-inc.com/symphony/addrbook.json > $HOME/.symphonyd/config/addrbook.json
 ```
 
 ### Configure Seeds and Peers
