@@ -10,7 +10,7 @@ version: v1.0.1
 ```
 sudo systemctl stop hippod
 hippod tendermint unsafe-reset-all --home $HOME/.hippo --keep-addr-book
-SNAP_RPC="https://rpc-hippo.vinjan.xyz:443"
+SNAP_RPC="https://rpc-hippo.vinjan-inc.com"
 LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
 BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000)); \
 TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
