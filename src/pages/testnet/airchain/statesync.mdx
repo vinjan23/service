@@ -10,7 +10,7 @@ version: v0.3.1
 ```
 sudo systemctl stop junctiond
 junctiond tendermint unsafe-reset-all --home $HOME/.junctiond --keep-addr-book
-SNAP_RPC="https://rpc-airchain.vinjan.xyz:443"
+SNAP_RPC="https://rpc-airchain.vinjan-inc.com:443"
 LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
 BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000)); \
 TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
