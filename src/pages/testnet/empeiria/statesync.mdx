@@ -11,7 +11,7 @@ version: v0.4.0
 sudo systemctl stop emped
 cp $HOME/.empe-chain/data/priv_validator_state.json $HOME/.empe-chain/priv_validator_state.json.backup
 emped tendermint unsafe-reset-all --home $HOME/.empe-chain --keep-addr-book
-SNAP_RPC="https://rpc-empe.vinjan.xyz:443"
+SNAP_RPC="https://rpc-empe.vinjan-inc.com:443"
 LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
 BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000)); \
 TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
