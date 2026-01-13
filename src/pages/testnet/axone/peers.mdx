@@ -8,7 +8,7 @@ version: v12.0.0
 ---
 Automatically adding Live peers to your config.toml file
 ```
-peers="$(curl -sS https://rpc-test.axone.vinjan.xyz:443/net_info | jq -r '.result.peers[] | "\(.node_info.id)@\(.remote_ip):\(.node_info.listen_addr)"' | awk -F ':' '{print $1":"$(NF)}' | sed -z 's|\n|,|g;s|.$||')"
+peers="$(curl -sS https://rpc-test.axone.vinjan-inc.com:443/net_info | jq -r '.result.peers[] | "\(.node_info.id)@\(.remote_ip):\(.node_info.listen_addr)"' | awk -F ':' '{print $1":"$(NF)}' | sed -z 's|\n|,|g;s|.$||')"
 sed -i -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.axoned/config/config.toml
 ```
 Seed/Peer
