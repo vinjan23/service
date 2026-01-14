@@ -1,0 +1,187 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Mainnet
+icon: epix
+chain: epix_1916-1
+version: v0.5.2
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+epixd keys add wallet
+```
+
+Recover Wallet
+```
+epixd keys add wallet --recover
+```
+
+List Wallet
+```
+epixd keys list
+```
+
+Delete Wallet
+```
+epixd keys delete wallet
+```
+
+Check Wallet Balance
+```
+epixd q bank balances $(epixd keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+```
+epixd comet show-validator
+```
+```
+nano /root/.epixd/validator.json
+```
+```
+{
+  "pubkey": ,
+  "amount": "1000000000000000000aepix",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.01",
+  "min-self-delegation": "1"
+}
+```
+```
+epixd tx staking create-validator $HOME/.epixd/validator.json \
+--from wallet \
+--chain-id epix_1916-1 \
+--gas-prices="0.001aepix" \
+--gas-adjustment=1.2 \
+--gas=auto
+```
+
+
+Edit Validator
+```
+epixd tx staking edit-validator \
+--new-moniker="" \
+--identity="" \
+--website="" \
+--details="" \
+--chain-id=axone-1 \
+--commission-rate="0.02" \
+--from=wallet \
+--gas-prices="0.001aepix" \
+--gas-adjustment=1.2 \
+--gas=auto
+```
+
+Unjail Validator
+```
+epixd tx slashing unjail --from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
+```
+
+Check Jailed Reason
+```
+epixd query slashing signing-info $(epixd tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+epixd tx distribution withdraw-all-rewards --from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
+```
+
+Withdraw Rewards with Comission
+```
+epixd tx distribution withdraw-rewards $(epixd keys show wallet --bech val -a) 1 --commission--from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
+```
+
+Delegate Token to your own validator
+```
+epixd tx staking delegate $(epixd keys show wallet --bech val -a) 1000000aepix --from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
+```
+
+Delegate Token to other validator
+```
+epixd tx staking redelegate $(epixd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000aepix --from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
+```
+
+Unbond Token from your validator
+```
+epixd tx staking unbond $(epixd keys show wallet --bech val -a) 1000000aepix --from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
+```
+
+Send Token to another wallet
+```
+epixd tx bank send wallet <TO_WALLET_ADDRESS> 1000000aepix --from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+epixd tx gov vote 1 yes --from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=44` To any other ports
+
+- PORT=399
+```  
+PORT=399
+sed -i -e "s%:26657%:${PORT}57%" $HOME/.epixd/config/client.toml
+sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:26656%:${PORT}56%; s%:26660%:${PORT}61%" $HOME/.epixd/config/config.toml
+sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%" $HOME/.epixd/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.epixd/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.epixd/config/config.toml
+```
+
+Reset Chain Data
+```
+epixd comet unsafe-reset-all --home $HOME/.epixd --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop epixd
+sudo systemctl disable epixd
+sudo rm /etc/systemd/system/epixd.service
+sudo systemctl daemon-reload
+rm -f $(which epixd)
+rm -rf .epixd
+rm -rf epix
+```
