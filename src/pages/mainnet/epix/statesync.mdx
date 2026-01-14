@@ -1,0 +1,37 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Statesync
+network: Mainnet
+icon: epix
+chain: epix_1916-1
+version: v0.5.2
+---
+
+```
+sudo systemctl stop epixd
+```
+```
+cp $HOME/.epixd/data/priv_validator_state.json $HOME/.epixd/priv_validator_state.json.backup
+```
+```
+epixd comet unsafe-reset-all --home $HOME/.epixd --keep-addr-book
+```
+```
+SNAP_RPC="https://rpc-epix.vinjan-inc.com:443"
+LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
+BLOCK_HEIGHT=$((LATEST_HEIGHT - 2000))
+TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+sed -i \
+-e "s|^enable *=.*|enable = true|" \
+-e "s|^rpc_servers *=.*|rpc_servers = \"$SNAP_RPC,$SNAP_RPC\"|" \
+-e "s|^trust_height *=.*|trust_height = $BLOCK_HEIGHT|" \
+-e "s|^trust_hash *=.*|trust_hash = \"$TRUST_HASH\"|" \
+$HOME/.epixd/config/config.toml
+```
+```
+mv $HOME/.epixd/priv_validator_state.json.backup $HOME/.epixd/data/priv_validator_state.json
+```
+```
+sudo systemctl restart epixd
+sudo journalctl -u epixd -f -o cat
+```
