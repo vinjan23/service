@@ -1,0 +1,184 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: safro
+chain: safro-testnet-1
+version: v0.1.0
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+safrochaind keys add wallet
+```
+
+Recover Wallet
+```
+safrochaind keys add wallet --recover
+```
+
+List Wallet
+```
+safrochaind keys list
+```
+
+Delete Wallet
+```
+safrochaind keys delete wallet
+```
+
+Check Wallet Balance
+```
+safrochaind q bank balances $(safrochaind keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+
+```
+safrochaind tendermint show-validator
+```
+```
+nano /root/.safrochain/validator.json
+```
+```
+{
+  "pubkey": {"@type":"/cosmos.crypto.ed25519.PubKey.......},
+  "amount": "5000000usaf",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.01",
+  "min-self-delegation": "1"
+}
+```
+```
+safrochaind tx staking create-validator $HOME/.safrochain/validator.json \
+--from wallet \
+--chain-id safro-testnet-1 \
+--fees 5000usaf
+```
+
+Edit Validator
+```
+safrochaind tx staking edit-validator \
+--new-moniker="" \
+--identity="" \
+--details="" \
+--website="" \
+--chain-id safro-testnet-1 \
+--from wallet \
+--commission-rate 0.15 \
+--fees 5000usaf
+```
+
+
+Unjail Validator
+```
+safrochaind tx slashing unjail --from wallet --chain-id safro-testnet-1 --fees 5000usaf
+```
+
+Check Jailed Reason
+```
+safrochaind query slashing signing-info $(safrochaind tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+safrochaind tx distribution withdraw-all-rewards --from wallet --chain-id safro-testnet-1 --fees 5000usaf
+```
+
+Withdraw Rewards with Comission
+```
+safrochaind tx distribution withdraw-rewards $(safrochaind keys show wallet --bech val -a) --commission --from wallet --chain-id safro-testnet-1 --fees 5000usaf
+```
+
+Delegate Token to your own validator
+```
+safrochaind tx staking delegate $(safrochaind keys show wallet --bech val -a) 50000000000usaf --from wallet --chain-id safro-testnet-1 --fees 5000usaf
+```
+
+Delegate Token to other validator
+```
+safrochaind tx staking delegate $(safrochaind keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 50000000000usaf --from wallet --chain-id safro-testnet-1 --fees 5000usaf
+```
+
+Unbond Token from your validator
+```
+safrochaind tx staking unbond $(safrochaind keys show wallet --bech val -a) 1000000usaf --from wallet --chain-id safro-testnet-1 --fees 5000usaf
+```
+
+Send Token to another wallet
+```
+safrochaind tx bank send wallet <TO_WALLET_ADDRESS> 1000000usaf --from wallet --chain-id safro-testnet-1 --fees 5000usaf
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+safrochaind tx gov vote 1 yes --from wallet --chain-id safro-testnet-1 --fees 5000usaf
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT` To any other ports
+
+PORT=12
+```
+PORT=12
+sed -i -e "s%:26657%:${PORT}657%" $HOME/.safrochain/config/client.toml
+sed -i -e "s%:26658%:${PORT}658%; s%:26657%:${PORT}657%; s%:6060%:${PORT}060%; s%:26656%:${PORT}656%; s%:26660%:${PORT}660%" $HOME/.safrochain/config/config.toml
+sed -i -e "s%:1317%:${PORT}317%; s%:9090%:${PORT}090%" $HOME/.safrochain/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.safrochain/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.safrochain/config/config.toml
+```
+
+Reset Chain Data
+```
+safrochaind tendermint unsafe-reset-all --home $HOME/.safrochain --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop safrochaind 
+sudo systemctl disable safrochaind
+sudo rm /etc/systemd/system/safrochaind.service
+sudo systemctl daemon-reload
+rm -rf $(which safrochaind)
+rm -rf .safrochain
+rm -rf safrochain-node
+```
