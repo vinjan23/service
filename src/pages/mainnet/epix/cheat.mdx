@@ -111,22 +111,22 @@ epixd tx distribution withdraw-all-rewards --from wallet --chain-id epix_1916-1 
 
 Withdraw Rewards with Comission
 ```
-epixd tx distribution withdraw-rewards $(epixd keys show wallet --bech val -a) 1 --commission--from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
+epixd tx distribution withdraw-rewards $(epixd keys show wallet --bech val -a) --commission --from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
 ```
 
 Delegate Token to your own validator
 ```
-epixd tx staking delegate $(epixd keys show wallet --bech val -a) 1000000aepix --from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
+epixd tx staking delegate $(epixd keys show wallet --bech val -a) 1000000000000000000aepix --from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
 ```
 
 Delegate Token to other validator
 ```
-epixd tx staking redelegate $(epixd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000aepix --from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
+epixd tx staking redelegate $(epixd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000000000000000aepix --from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
 ```
 
 Unbond Token from your validator
 ```
-epixd tx staking unbond $(epixd keys show wallet --bech val -a) 1000000aepix --from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
+epixd tx staking unbond $(epixd keys show wallet --bech val -a) 1000000000000000000aepix --from wallet --chain-id epix_1916-1 --gas-adjustment=1.2 --gas-prices="0.001aepix" --gas=auto
 ```
 
 Send Token to another wallet
