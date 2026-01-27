@@ -1,0 +1,172 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: republic
+chain: raitestnet_77701-1
+version: v0.1.0
+---
+
+### CLI Cheatsheet
+ 
+-Sync
+```
+republicd status 2>&1 | jq .sync_info
+```
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Usefull Command
+```
+republicd status 2>&1 | jq .sync_info
+```
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+republicd keys add wallet
+```
+
+Recover Wallet
+```
+republicd keys add wallet --recover
+```
+
+List Wallet
+```
+republicd keys list
+```
+
+Delete Wallet
+```
+republicd keys delete wallet
+```
+
+Check Wallet Balance
+```
+republicd q bank balances $(republicd keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+- Check Your Pubkey
+```
+republicd comet show-validator
+```
+- Make File validator.json
+```
+nano $HOME/.republic/validator.json
+```
+```
+{
+  "pubkey":  ,
+  "amount": "1000000000000000000arai",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": ",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.05",
+  "min-self-delegation": "1"
+}
+```
+```
+republicd tx staking create-validator $HOME/.republic/validator.json \
+--from wallet \
+--chain-id raitestnet_77701-1 \
+--gas-prices=2500000000arai \
+--gas-adjustment=1.5 \
+--gas=auto
+```
+
+Unjail Validator
+```
+republicd tx slashing unjail --from wallet --chain-id raitestnet_77701-1 --gas-prices=2500000000arai --gas-adjustment=1.5 --gas=auto
+```
+
+Check Jailed Reason
+```
+republicd query slashing signing-info $(republicd comet show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+republicd tx distribution withdraw-all-rewards --from wallet --chain-id raitestnet_77701-1 --gas-prices=2500000000arai --gas-adjustment=1.5 --gas=auto
+```
+
+Withdraw Rewards with Comission
+```
+republicd tx distribution withdraw-rewards $(republicd keys show wallet --bech val -a) --commission --from wallet --chain-id raitestnet_77701-1 --gas-prices=2500000000arai --gas-adjustment=1.5 --gas=auto
+```
+
+Delegate Token to your own validator
+```
+republicd tx staking delegate $(republicd keys show wallet --bech val -a) 1000000000000000000arai --from wallet --chain-id raitestnet_77701-1 --gas-prices=2500000000arai --gas-adjustment=1.5 --gas=auto
+```
+
+Delegate Token to other validator
+```
+republicd staking redelegate $(republicd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000000000000000arai --from wallet --chain-id raitestnet_77701-1 --gas-prices=2500000000arai --gas-adjustment=1.5 --gas=auto
+```
+
+Unbond Token from your validator
+```
+republicd tx staking unbond $(republicd keys show wallet --bech val -a) 1000000000000000000arai --from wallet --chain-id raitestnet_77701-1 --gas-prices=2500000000arai --gas-adjustment=1.5 --gas=auto
+```
+
+Send Token to another wallet
+```
+republicd tx bank send wallet <TO_WALLET_ADDRESS> 1000000000000000000arai --from wallet --chain-id raitestnet_77701-1 --gas-prices=2500000000arai --gas-adjustment=1.5 --gas=auto
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=17` To any other ports
+
+```
+PORT=133
+sed -i -e "s%:26657%:${PORT}657%" $HOME/.republic/config/client.toml
+sed -i -e "s%:26658%:${PORT}658%; s%:26657%:${PORT}657%; s%:6060%:${PORT}060%; s%:26656%:${PORT}656%; s%:26660%:${PORT}660%" $HOME/.republic/config/config.toml
+sed -i -e "s%:1317%:${PORT}317%; s%:9090%:${PORT}090%" $HOME/.republic/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.republic/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.republic/config/config.toml
+```
+
+Reset Chain Data
+```
+republicd comet unsafe-reset-all --home $HOME/.republic --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop republicd
+sudo systemctl disable republicd
+sudo rm /etc/systemd/system/republicd.service
+sudo systemctl daemon-reload
+rm -f $(which republicd)
+rm -rf .republic
+```
