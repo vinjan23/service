@@ -1,0 +1,161 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Installation Node
+network: Mainnet
+icon: kiichain
+chain: kiichain_1783-1
+version: v6.1.0
+---
+
+### Hardware requirements
+
+The following requirements are recommended:
+
+- 8 or more physical CPU cores
+- At least 400GB of SSD disk storage
+- At least 8GB of memory (RAM)
+- At least 100mbps network bandwidth
+
+
+### Install dependencies Required
+
+```
+sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool -y
+```
+
+### Install go
+
+We are gonna use GO Version 1.24.5
+If you already have GO installed you can skip this 
+
+```
+ver="1.24.5"
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+rm "go$ver.linux-amd64.tar.gz"
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+source ~/.bash_profile
+go version
+```
+
+
+### Install binary
+```
+cd $HOME
+rm -rf kiichain
+git clone https://github.com/KiiChain/kiichain.git
+cd kiichain
+git checkout v6.1.0
+make install
+```
+
+Verify that you've installed successfully
+
+```
+kiichaind version --long | grep -e commit -e version
+```
+
+### Initialize Node
+
+Please change `<MONIKER>` To your own Moniker.
+
+```
+kiichaind init <MONIKER> --chain-id kiichain_1783-1
+```
+
+### Download Genesis file and addrbook
+
+- Genesis
+
+```
+curl -L https://snapshot.vinjan-inc.com/kiichain/genesis.json > $HOME/.kiichain/config/genesis.json
+```
+
+- Addrbook
+```
+curl -L https://snapshot.vinjan-inc.com/kiichain/addrbook.json > $HOME/.kiichain/config/addrbook.json
+```
+
+### Custom Port
+```
+PORT=199
+sed -i -e "s%:26657%:${PORT}57%" $HOME/.kiichain/config/client.toml
+sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:26656%:${PORT}56%; s%:26660%:${PORT}61%" $HOME/.kiichain/config/config.toml
+sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%" $HOME/.kiichain/config/app.toml
+```
+
+### Configure Gas & EVM id
+```
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"333333333akii\"/" $HOME/.kiichain/config/app.toml
+sed -i -e "/evm-chain-id =/ s/= .*/= 1783/" $HOME/.kiichain/config/app.toml
+```
+
+### Prunning
+```
+sed -i \
+-e 's|^pruning *=.*|pruning = "custom"|' \
+-e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "100"|' \
+-e 's|^pruning-keep-every *=.*|pruning-keep-every = ""|' \
+-e 's|^pruning-interval *=.*|pruning-interval = "20"|' \
+$HOME/.kiichain/config/app.toml
+```
+
+### Indexer Off
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.kiichain/config/config.toml
+```
+
+### create service file and start node
+
+Create service file
+Create a `wardend.service` file in the `/etc/systemd/system` folder with the following code. 
+You can change `USER` with your Linux user name. You need sudo previlege to do this step.
+
+```
+sudo tee /etc/systemd/system/kiichaind.service > /dev/null <<EOF
+[Unit]
+Description=kiichain
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which kiichaind) start
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+- Enable Service and Start Node
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable kiichaind
+```
+
+### Snapshot
+<a href="https://vinjan-inc.com/mainnet/kiichain/snapshot" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
+</a>
+
+### Statesync
+<a href="https://vinjan-inc.com/mainnet/kiichain/statesync" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Statesync</button>
+</a>
+
+```
+sudo systemctl restart kiichaind
+sudo journalctl -u kiichaind -f -o cat
+```
+
+### Create Validator
+
+Heads up to the Cheat Sheets to create validator
+
+<a href="https://vinjan-inc.com/mainnet/kiichain/cheat" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">CLI Cheatsheets</button>
+</a>
