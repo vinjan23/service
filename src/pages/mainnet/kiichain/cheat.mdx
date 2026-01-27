@@ -1,0 +1,167 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Mainnet
+icon: kiichain
+chain: kiichain_1783-1
+version: v6.1.0
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Usefull Command
+```
+kiichaind status 2>&1 | jq .sync_info
+```
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+kiichaind keys add wallet
+```
+
+Recover Wallet
+```
+kiichaind keys add wallet --recover
+```
+
+List Wallet
+```
+kiichaind keys list
+```
+
+Delete Wallet
+```
+kiichaind keys delete wallet
+```
+
+Check Wallet Balance
+```
+kiichaind q bank balances $(kiichaind keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+```
+kiichaind comet show-validator
+```
+```
+nano $HOME/.kiichain/validator.json
+```
+```
+{
+  "pubkey": ,
+  "amount": "1000000000000000000akii",
+  "moniker": "MONIKER",
+  "identity": "7",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.05",
+  "min-self-delegation": "1"
+}
+```
+```
+kiichaind tx staking create-validator $HOME/.kiichain/validator.json \
+--from wallet \
+--chain-id kiichain_1783-1 \
+--gas-prices="333333333akii" \
+--gas-adjustment=1.2 \
+--gas=auto
+```
+Unjail Validator
+```
+kiichaind tx slashing unjail --from wallet --chain-id kiichain_1783-1 --gas-prices="333333333akii" --gas-adjustment=1.2 --gas=auto
+```
+
+Check Jailed Reason
+```
+kiichaind query slashing signing-info $(kiichaind tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+kiichaind tx distribution withdraw-all-rewards --from wallet --chain-id kiichain_1783-1 --gas-prices="333333333akii" --gas-adjustment=1.2 --gas=auto
+```
+
+Withdraw Rewards with Comission
+```
+kiichaind tx distribution withdraw-rewards $(kiichaind keys show wallet --bech val -a) --commission --from wallet --chain-id kiichain_1783-1 --gas-prices="333333333akii" --gas-adjustment=1.2 --gas=auto
+```
+
+Delegate Token to your own validator
+```
+kiichaind tx staking delegate $(kiichaind keys show wallet --bech val -a) 1000000000000000000akii --from wallet --chain-id kiichain_1783-1 --gas-prices="333333333akii" --gas-adjustment=1.2 --gas=auto
+```
+
+Delegate Token to other validator
+```
+kiichaind staking redelegate $(kiichaind keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000000000000000akii --from wallet --chain-id lkiichain_1783-1 --gas-prices="333333333akii" --gas-adjustment=1.2 --gas=auto
+```
+
+Unbond Token from your validator
+```
+kiichaind tx staking unbond $(kiichaind keys show wallet --bech val -a) 1000000000000000000akii --from wallet --chain-id kiichain_1783-1 --gas-prices="333333333akii" --gas-adjustment=1.2 --gas=auto
+```
+
+Send Token to another wallet
+```
+kiichaind tx bank send wallet <TO_WALLET_ADDRESS> 1000000000000000000akii --from wallet --chain-id kiichain_1783-1 --gas-prices="333333333akii" --gas-adjustment=1.2 --gas=auto
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=299` To any other ports
+
+```
+PORT=199
+sed -i -e "s%:26657%:${PORT}57%" $HOME/.kiichain/config/client.toml
+sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:26656%:${PORT}56%; s%:26660%:${PORT}61%" $HOME/.kiichain/config/config.toml
+sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%" $HOME/.kiichain/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.kiichain/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.kiichain/config/config.toml
+```
+### Vote
+```
+kiichaind tx gov vote 1 yes --from wallet --chain-id kiichain_1783-1 --gas-prices="333333333akii" --gas-adjustment=1.2 --gas=auto
+```
+  
+Reset Chain Data
+```
+kiichaind tendermint unsafe-reset-all --home $HOME/.kiichain --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop kiichaind
+sudo systemctl disable kiichaind
+sudo rm /etc/systemd/system/kiichaind.service
+sudo systemctl daemon-reload
+rm -f $(which kiichaind)
+rm -rf .kiichain
+rm -rf kiichain
+```
