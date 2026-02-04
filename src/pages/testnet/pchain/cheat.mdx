@@ -1,0 +1,94 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: pchain
+chain: push_42101-1
+version: v0.0.15
+---
+
+### CLI Cheatsheet
+ 
+-Sync
+```
+pchaind status 2>&1 | jq .sync_info
+```
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+pchaind keys add wallet
+```
+
+Export to EVM
+```
+pchaind keys unsafe-export-eth-key wallet
+```
+
+Check Wallet Balance
+```
+pchaind q bank balances $(pchaind keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+- Check Your Pubkey
+```
+pchaind comet show-validator
+```
+- Make File validator.json
+```
+nano $HOME/.pchain/validator.json
+```
+```
+{
+  "pubkey":  ,
+  "amount": "1000000000000000000upc",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": ",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.05",
+  "min-self-delegation": "1"
+}
+```
+```
+pchaind tx staking create-validator $HOME/.pchain/validator.json \
+--from wallet \
+--chain-id push_42101-1 \
+--gas-prices=2500000000upc \
+--gas-adjustment=1.5 \
+--gas=auto
+```
+
+Unjail Validator
+```
+pchaind tx slashing unjail --from wallet --chain-id push_42101-1 --gas-prices=2500000000upc --gas-adjustment=1.5 --gas=auto
+```
+
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop pchaind
+sudo systemctl disable pchaind
+sudo rm /etc/systemd/system/pchaind.service
+sudo systemctl daemon-reload
+rm -rf $HOME/go/bin/pchaind
+rm -rf .pchain
+```
