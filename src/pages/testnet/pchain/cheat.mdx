@@ -78,6 +78,15 @@ Unjail Validator
 pchaind tx slashing unjail --from wallet --chain-id push_42101-1 --gas-prices=2500000000upc --gas-adjustment=1.5 --gas=auto
 ```
 
+Withdraw with Comission
+```
+pchaind tx distribution withdraw-rewards $(pchaind keys show wallet --bech val -a) --commission --from wallet --chain-id push_42101-1 --gas-prices=2500000000upc --gas-adjustment=1.5 --gas=auto
+```
+
+Stake
+```
+pchaind tx staking delegate $(pchaind keys show wallet --bech val -a) 1000000000000000000upc --from wallet --chain-id push_42101-1 --gas-prices=2500000000upc --gas-adjustment=1.5 --gas=auto
+```
 
 ### Delete Node
 
