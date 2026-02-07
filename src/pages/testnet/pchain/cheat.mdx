@@ -72,6 +72,20 @@ pchaind tx staking create-validator $HOME/.pchain/validator.json \
 --gas-adjustment=1.5 \
 --gas=auto
 ```
+Edit Validator
+```
+pchaind tx staking edit-validator \
+--new-moniker="" \
+--identity="" \
+--website="" \
+--details="" \
+--from wallet \
+--commission-rate="" \
+--chain-id push_42101-1 \
+--gas-prices=2500000000upc \
+--gas-adjustment=1.5 \
+--gas=auto
+```
 
 Unjail Validator
 ```
