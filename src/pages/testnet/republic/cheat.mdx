@@ -117,7 +117,7 @@ republicd tx staking delegate $(republicd keys show wallet --bech val -a) 100000
 
 Delegate Token to other validator
 ```
-republicd staking redelegate $(republicd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000000000000000arai --from wallet --chain-id raitestnet_77701-1 --gas-prices=2500000000arai --gas-adjustment=1.5 --gas=auto
+republicd tx staking redelegate $(republicd keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000000000000000arai --from wallet --chain-id raitestnet_77701-1 --gas-prices=2500000000arai --gas-adjustment=1.5 --gas=auto
 ```
 
 Unbond Token from your validator
