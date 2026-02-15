@@ -85,7 +85,7 @@ sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%; s%:8545%:${PORT}45%; s%:854
 ```
 ### Configure Peer & Gas
 ```
-peers="6313f892ee50ca0b2d6cc6411ac5207dbf2d164b@95.216.102.220:13356"
+peers="6313f892ee50ca0b2d6cc6411ac5207dbf2d164b@peers-t.republic.vinjan-inc.com:13356"
 sed -i -e "s|^persistent_peers *=.*|persistent_peers = \"$peers\"|" $HOME/.republic/config/config.toml
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"2500000000arai\"/" $HOME/.republic/config/app.toml
 ```
