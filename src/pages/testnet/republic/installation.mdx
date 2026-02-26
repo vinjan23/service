@@ -39,7 +39,6 @@ source ~/.bash_profile
 go version
 ```
 
-
 ### Install binary ( New Install )
 ```
 wget https://github.com/RepublicAI/networks/releases/download/v0.1.0/republicd-linux-amd64 -O republicd
@@ -75,7 +74,7 @@ curl -L https://snapshot.vinjan-inc.com/republic/genesis.json > $HOME/.republic/
 curl -L https://snapshot.vinjan-inc.com/republic/addrbook.json > $HOME/.republic/config/addrbook.jso
 ```
 
- -Custom Port
+### Custom Port
  
 ```
 PORT=133
@@ -83,6 +82,7 @@ sed -i -e "s%:26657%:${PORT}57%" $HOME/.republic/config/client.toml
 sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:26656%:${PORT}56%; s%:26660%:${PORT}60%" $HOME/.republic/config/config.toml
 sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%; s%:8545%:${PORT}45%; s%:8546%:${PORT}46%; s%:6065%:${PORT}65%" $HOME/.republic/config/app.toml
 ```
+
 ### Configure Peer & Gas
 ```
 peers="6313f892ee50ca0b2d6cc6411ac5207dbf2d164b@peers-t.republic.vinjan-inc.com:13356,7fef6e3bb5c254c777449e09e9cf0ee40f4cdee3@195.201.160.23:13356,1fc361b76cb5d3190027e18299a22e3dcb689dd9@54.159.96.158:26656"
