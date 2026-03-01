@@ -4,7 +4,7 @@ title: Snapshot
 network: Mainnet
 icon: bitbadges
 chain: bitbadges-1
-version: v23
+version: v25
 ---
 Update Everyday
 ---
@@ -21,7 +21,7 @@ cp $HOME/.bitbadgeschain/data/priv_validator_state.json $HOME/.bitbadgeschain/pr
 bitbadgeschaind tendermint unsafe-reset-all --home $HOME/.bitbadgeschain --keep-addr-book
 ```
 ```
-curl -L https://snapshot.vinjan-inc.com/bitbadges/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.bitbadgeschain
+soon
 ```
 ```
 mv $HOME/.bitbadgeschain/priv_validator_state.json.backup $HOME/.bitbadgeschain/data/priv_validator_state.json
