@@ -1,15 +1,19 @@
 ---
-layout: '~/layouts/MarkdownLayout.astro'
-title: Snapshot
+title: Republic Testnet Snapshot
+description: Latest Republic testnet snapshot and restore guide.
 ---
 
 ## Republic Testnet Snapshot
 
-<div id="snapshot-info">
-  Loading snapshot info…
+<div class="snapshot-box">
+  <div><strong>Height:</strong> <span id="height">Loading...</span></div>
+  <div><strong>Last Updated:</strong> <span id="last-updated">Loading...</span></div>
+  <div><strong>Size:</strong> <span id="size">Loading...</span></div>
 </div>
 
 <script type="module" src="/src/scripts/republic-snapshot.js"></script>
+
+---
 ```
 sudo apt install lz4 -y
 ```
