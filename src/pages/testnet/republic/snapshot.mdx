@@ -1,39 +1,13 @@
 ---
-title: Republic Testnet Snapshot
-description: Latest Republic testnet snapshot and restore guide.
-
-const res = await fetch("https://snapshot.vinjan-inc.com/republic/log.json");
-const data = await res.json();
-const info = data.snapshot_info;
-
-const createdAt = new Date(info.created_at);
-const now = new Date();
-const diffMinutes = Math.floor((now - createdAt) / 60000);
-const hours = Math.floor(diffMinutes / 60);
-const minutes = diffMinutes % 60;
-
-const updated =
-  hours > 0
-    ? `${hours}h ${minutes}m ago`
-    : `${minutes}m ago`;
-
-const downloadUrl = `https://snapshot.vinjan-inc.com/republic/${info.filename}`;
+layout: '~/layouts/MarkdownLayout.astro'
+title: Snapshot
+network: Testnet
+icon: republic
+chain: raitestnet_77701-1
+version: v0.3.0
 ---
-
-## Republic Testnet Snapshot
-
-<div style="background:#111827;padding:20px;border-radius:12px;margin-bottom:25px;">
-  <strong>Height:</strong> {info.block_height} <br />
-  <strong>Last Updated:</strong> {updated} <br />
-  <strong>Size:</strong> {info.size} <br />
-  <strong>Download:</strong> <a href={downloadUrl}>{info.filename}</a>
-</div>
-
----
-
-## 📦 Restore Snapshot
-
-
+Update Every 4 hours
+```
 ```
 sudo apt install lz4 -y
 ```
@@ -47,7 +21,7 @@ cp $HOME/.republic/data/priv_validator_state.json $HOME/.republic/priv_validator
 republicd comet unsafe-reset-all --home $HOME/.republic --keep-addr-book
 ```
 ```
-curl -L https://snapshot.vinjan-inc.com/republic/republic-latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.republic
+curl -L https://snapshot.vinjan-inc.com/republic/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.republic
 ```
 ```
 mv $HOME/.republic/priv_validator_state.json.backup $HOME/.republic/data/priv_validator_state.json
