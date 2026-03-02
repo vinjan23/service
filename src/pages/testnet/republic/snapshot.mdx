@@ -7,83 +7,64 @@ chain: raitestnet_77701-1
 version: v0.3.0
 ---
 
-const endpoint = "https://snapshot.vinjan-inc.com/republic/log.json";
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
-let snapshot = null;
+  async function fetchSnapshotInfo() {
+    try {
+      const response = await fetch(
+        'https://snapshot.vinjan-inc.com/republic/log.json'
+      );
 
-try {
-  const res = await fetch(endpoint, { cache: "no-store" });
-  const data = await res.json();
+      if (!response.ok) throw new Error("Network error");
 
-  // supports both wrapped and direct JSON
-  snapshot = data.snapshot_info ?? data;
+      const data = await response.json();
+      const snapshotInfo = data.snapshot_info ?? data;
 
-} catch (err) {
-  console.error("Snapshot fetch failed:", err);
-  snapshot = null;
-}
+      if (!snapshotInfo) throw new Error("Invalid JSON");
 
-function formatBytes(bytes) {
-  if (!bytes) return "Unknown";
-  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  return (bytes / Math.pow(1024, i)).toFixed(2) + " " + sizes[i];
-}
+      document.getElementById('height').textContent =
+        snapshotInfo.block_height ?? "N/A";
 
-function formatTimeAgo(dateString) {
-  if (!dateString) return "Unknown";
+      document.getElementById('size').textContent =
+        snapshotInfo.size ?? "N/A";
 
-  const createdAt = new Date(dateString);
-  const now = new Date();
-  const diffMinutes = Math.floor((now - createdAt) / (1000 * 60));
+      const createdAt = new Date(snapshotInfo.created_at);
+      const now = new Date();
+      const timeDiffMs = now - createdAt;
 
-  const days = Math.floor(diffMinutes / 1440);
-  const hours = Math.floor((diffMinutes % 1440) / 60);
-  const minutes = diffMinutes % 60;
+      const minutesAgo = Math.floor(timeDiffMs / (1000 * 60));
+      const days = Math.floor(minutesAgo / (60 * 24));
+      const hours = Math.floor((minutesAgo % (60 * 24)) / 60);
+      const minutes = minutesAgo % 60;
 
-  if (days > 0) return `${days}d ${hours}h ago`;
-  if (hours > 0) return `${hours}h ${minutes}m ago`;
-  return `${minutes}m ago`;
-}
----
+      let text = "";
 
-<style>
-.snapshot-info {
-  font-size: 18px;
-  margin: 20px 0;
-  padding: 12px 16px;
-  border-radius: 10px;
-  background: rgba(77, 166, 255, 0.08);
-  border: 1px solid rgba(77, 166, 255, 0.2);
-  display: inline-block;
-}
-.snapshot-info .label {
-  color: #ccc;
-  font-weight: 500;
-}
-.snapshot-info .value {
-  color: #4da6ff;
-  font-weight: 600;
-}
-</style>
+      if (days > 0) {
+        text = `${days} day${days > 1 ? "s" : ""}`;
+        if (hours > 0) {
+          text += ` and ${hours} hour${hours > 1 ? "s" : ""}`;
+        }
+        text += " ago";
+      } else if (hours > 0) {
+        text = `${hours} hour${hours > 1 ? "s" : ""} ${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+      } else {
+        text = `${minutes} minute${minutes > 1 ? "s" : ""} ago`;
+      }
 
-<div class="snapshot-info">
-  <span class="label">Height:</span>
-  <span class="value">
-    {snapshot?.block_height ?? "Unavailable"}
-  </span> |
+      document.getElementById('last-updated').textContent = text;
 
-  <span class="label">Last updated:</span>
-  <span class="value">
-    {snapshot ? formatTimeAgo(snapshot.created_at) : "Unavailable"}
-  </span> |
+    } catch (error) {
+      console.error('Error fetching snapshot info:', error);
+      document.getElementById('height').textContent = "Unavailable";
+      document.getElementById('last-updated').textContent = "Unavailable";
+      document.getElementById('size').textContent = "Unavailable";
+    }
+  }
 
-  <span class="label">Size:</span>
-  <span class="value">
-    {snapshot ? formatBytes(Number(snapshot.size)) : "Unavailable"}
-  </span>
-</div>
-
+  fetchSnapshotInfo();
+});
+</script>
 ```
 sudo apt install lz4 -y
 ```
