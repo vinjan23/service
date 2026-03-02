@@ -12,10 +12,14 @@ const endpoint = "https://snapshot.vinjan-inc.com/republic/log.json";
 let snapshot = null;
 
 try {
-  const res = await fetch(endpoint);
+  const res = await fetch(endpoint, { cache: "no-store" });
   const data = await res.json();
+
+  // supports both wrapped and direct JSON
   snapshot = data.snapshot_info ?? data;
-} catch (e) {
+
+} catch (err) {
+  console.error("Snapshot fetch failed:", err);
   snapshot = null;
 }
 
@@ -28,6 +32,7 @@ function formatBytes(bytes) {
 
 function formatTimeAgo(dateString) {
   if (!dateString) return "Unknown";
+
   const createdAt = new Date(dateString);
   const now = new Date();
   const diffMinutes = Math.floor((now - createdAt) / (1000 * 60));
