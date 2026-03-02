@@ -35,9 +35,7 @@ const { endpoint } = Astro.props;
   <span id="size" class="value">Loading...</span>
 </div>
 
-<script client:load>
-const endpoint = `${endpoint}`;
-
+<script define:vars={{ endpoint }}>
 function formatBytes(bytes) {
   if (!bytes) return "Unknown";
   const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
@@ -62,11 +60,11 @@ function formatTimeAgo(dateString) {
 async function fetchSnapshotInfo() {
   try {
     const res = await fetch(endpoint + "?t=" + Date.now());
-    if (!res.ok) throw new Error();
+    if (!res.ok) throw new Error("Network error");
 
     const data = await res.json();
     const snapshot = data?.snapshot_info;
-    if (!snapshot) throw new Error();
+    if (!snapshot) throw new Error("Invalid JSON");
 
     document.getElementById("height").textContent =
       snapshot.block_height ?? "N/A";
