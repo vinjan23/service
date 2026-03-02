@@ -36,7 +36,7 @@ const { endpoint } = Astro.props;
 </div>
 
 <script client:load>
-const endpoint = "{endpoint}";
+const endpoint = `${endpoint}`;
 
 function formatBytes(bytes) {
   if (!bytes) return "Unknown";
@@ -62,6 +62,8 @@ function formatTimeAgo(dateString) {
 async function fetchSnapshotInfo() {
   try {
     const res = await fetch(endpoint + "?t=" + Date.now());
+    if (!res.ok) throw new Error();
+
     const data = await res.json();
     const snapshot = data?.snapshot_info;
     if (!snapshot) throw new Error();
@@ -70,12 +72,13 @@ async function fetchSnapshotInfo() {
       snapshot.block_height ?? "N/A";
 
     document.getElementById("size").textContent =
-      formatBytes(snapshot.size);
+      formatBytes(Number(snapshot.size));
 
     document.getElementById("last-updated").textContent =
       formatTimeAgo(snapshot.created_at);
 
-  } catch {
+  } catch (err) {
+    console.error("Snapshot fetch failed:", err);
     document.getElementById("height").textContent = "Unavailable";
     document.getElementById("size").textContent = "Unavailable";
     document.getElementById("last-updated").textContent = "Unavailable";
