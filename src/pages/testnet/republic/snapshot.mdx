@@ -5,15 +5,95 @@ network: Testnet
 icon: republic
 chain: raitestnet_77701-1
 version: v0.3.0
----
 
-import SnapshotInfo from "@/components/SnapshotInfo.astro";
+<style>
+.snapshot-info {
+  font-size: 18px;
+  margin: 20px 0;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(77, 166, 255, 0.08);
+  border: 1px solid rgba(77, 166, 255, 0.2);
+  display: inline-block;
+}
 
-<SnapshotInfo endpoint="https://snapshot.vinjan-inc.com/republic/log.json" />
+.snapshot-info .label {
+  color: #ccc;
+  font-weight: 500;
+}
 
-## 📦 Republic Testnet Snapshot
+.snapshot-info .value {
+  color: #4da6ff;
+  font-weight: 600;
+}
+</style>
 
-Snapshot is updated every **4 hours**.
+<div class="snapshot-info">
+  <span class="label">Height:</span>
+  <span id="height" class="value">Loading...</span> |
+
+  <span class="label">Last updated:</span>
+  <span id="last-updated" class="value">Loading...</span> |
+
+  <span class="label">Size:</span>
+  <span id="size" class="value">Loading...</span>
+</div>
+
+<script is:inline>
+const endpoint = "https://snapshot.vinjan-inc.com/republic/log.json";
+
+function formatBytes(bytes) {
+  if (!bytes) return "Unknown";
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return (bytes / Math.pow(1024, i)).toFixed(2) + " " + sizes[i];
+}
+
+function formatTimeAgo(dateString) {
+  const createdAt = new Date(dateString);
+  const now = new Date();
+  const diffMinutes = Math.floor((now - createdAt) / (1000 * 60));
+
+  const days = Math.floor(diffMinutes / 1440);
+  const hours = Math.floor((diffMinutes % 1440) / 60);
+  const minutes = diffMinutes % 60;
+
+  if (days > 0) return `${days}d ${hours}h ago`;
+  if (hours > 0) return `${hours}h ${minutes}m ago`;
+  return `${minutes}m ago`;
+}
+
+async function fetchSnapshotInfo() {
+  try {
+    const res = await fetch(endpoint + "?t=" + Date.now());
+    if (!res.ok) throw new Error("Network error");
+
+    const data = await res.json();
+    const snapshot = data?.snapshot_info;
+
+    if (!snapshot) throw new Error("Invalid JSON");
+
+    document.getElementById("height").textContent =
+      snapshot.block_height ?? "N/A";
+
+    document.getElementById("size").textContent =
+      formatBytes(snapshot.size);
+
+    document.getElementById("last-updated").textContent =
+      formatTimeAgo(snapshot.created_at);
+
+  } catch (err) {
+    console.error("Snapshot fetch failed:", err);
+
+    document.getElementById("height").textContent = "Unavailable";
+    document.getElementById("size").textContent = "Unavailable";
+    document.getElementById("last-updated").textContent = "Unavailable";
+  }
+}
+
+fetchSnapshotInfo();
+setInterval(fetchSnapshotInfo, 300000); // refresh every 5 minutes
+</script>
 
 ```
 sudo apt install lz4 -y
