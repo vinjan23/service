@@ -6,41 +6,18 @@ icon: republic
 chain: raitestnet_77701-1
 version: v0.3.0
 ---
-<style>
-.snapshot-info {
-  font-size: 18px;
-  margin: 20px 0;
-  padding: 12px 16px;
-  border-radius: 10px;
-  background: rgba(77, 166, 255, 0.08);
-  border: 1px solid rgba(77, 166, 255, 0.2);
-  display: inline-block;
-}
 
-.snapshot-info .label {
-  color: #ccc;
-  font-weight: 500;
-}
-
-.snapshot-info .value {
-  color: #4da6ff;
-  font-weight: 600;
-}
-</style>
-
-<div class="snapshot-info">
-  <span class="label">Height:</span>
-  <span id="height" class="value">Loading...</span> |
-
-  <span class="label">Last updated:</span>
-  <span id="last-updated" class="value">Loading...</span> |
-
-  <span class="label">Size:</span>
-  <span id="size" class="value">Loading...</span>
-</div>
-
-<script is:inline>
 const endpoint = "https://snapshot.vinjan-inc.com/republic/log.json";
+
+let snapshot = null;
+
+try {
+  const res = await fetch(endpoint);
+  const data = await res.json();
+  snapshot = data.snapshot_info ?? data;
+} catch (e) {
+  snapshot = null;
+}
 
 function formatBytes(bytes) {
   if (!bytes) return "Unknown";
@@ -50,6 +27,7 @@ function formatBytes(bytes) {
 }
 
 function formatTimeAgo(dateString) {
+  if (!dateString) return "Unknown";
   const createdAt = new Date(dateString);
   const now = new Date();
   const diffMinutes = Math.floor((now - createdAt) / (1000 * 60));
@@ -62,38 +40,44 @@ function formatTimeAgo(dateString) {
   if (hours > 0) return `${hours}h ${minutes}m ago`;
   return `${minutes}m ago`;
 }
+---
 
-async function fetchSnapshotInfo() {
-  try {
-    const res = await fetch(endpoint + "?t=" + Date.now());
-    if (!res.ok) throw new Error("Network error");
-
-    const data = await res.json();
-    const snapshot = data?.snapshot_info;
-
-    if (!snapshot) throw new Error("Invalid JSON");
-
-    document.getElementById("height").textContent =
-      snapshot.block_height ?? "N/A";
-
-    document.getElementById("size").textContent =
-      formatBytes(snapshot.size);
-
-    document.getElementById("last-updated").textContent =
-      formatTimeAgo(snapshot.created_at);
-
-  } catch (err) {
-    console.error("Snapshot fetch failed:", err);
-
-    document.getElementById("height").textContent = "Unavailable";
-    document.getElementById("size").textContent = "Unavailable";
-    document.getElementById("last-updated").textContent = "Unavailable";
-  }
+<style>
+.snapshot-info {
+  font-size: 18px;
+  margin: 20px 0;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(77, 166, 255, 0.08);
+  border: 1px solid rgba(77, 166, 255, 0.2);
+  display: inline-block;
 }
+.snapshot-info .label {
+  color: #ccc;
+  font-weight: 500;
+}
+.snapshot-info .value {
+  color: #4da6ff;
+  font-weight: 600;
+}
+</style>
 
-fetchSnapshotInfo();
-setInterval(fetchSnapshotInfo, 300000); // refresh every 5 minutes
-</script>
+<div class="snapshot-info">
+  <span class="label">Height:</span>
+  <span class="value">
+    {snapshot?.block_height ?? "Unavailable"}
+  </span> |
+
+  <span class="label">Last updated:</span>
+  <span class="value">
+    {snapshot ? formatTimeAgo(snapshot.created_at) : "Unavailable"}
+  </span> |
+
+  <span class="label">Size:</span>
+  <span class="value">
+    {snapshot ? formatBytes(Number(snapshot.size)) : "Unavailable"}
+  </span>
+</div>
 
 ```
 sudo apt install lz4 -y
