@@ -1,8 +1,10 @@
+
+Put this inside:
+
+```js
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     const res = await fetch("https://snapshot.vinjan-inc.com/republic/log.json");
-    if (!res.ok) throw new Error("Network error");
-
     const data = await res.json();
     const info = data.snapshot_info;
 
@@ -22,6 +24,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         : minutes + "m ago";
 
   } catch (err) {
-    console.error("Snapshot fetch failed:", err);
+    console.error(err);
   }
 });
