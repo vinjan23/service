@@ -2,41 +2,83 @@
 const { endpoint } = Astro.props;
 ---
 
+<style>
+.snapshot-info {
+  font-size: 18px;
+  margin: 20px 0;
+  padding: 12px 16px;
+  border-radius: 10px;
+  background: rgba(77, 166, 255, 0.08);
+  border: 1px solid rgba(77, 166, 255, 0.2);
+  display: inline-block;
+}
+
+.snapshot-info .label {
+  color: #ccc;
+  font-weight: 500;
+}
+
+.snapshot-info .value {
+  color: #4da6ff;
+  font-weight: 600;
+}
+</style>
+
 <div class="snapshot-info">
   <span class="label">Height:</span>
   <span id="height" class="value">Loading...</span> |
+
   <span class="label">Last updated:</span>
   <span id="last-updated" class="value">Loading...</span> |
+
   <span class="label">Size:</span>
   <span id="size" class="value">Loading...</span>
 </div>
 
-<script is:inline>
+<script client:load>
 const endpoint = "{endpoint}";
+
+function formatBytes(bytes) {
+  if (!bytes) return "Unknown";
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return (bytes / Math.pow(1024, i)).toFixed(2) + " " + sizes[i];
+}
+
+function formatTimeAgo(dateString) {
+  const createdAt = new Date(dateString);
+  const now = new Date();
+  const diffMinutes = Math.floor((now - createdAt) / (1000 * 60));
+
+  const days = Math.floor(diffMinutes / 1440);
+  const hours = Math.floor((diffMinutes % 1440) / 60);
+  const minutes = diffMinutes % 60;
+
+  if (days > 0) return `${days}d ${hours}h ago`;
+  if (hours > 0) return `${hours}h ${minutes}m ago`;
+  return `${minutes}m ago`;
+}
 
 async function fetchSnapshotInfo() {
   try {
-    const response = await fetch(endpoint + '?t=' + Date.now());
-    const data = await response.json();
-    const snapshot = data.snapshot_info;
+    const res = await fetch(endpoint + "?t=" + Date.now());
+    const data = await res.json();
+    const snapshot = data?.snapshot_info;
+    if (!snapshot) throw new Error();
 
-    document.getElementById('height').textContent = snapshot.block_height;
-    document.getElementById('size').textContent = snapshot.size;
+    document.getElementById("height").textContent =
+      snapshot.block_height ?? "N/A";
 
-    const createdAt = new Date(snapshot.created_at);
-    const diff = Math.floor((Date.now() - createdAt) / (1000 * 60));
+    document.getElementById("size").textContent =
+      formatBytes(snapshot.size);
 
-    const days = Math.floor(diff / 1440);
-    const hours = Math.floor((diff % 1440) / 60);
-    const minutes = diff % 60;
-
-    document.getElementById('last-updated').textContent =
-      days > 0 ? `${days}d ${hours}h ago` :
-      hours > 0 ? `${hours}h ${minutes}m ago` :
-      `${minutes}m ago`;
+    document.getElementById("last-updated").textContent =
+      formatTimeAgo(snapshot.created_at);
 
   } catch {
-    document.getElementById('last-updated').textContent = 'Unavailable';
+    document.getElementById("height").textContent = "Unavailable";
+    document.getElementById("size").textContent = "Unavailable";
+    document.getElementById("last-updated").textContent = "Unavailable";
   }
 }
 
