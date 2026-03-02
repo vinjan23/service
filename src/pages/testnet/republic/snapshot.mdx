@@ -1,19 +1,39 @@
 ---
 title: Republic Testnet Snapshot
 description: Latest Republic testnet snapshot and restore guide.
+
+const res = await fetch("https://snapshot.vinjan-inc.com/republic/log.json");
+const data = await res.json();
+const info = data.snapshot_info;
+
+const createdAt = new Date(info.created_at);
+const now = new Date();
+const diffMinutes = Math.floor((now - createdAt) / 60000);
+const hours = Math.floor(diffMinutes / 60);
+const minutes = diffMinutes % 60;
+
+const updated =
+  hours > 0
+    ? `${hours}h ${minutes}m ago`
+    : `${minutes}m ago`;
+
+const downloadUrl = `https://snapshot.vinjan-inc.com/republic/${info.filename}`;
 ---
 
 ## Republic Testnet Snapshot
 
-<div class="snapshot-box">
-  <div><strong>Height:</strong> <span id="height">Loading...</span></div>
-  <div><strong>Last Updated:</strong> <span id="last-updated">Loading...</span></div>
-  <div><strong>Size:</strong> <span id="size">Loading...</span></div>
+<div style="background:#111827;padding:20px;border-radius:12px;margin-bottom:25px;">
+  <strong>Height:</strong> {info.block_height} <br />
+  <strong>Last Updated:</strong> {updated} <br />
+  <strong>Size:</strong> {info.size} <br />
+  <strong>Download:</strong> <a href={downloadUrl}>{info.filename}</a>
 </div>
 
-<script type="module" src="/src/scripts/republic-snapshot.js"></script>
-
 ---
+
+## 📦 Restore Snapshot
+
+
 ```
 sudo apt install lz4 -y
 ```
