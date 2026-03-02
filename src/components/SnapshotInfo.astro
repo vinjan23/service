@@ -1,0 +1,45 @@
+---
+const { endpoint } = Astro.props;
+---
+
+<div class="snapshot-info">
+  <span class="label">Height:</span>
+  <span id="height" class="value">Loading...</span> |
+  <span class="label">Last updated:</span>
+  <span id="last-updated" class="value">Loading...</span> |
+  <span class="label">Size:</span>
+  <span id="size" class="value">Loading...</span>
+</div>
+
+<script is:inline>
+const endpoint = "{endpoint}";
+
+async function fetchSnapshotInfo() {
+  try {
+    const response = await fetch(endpoint + '?t=' + Date.now());
+    const data = await response.json();
+    const snapshot = data.snapshot_info;
+
+    document.getElementById('height').textContent = snapshot.block_height;
+    document.getElementById('size').textContent = snapshot.size;
+
+    const createdAt = new Date(snapshot.created_at);
+    const diff = Math.floor((Date.now() - createdAt) / (1000 * 60));
+
+    const days = Math.floor(diff / 1440);
+    const hours = Math.floor((diff % 1440) / 60);
+    const minutes = diff % 60;
+
+    document.getElementById('last-updated').textContent =
+      days > 0 ? `${days}d ${hours}h ago` :
+      hours > 0 ? `${hours}h ${minutes}m ago` :
+      `${minutes}m ago`;
+
+  } catch {
+    document.getElementById('last-updated').textContent = 'Unavailable';
+  }
+}
+
+fetchSnapshotInfo();
+setInterval(fetchSnapshotInfo, 300000);
+</script>
