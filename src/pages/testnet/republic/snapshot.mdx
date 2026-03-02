@@ -1,14 +1,15 @@
 ---
+layout: '~/layouts/MarkdownLayout.astro'
 title: Snapshot
 ---
 
-<div class="snapshot-info">
-  <span>Height:</span> <span id="height">Loading...</span> |
-  <span>Last updated:</span> <span id="last-updated">Loading...</span> |
-  <span>Size:</span> <span id="size">Loading...</span>
-</div>
-<script type="module" src="/src/scripts/republic-snapshot.js"></script>
+## Republic Testnet Snapshot
 
+<div id="snapshot-info">
+  Loading snapshot info…
+</div>
+
+<script type="module" src="/src/scripts/republic-snapshot.js"></script>
 ```
 sudo apt install lz4 -y
 ```
