@@ -1,0 +1,157 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Installation Node
+network: Testnet
+icon: monolyth
+chain: mono_6940-1
+version: v0.1.0-rc1
+---
+
+### Hardware requirements
+
+The following requirements are recommended:
+
+- 4 or more physical CPU cores
+- At least 200GB of SSD disk storage
+- At least 8GB of memory (RAM)
+- At least 100mbps network bandwidth
+
+
+### Install dependencies Required
+
+```
+sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool -y
+```
+
+### Install go
+
+We are gonna use GO Version 1.22.5
+If you already have GO installed you can skip this 
+
+```
+ver="1.22.5"
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+rm "go$ver.linux-amd64.tar.gz"
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+source ~/.bash_profile
+go version
+```
+
+### Install binary
+```
+cd $HOME
+rm -rf mono-chain
+git clone https://github.com/monolythium/mono-chain.git
+cd mono-chain
+git checkout v0.1.0-rc1
+make install
+```
+
+Verify that you've installed successfully
+
+```
+monod  --long | grep -e version -e commit
+```
+
+### Initialize Node
+
+Please change `<MONIKER>` To your own Moniker.
+
+```
+monod init <MONIKER> --chain-id mono_6940-1
+```
+
+### Download Genesis file and addrbook
+
+- Genesis
+
+```
+curl -L https://snapshot.vinjan-inc.com/monolyth/genesis.json > $HOME/.mono/config/genesis.json
+```
+
+- Addrbook
+
+```
+curl -L https://snapshot.vinjan-inc.com/monolyth/addrbook.json > $HOME/.mono/config/addrbook.jso
+```
+
+### Custom Port
+ 
+```
+PORT=197
+sed -i -e "s%:26657%:${PORT}57%" $HOME/.mono/config/client.toml
+sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:26656%:${PORT}56%; s%:26660%:${PORT}60%" $HOME/.mono/config/config.toml
+sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%; s%:8545%:${PORT}45%; s%:8546%:${PORT}46%; s%:6065%:${PORT}65%" $HOME/.mono/config/app.toml
+```
+
+### Configure EVM & Gas
+```
+sed -i 's/^evm-chain-id = .*/evm-chain-id = 6940/' ~/.mono/config/app.toml
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"10000000000alyth\"/" $HOME/.mono/config/app.toml
+```
+
+### Prunning
+```
+sed -i \
+-e 's|^pruning *=.*|pruning = "custom"|' \
+-e 's|^pruning-keep-recent *=.*|pruning-keep-recent = "100"|' \
+-e 's|^pruning-keep-every *=.*|pruning-keep-every = ""|' \
+-e 's|^pruning-interval *=.*|pruning-interval = "20"|' \
+$HOME/.mono/config/app.toml
+```
+
+### Indexer Off
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.mono/config/config.toml
+```
+
+### create service file and start node
+
+Create service file
+Create a `monod.service` file in the `/etc/systemd/system` folder with the following code. 
+You can change `USER` with your Linux user name. You need sudo previlege to do this step.
+
+```
+sudo tee /etc/systemd/system/monod.service > /dev/null <<EOF
+[Unit]
+Description=monolythium
+After=network-online.target
+
+[Service]
+User=$USER
+ExecStart=$(which monod) start
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+- Enable Service and Start Node
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable monod
+sudo systemctl restart monod
+sudo journalctl -u monod -f -o cat
+```
+
+
+### Use Snapshot
+<a href="https://vinjan-inc.com/testnet/monolythium/snapshot" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
+</a>
+
+
+
+### Create Validator
+
+Heads up to the Cheat Sheets to create validator
+
+<a href="https://vinjan-inc.com/testnet/monolythium/cheat" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">CLI Cheatsheets</button>
+</a>
