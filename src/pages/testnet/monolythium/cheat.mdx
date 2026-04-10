@@ -1,0 +1,184 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Testnet
+icon: monolyth
+chain: mono_6940-1
+version: v0.1.0-rc1
+---
+
+### CLI Cheatsheet
+ 
+-Sync
+```
+monod status 2>&1 | jq .sync_info
+```
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Usefull Command
+```
+monod status 2>&1 | jq .sync_info
+```
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+monod keys add wallet
+```
+
+Recover Wallet
+```
+monod keys add wallet --recover
+```
+
+List Wallet
+```
+monod keys list
+```
+
+Delete Wallet
+```
+monod keys delete wallet
+```
+
+Check Wallet Balance
+```
+monod q bank balances $(monod keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+- Check Your Pubkey
+```
+monod comet show-validator
+```
+- Make File validator.json
+```
+nano $HOME/validator.json
+```
+```
+{
+  "description": {
+    "moniker": "ur_moniker",
+    "identity": "",
+    "website": "",
+    "security_contact": "",
+    "details": ""
+  },
+  "commission": {
+    "rate": "100000000000000000",
+    "max_rate": "200000000000000000",
+    "max_change_rate": "100000000000000000"
+  },
+  "min_self_delegation": "100000000000000000000000",
+  "delegator_address": "mono....",
+  "validator_address": "monovaloper.....",
+  "pubkey": ur_pubkey,
+  "value": {
+    "denom": "alyth",
+    "amount": "100000000000000000000000"
+  }
+}
+```
+```
+monod tx validator register-validator \
+--burn 100000000000000000000000alyth \
+--create-validator "$(cat $HOME/validator.json)" \
+--from wallet \
+--gas auto \
+--gas-adjustment 1.5 \
+--gas-prices "10000000000alyth" \
+--chain-id mono_6940-1 \
+--yes
+```
+
+Unjail Validator
+```
+monod tx slashing unjail --from wallet --chain-id mono_6940-1 --gas-adjustment=1.5 --gas-prices 10000000000alyth --gas auto
+```
+
+Check Jailed Reason
+```
+monod query slashing signing-info $(monod comet show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+monod tx distribution withdraw-all-rewards --from wallet --chain-id mono_6940-1 --gas-adjustment=1.5 --gas-prices 10000000000alyth --gas auto
+```
+Withdraw Rewards with Comission
+```
+monod tx distribution withdraw-rewards $(monod keys show wallet --bech val -a) --commission --from wallet --chain-id mono_6940-1 --gas-adjustment=1.5 --gas-prices 10000000000alyth --gas auto
+```
+
+Delegate Token to your own validator
+```
+monod tx staking delegate $(monod keys show wallet --bech val -a) 100000000000000000000alyth --from wallet --chain-id mono_6940-1 --gas-adjustment=1.5 --gas-prices 10000000000alyth --gas auto
+```
+
+Delegate Token to other validator
+```
+monod tx staking redelegate $(monod keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000000000000000alyth --from wallet --chain-id mono_6940-1 --gas-adjustment=1.5 --gas-prices 10000000000alyth --gas auto
+```
+
+Unbond Token from your validator
+```
+monod tx staking unbond $(monod keys show wallet --bech val -a) 1000000000000000000alyth --from wallet --chain-id mono_6940-1 --gas-adjustment=1.5 --gas-prices 10000000000alyth --gas auto
+```
+
+Send Token to another wallet
+```
+monod tx bank send wallet <TO_WALLET_ADDRESS> 1000000000000000000alyth --from wallet --chain-id mono_6940-1 --gas-adjustment=1.5 --gas-prices 10000000000alyth --gas auto
+```
+Gov Vote
+```
+monod tx gov vote 1 yes --from wallet --chain-id mono_6940-1 --gas-adjustment=1.5 --gas-prices 10000000000alyth --gas auto
+```
+
+Set Your own Custom Ports
+```
+PORT=197
+sed -i -e "s%:26657%:${PORT}57%" $HOME/.mono/config/client.toml
+sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:26656%:${PORT}56%; s%:26660%:${PORT}60%" $HOME/.mono/config/config.toml
+sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%; s%:8545%:${PORT}45%; s%:8546%:${PORT}46%; s%:6065%:${PORT}65%" $HOME/.mono/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.mono/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.mono/config/config.toml
+```
+
+Reset Chain Data
+```
+monod comet unsafe-reset-all --home $HOME/.mono --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop monod
+sudo systemctl disable monod
+sudo rm /etc/systemd/system/monod.service
+sudo systemctl daemon-reload
+rm -rf $(which monod)
+rm -rf .mono
+rm -rf mono-chain
+```
