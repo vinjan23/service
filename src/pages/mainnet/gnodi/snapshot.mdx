@@ -1,0 +1,29 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Snapshot
+network: Mainnet
+icon: gnod
+chain: gnodi
+version: v1.0.1
+---
+Update Everyday 00 UTC
+
+```
+sudo systemctl stop gnodid
+```
+```
+cp $HOME/.gnodi/data/priv_validator_state.json $HOME/.gnodi/priv_validator_state.json.backup
+```
+```
+gnodid comet unsafe-reset-all --home $HOME/.gnodi --keep-addr-book
+```
+```
+curl -L https://snapshot.vinjan-inc.com/gnodi/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.gnodi
+```
+```
+mv $HOME/.gnodi/priv_validator_state.json.backup $HOME/.gnodi/data/priv_validator_state.json
+```
+```
+sudo systemctl restart gnodid
+sudo journalctl -u gnodid -f -o cat
+```
