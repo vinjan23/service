@@ -1,0 +1,183 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Node CLI Cheatsheet
+network: Mainnet
+icon: gnod
+chain: gnodi
+version: v1.0.1
+---
+
+### CLI Cheatsheet
+
+- Always be careful with the capitalized words
+- Specify `--chain-id`
+
+### Wallet Management
+
+Add Wallet
+Specify the value `<wallet>` with your own wallet name
+
+```
+gnodid keys add wallet
+```
+
+Recover Wallet
+```
+gnodid keys add wallet --recover
+```
+
+List Wallet
+```
+gnodid keys list
+```
+
+Delete Wallet
+```
+gnodid keys delete wallet
+```
+
+Check Wallet Balance
+```
+gnodid q bank balances $(gnodid keys show wallet -a)
+```
+
+### Validator Management
+
+Please adjust `<wallet>` , `MONIKER` , `YOUR_KEYBASE_ID` , `YOUR_DETAILS` , `YOUUR_WEBSITE_URL`
+
+Create Validator (Staking)
+```
+gnodid comet show-validator
+```
+```
+nano /root/.gnodi/validator.json
+```
+```
+{
+  "pubkey": ,
+  "amount": "1000000uGNOT",
+  "moniker": "",
+  "identity": "",
+  "website": "",
+  "security": "",
+  "details": "",
+  "commission-rate": "0.05",
+  "commission-max-rate": "0.2",
+  "commission-max-change-rate": "0.01",
+  "min-self-delegation": "1"
+}
+```
+```
+gnodid tx staking create-validator $HOME/.gnodi/validator.json \
+--from wallet \
+--chain-id gnodi \
+--gas-prices="0.25uGNOD" \
+--gas-adjustment=1.5 \
+--gas=auto
+```
+
+
+Edit Validator
+```
+gnodid tx staking edit-validator \
+--new-moniker="" \
+--identity="" \
+--website="" \
+--details="" \
+--commission-rate="0.02" \
+--from wallet \
+--chain-id gnodi \
+--gas-prices="0.25uGNOD" \
+--gas-adjustment=1.5 \
+--gas=auto
+```
+
+Unjail Validator
+```
+gnodid tx slashing unjail --from wallet --chain-id gnodi --gas-adjustment=1.5 --gas-prices="0.25uGNOD" --gas=auto
+```
+
+Check Jailed Reason
+```
+gnodid query slashing signing-info $(gnodid tendermint show-validator)
+```
+
+### Token Management
+
+Withdraw Rewards
+```
+gnodid tx distribution withdraw-all-rewards --from wallet --chain-id gnodi --gas-adjustment=1.5 --gas-prices="0.25uGNOD" --gas=auto
+```
+
+Withdraw Rewards with Comission
+```
+gnodid tx distribution withdraw-rewards $(gnodid keys show wallet --bech val -a) --commission --from wallet --chain-id gnodi --gas-adjustment=1.5 --gas-prices="0.25uGNOD" --gas=auto
+
+Delegate Token to your own validator
+```
+gnodid tx staking delegate $(gnodid keys show wallet --bech val -a) 1000000uGNOD --from wallet --chain-id gnodi --gas-adjustment=1.5 --gas-prices="0.25uGNOD" --gas=auto
+```
+
+Delegate Token to other validator
+```
+gnodid tx staking redelegate $(gnodid keys show wallet --bech val -a) <TO_VALOPER_ADDRESS> 1000000uGNOD --from wallet --chain-id gnodi --gas-adjustment=1.5 --gas-prices="0.25uGNOD" --gas=auto
+```
+
+Unbond Token from your validator
+```
+gnodid tx staking unbond $(gnodid keys show wallet --bech val -a) 1000000uGNOD --from wallet --chain-id gnodi --gas-adjustment=1.5 --gas-prices="0.25uGNOD" --gas=auto
+```
+
+Send Token to another wallet
+```
+gnodid tx bank send wallet <TO_WALLET_ADDRESS> 1000000uGNOD --from wallet --chain-id gnodi --gas-adjustment=1.5 --gas-prices="0.25uGNOD" --gas=auto
+```
+
+### Governance 
+
+Vote
+You can change the value of `yes` to `no`,`abstain`,`nowithveto`
+
+```
+gnodid tx gov vote 1 yes --from wallet --chain-id gnodi --gas-adjustment=1.5 --gas-prices="0.25uGNOD" --gas=auto
+```
+
+### Other
+
+Set Your own Custom Ports
+You can change value `CUSTOM_PORT=44` To any other ports
+```  
+PORT=155
+sed -i -e "s%:26657%:${PORT}57%" $HOME/.gnodi/config/client.toml
+sed -i -e "s%:26658%:${PORT}58%; s%:26657%:${PORT}57%; s%:6060%:${PORT}60%; s%:26656%:${PORT}56%; s%:26660%:${PORT}60%" $HOME/.gnodi/config/config.toml
+sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%" $HOME/.gnodi/config/app.toml
+```
+
+Enable Indexing usually enabled by default
+```
+sed -i 's|^indexer *=.*|indexer = "kv"|' $HOME/.gnodi/config/config.toml
+```
+
+Disable Indexing
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.gnodi/config/config.toml
+```
+
+Reset Chain Data
+```
+gnodid comet unsafe-reset-all --home $HOME/.gnodi --keep-addr-book
+```
+
+### Delete Node
+
+WARNING! Use this command wisely 
+Backup your key first it will remove Defund from your system
+
+```
+sudo systemctl stop gnodid
+sudo systemctl disable gnodid
+sudo rm /etc/systemd/system/gnodid.service
+sudo systemctl daemon-reload
+rm -f $(which gnodid)
+rm -rf .gnodi
+```
