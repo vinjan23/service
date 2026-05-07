@@ -29,7 +29,7 @@ We are gonna use GO Version 1.22.5
 If you already have GO installed you can skip this 
 
 ```
-ver="1.22.5"
+ver="1.24.5"
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
 sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
@@ -85,7 +85,7 @@ sed -i -e "s%:1317%:${PORT}17%; s%:9090%:${PORT}90%; s%:8545%:${PORT}45%; s%:854
 
 ### Configure Peer & Gas
 ```
-peers="6313f892ee50ca0b2d6cc6411ac5207dbf2d164b@peers-t.republic.vinjan-inc.com:13356,7fef6e3bb5c254c777449e09e9cf0ee40f4cdee3@195.201.160.23:13356,1fc361b76cb5d3190027e18299a22e3dcb689dd9@54.159.96.158:26656"
+peers="6313f892ee50ca0b2d6cc6411ac5207dbf2d164b@peers-t.republic.vinjan-inc.com:13356,7fef6e3bb5c254c777449e09e9cf0ee40f4cdee3@195.201.160.23:13356"
 sed -i -e "s|^persistent_peers *=.*|persistent_peers = \"$peers\"|" $HOME/.republic/config/config.toml
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"2500000000arai\"/" $HOME/.republic/config/app.toml
 ```
