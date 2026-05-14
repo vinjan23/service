@@ -6,7 +6,7 @@ icon: jay
 chain: thejaynetwork
 version: v1.1.0
 ---
-Update Everyday 00 UTC
+Update Every 12 Hours
 
 ```
 sudo systemctl stop jaynd
@@ -19,7 +19,7 @@ jaynd comet unsafe-reset-all --home $HOME/.jayn --keep-addr-book
 ```
 ```
 curl -L https://snapshot.vinjan-inc.com/jaynetwork/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.jayn
-```
+``
 ```
 mv $HOME/.jayn/priv_validator_state.json.backup $HOME/.jayn/data/priv_validator_state.json
 ```
