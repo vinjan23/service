@@ -4,9 +4,9 @@ title: Snapshot
 network: Testnet
 icon: pchain
 chain: push_42101-1
-version: v0.0.30
+version: v0.0.35
 ---
-
+Height : 15408102
 ```
 sudo apt install lz4 -y
 ```
@@ -21,7 +21,7 @@ pchaind comet unsafe-reset-all --home $HOME/.pchain --keep-addr-book
 rm -rf $HOME/.pchain/data
 ```
 ```
-soon
+curl -L https://snapshot.vinjan-inc.com/pushchain/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.pchain
 ```
 ###### Error 68 : Unfinished stream ( Repeat )
 
