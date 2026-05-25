@@ -17,7 +17,7 @@ cp $HOME/.jayn/data/priv_validator_state.json $HOME/.jayn/priv_validator_state.j
 jaynd comet unsafe-reset-all --home $HOME/.jayn --keep-addr-book
 ```
 ```
-SNAP_RPC="https://rpc-jaynetwork.vinjan-inc.com:443"
+SNAP_RPC="http://89.58.25.104:26657"
 LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
 BLOCK_HEIGHT=$((LATEST_HEIGHT - 1000))
 TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
