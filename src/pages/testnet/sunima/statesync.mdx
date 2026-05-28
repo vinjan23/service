@@ -1,0 +1,28 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Statesync
+network: Testnet
+icon: sunima
+chain: sunima_8081-1
+version: 
+---
+
+```
+sudo systemctl stop sunimad
+cp $HOME/.sunima/data/priv_validator_state.json $HOME/.sunima/priv_validator_state.json.backup
+sunimad comet unsafe-reset-all --home $HOME/.sunima --keep-addr-book
+```
+```
+SNAP_RPC="https://rpc-t.sunima.vinjan-inc.com"
+LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
+BLOCK_HEIGHT=$((LATEST_HEIGHT - 1000)); \
+TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+sed -i "/\[statesync\]/, /^enable =/ s/=.*/= true/;\
+/^rpc_servers =/ s|=.*|= \"$SNAP_RPC,$SNAP_RPC\"|;\
+/^trust_height =/ s/=.*/= $BLOCK_HEIGHT/;\
+/^trust_hash =/ s/=.*/= \"$TRUST_HASH\"/" $HOME/.sunima/config/config.toml
+```
+```
+sudo systemctl restart sunimad
+sudo journalctl -u sunimad -f -o cat
+```
