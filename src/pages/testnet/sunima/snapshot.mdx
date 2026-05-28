@@ -1,0 +1,31 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Snapshot
+network: Testnet
+icon: sunima
+chain: sunima_8081-1 
+version: 
+---
+Update Everyday
+```
+sudo apt install lz4 -y
+```
+```
+sudo systemctl stop sunimad
+```
+```
+cp $HOME/.sunima/data/priv_validator_state.json $HOME/.sunima/priv_validator_state.json.backup
+```
+```
+sunimad comet unsafe-reset-all --home $HOME/.sunima --keep-addr-book
+```
+```
+curl -L https://snapshot.vinjan-inc.com/sunima/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.sunima
+```
+```
+mv $HOME/.sunima/priv_validator_state.json.backup $HOME/.sunima/data/priv_validator_state.json
+```
+```
+sudo systemctl restart sunimad
+sudo journalctl -u sunimad -f -o cat
+```
