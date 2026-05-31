@@ -78,7 +78,7 @@ curl -L https://snapshot.vinjan-inc.com/safrochain/addrbook.json > $HOME/.safroc
 ```
 peers="3d783002ed0218431e4623aff4754bb2280afece@peer-safrochain.vinjan-inc.com:12756"
 sed -i -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.safrochain/config/config.toml
-sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"10000usaf\"/" $HOME/.safrochain/config/app.toml
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.05usaf\"/" $HOME/.safrochain/config/app.toml
 ```
 
 ### Prunning
