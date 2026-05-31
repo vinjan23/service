@@ -3,7 +3,7 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Statesync
 network: Mainnet
 icon: safro
-chain: safrochain-1
+chain: safro-preprod-1
 version: v0.2.2
 ---
 
@@ -17,7 +17,7 @@ cp $HOME/.safrochain/data/priv_validator_state.json $HOME/.safrochain/priv_valid
 safrochaind comet unsafe-reset-all --home $HOME/.safrochain --keep-addr-book
 ```
 ```
-SNAP_RPC="https://rpc-safrochain.vinjan-inc.com:443"
+SNAP_RPC="https://rpc-safro.vinjan-inc.com:443"
 LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
 BLOCK_HEIGHT=$((LATEST_HEIGHT - 1000))
 TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
