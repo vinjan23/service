@@ -3,7 +3,7 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Installation Node
 network: Mainnet
 icon: safro
-chain: safrochain-1
+chain: safro-preprod-1
 version: v0.2.2
 ---
 
@@ -106,14 +106,12 @@ sudo tee /etc/systemd/system/safrochaind.service > /dev/null <<EOF
 [Unit]
 Description=safrochain
 After=network-online.target
-
 [Service]
 User=$USER
 ExecStart=$(which safrochaind) start
 Restart=on-failure
 RestartSec=3
 LimitNOFILE=65535
-
 [Install]
 WantedBy=multi-user.target
 EOF
