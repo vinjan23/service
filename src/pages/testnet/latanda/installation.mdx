@@ -1,0 +1,125 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Installation Node
+network: Testnet
+icon: latanda
+chain: latanda-testnet-1
+version: 
+---
+
+### Hardware requirements
+
+The following requirements are recommended:
+
+- 4 or more physical CPU cores
+- At least 200GB of SSD disk storage
+- At least 8GB of memory (RAM)
+- At least 100mbps network bandwidth
+
+
+### Install dependencies Required
+
+```
+sudo apt update && sudo apt upgrade -y && sudo apt install curl tar wget clang pkg-config libssl-dev jq build-essential bsdmainutils git make ncdu gcc git jq chrony liblz4-tool -y
+apt install zip
+```
+
+### Install go
+```
+ver="1.24.5"
+wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
+sudo rm -rf /usr/local/go
+sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
+rm "go$ver.linux-amd64.tar.gz"
+echo "export PATH=$PATH:/usr/local/go/bin:$HOME/go/bin" >> ~/.bash_profile
+source ~/.bash_profile
+go version
+```
+
+### Install binary
+
+```
+cd $HOME
+rm -rf la-tanda-chain
+git clone https://github.com/INDIGOAZUL/la-tanda-chain.git
+cd la-tanda-chain
+go build -o latandad ./cmd/latandad
+mv latandad $HOME/go/bin/
+```
+
+### Initialize Node
+
+Please change `<MONIKER>` To your own Moniker.
+
+```
+latandad init <Moniker> --chain-id latanda-testnet-1
+```
+
+### Download Genesis file and addrbook
+
+- Genesis
+
+```
+curl -L https://snapshot.vinjan-inc.com/latanda/genesis.json > $HOME/.latanda/config/genesis.json
+```
+- Addrbook
+```
+curl -L https://snapshot.vinjan-inc.com/latanda/addrbook.json > $HOME/.latanda/config/addrbook.json
+```
+
+### Configure Seeds and Peers
+
+```
+sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.001ultd\"/;" ~/.latanda/config/app.toml
+sed -i -e "s/^chain-id *=.*/chain-id = \"latanda-testnet-1\"/;" ~/.latanda/config/client.toml
+peers="029e202b9e5252c2c71c59aff210e5dbf9403bad@95.216.102.220:12956"
+sed -i -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.latanda/config/config.toml
+```
+
+### Indexer
+
+```
+sed -i 's|^indexer *=.*|indexer = "null"|' $HOME/.latanda/config/config.toml
+```
+
+### create service file and start node
+
+```
+sudo tee /etc/systemd/system/latandad.service > /dev/null <<EOF
+[Unit]
+Description=latanda
+After=network-online.target
+[Service]
+User=$USER
+ExecStart=$(which latandad) start
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65535
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+- Enable Service and Start Node
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable latandad
+```
+
+### Snapshot
+<a href="https://vinjan-inc.com/testnet/latanda/snapshot" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
+</a>
+
+### Statesync
+<a href="https://vinjan-inc.com/testnet/latanda/statesync" target="_blank">
+  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Statesync</button>
+</a>
+
+```
+sudo systemctl restart latandad
+sudo journalctl -u latandad -f -o cat
+```
+
+
