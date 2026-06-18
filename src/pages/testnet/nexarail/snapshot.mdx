@@ -1,0 +1,32 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Snapshot
+network: Testnet
+icon: nxrl
+chain: nexarail-testnet-1
+version: v0.1.0-rc1-validator-recovery-hotfix
+---
+`
+Every 12 Hours
+`
+
+```
+sudo systemctl stop nexaraild
+```
+```
+cp $HOME/.nexarail/data/priv_validator_state.json $HOME/.nexarail/priv_validator_state.json.backup
+```
+```
+nexaraild tendermint unsafe-reset-all --home $HOME/.nexarail --keep-addr-book
+rm -rf $HOME/.nexarail/data
+```
+```
+curl -L https://snapshot.vinjan-inc.com/nexarail/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.nexarail
+```
+```
+mv $HOME/.nexarail/priv_validator_state.json.backup $HOME/.nexarail/data/priv_validator_state.json
+```
+```
+sudo systemctl restart nexaraild
+journalctl -fu nexaraild -o cat
+```
