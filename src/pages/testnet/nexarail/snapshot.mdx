@@ -17,8 +17,7 @@ sudo systemctl stop nexaraild
 cp $HOME/.nexarail/data/priv_validator_state.json $HOME/.nexarail/priv_validator_state.json.backup
 ```
 ```
-nexaraild tendermint unsafe-reset-all --home $HOME/.nexarail --keep-addr-book
-rm -rf $HOME/.nexarail/data
+rm -rf $HOME/.nexarail/data/{application.db,evidence.db,snapshots,tx_index.db,blockstore.db,state.db,cs.wal}
 ```
 ```
 curl -L https://snapshot.vinjan-inc.com/nexarail/latest.tar.lz4 | lz4 -dc - | tar -xf - -C $HOME/.nexarail
