@@ -64,7 +64,7 @@ curl -L https://snapshot.vinjan-inc.com/nexarail/addrbook.json > $HOME/.nexarail
 ### Configure
 ```
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.025unxrl\"/;" ~/.nexarail/config/app.toml
-sed -i -e "s/^chain-id *=.*/chain-id = \"nexarail-testnet-1\"/;" ~/.nexarail/config/client.toml
+sed -i -e "s/^chain-id *=.*/chain-id = \"nexarail-mainnet-1\"/;" ~/.nexarail/config/client.toml
 peers="773f8b03fb17bae2d3081d8b5c450031283e1b07@95.216.102.220:16956"
 sed -i -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.nexarail/config/config.toml
 ```
