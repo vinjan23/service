@@ -3,7 +3,7 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Installation Node
 network: Mainnet
 icon: safro
-chain: safro-preprod-1
+chain: safrochain-1
 version: v0.2.2
 ---
 
@@ -57,7 +57,7 @@ make install
 Please change `<MONIKER>` To your own Moniker.
 
 ```
-safrochaind init <MONIKER> --chain-id safro-preprod-1
+safrochaind init <MONIKER> --chain-id safrochain-1
 ```
 
 ### Download Genesis file and addrbook
@@ -65,18 +65,18 @@ safrochaind init <MONIKER> --chain-id safro-preprod-1
 - Genesis
 
 ```
-curl -L https://snapshot.vinjan-inc.com/safrochain/genesis.json > $HOME/.safrochain/config/genesis.json
+wget -O $HOME/.safrochain/config/genesis.json https://raw.githubusercontent.com/Safrochain-Org/mainnet-genesis/refs/heads/main/genesis.json
 ```
 - Addrbook
 
 ```
-curl -L https://snapshot.vinjan-inc.com/safrochain/addrbook.json > $HOME/.safrochain/config/addrbook.json
+
 ```
 
 ### Configure Seeds and Peers
 
 ```
-peers="3d783002ed0218431e4623aff4754bb2280afece@peer-safrochain.vinjan-inc.com:12756"
+peers="3aafa25bae84b2bbcbf7ead5400474a623727fe3@@65.21.234.111:12756"
 sed -i -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.safrochain/config/config.toml
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.05usaf\"/" $HOME/.safrochain/config/app.toml
 ```
