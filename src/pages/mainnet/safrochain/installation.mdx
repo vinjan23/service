@@ -76,7 +76,7 @@ wget -O $HOME/.safrochain/config/genesis.json https://raw.githubusercontent.com/
 ### Configure Seeds and Peers
 
 ```
-peers="3aafa25bae84b2bbcbf7ead5400474a623727fe3@@65.21.234.111:12756"
+peers="3aafa25bae84b2bbcbf7ead5400474a623727fe3@65.21.234.111:12756"
 sed -i -e "s/^persistent_peers *=.*/persistent_peers = \"$peers\"/" $HOME/.safrochain/config/config.toml
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0.05usaf\"/" $HOME/.safrochain/config/app.toml
 ```
