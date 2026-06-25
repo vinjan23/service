@@ -3,7 +3,7 @@ layout: '~/layouts/MarkdownLayout.astro'
 title: Installation Node
 network: Testnet
 icon: gnoland
-chain: test7.2
+chain: test13
 version: 
 ---
 
@@ -11,9 +11,9 @@ version:
 
 The following requirements are recommended:
 
-- 4 or more physical CPU cores
-- At least 200GB of SSD disk storage
-- At least 8GB of memory (RAM)
+- 12 or more physical CPU cores
+- At least 2 TB of SSD disk storage
+- At least 64 GB of memory (RAM)
 - At least 100mbps network bandwidth
 
 
@@ -29,7 +29,7 @@ We are gonna use GO Version 1.22.5
 If you already have GO installed you can skip this 
 
 ```
-ver="1.22.5"
+ver="1.25.0"
 wget "https://golang.org/dl/go$ver.linux-amd64.tar.gz"
 sudo rm -rf /usr/local/go
 sudo tar -C /usr/local -xzf "go$ver.linux-amd64.tar.gz"
@@ -43,19 +43,25 @@ go version
 ### Install binary
 
 ```
-cd $HOME
-rm -rf gno
-git clone https://github.com/gnolang/gno/
-cd gno
-git checkout chain/test7.2
-make -C gno.land install.gnoland
+git clone https://github.com/gnolang/gno.git
+cd gno && git checkout chain/test13
+make -C gno.land install.gnoland install.gnokey
 ```
 ### Init
-
 ```
-cd $HOME
 gnoland config init
 gnoland secrets init
+gnoland config set moniker (MONIKER)
+```
+
+### Set Config
+```
+gnoland config set consensus.peer_gossip_sleep_duration 10ms
+gnoland config set consensus.timeout_commit 3s
+gnoland config set mempool.size 10000
+gnoland config set p2p.flush_throttle_timeout 10ms
+gnoland config set p2p.max_num_outbound_peers 40
+gnoland config set p2p.persistent_peers g1e3pftctakyx58mzapqs4syc4h0jcxwtnraq00c@185.248.24.16:47656,g13lg797wyweuultfxdntaz3v9yuchl5p9aexj4k@178.124.192.147:26656,g1z3mavstqrfewltrw886d35fufq6v7eg63xjcet@88.198.46.55:32556,g1j3ylvtrdfzckh5979kvhpznvgy6e0ytwhzrja5@149.50.96.58:41656,g1xjx0hcg67jwqfsmuzjz4uqfhh5ma4rf6n7yg2k@38.246.115.151:26656,g13gumehh3euchv3hp29gsj72pt0ssezaapqu5qd@138.201.240.155:17656,g17su28ydtj8jsdqt2c7m3jn3mysqlz6n57vxd5t@62.210.125.225:26656,g1tsdm60z0akzxtwxkfamt02m6e8fqk0y9h25vks@135.181.78.21:17656,g1xmnn74a2fcc9qnmk6zdlgr5n446em44378c5n3@142.132.158.158:26656,g16ueudzsm5t2v5t2hdr2tr8n2fzj2x6mekx6pvy@192.155.100.132:26656,g1lxkf9gn7kddrr26c640ww5wg3ezsm22we8cjpc@99.81.240.125:26656,g1ghkxmz46w46562yl8capdfqvlypp6zcp55qx7t@185.144.99.19:26656,g1ghl8lhhdnhwwvp94z0gsadvz3c03et30cqyhu2@117.1.104.188:26656,g1wfu406mz57cv2cq68agrkefd4g6pw0ew4kyvlu@65.109.22.211:54656,g1cw4ajr026320c3a6rfm2d77tr94yglh5namap9@149.50.110.40:22656,g17qp5xc8a607svp77h3ttl05mg4fuzyl5fyvc2r@37.60.255.34:27656,g1zz2yvc23ts7uk05gemxmj9dlrhdt7w8pxtcdy5@62.210.207.58:26656,g1pzyfmmtxlla7ay90rfx62cc3rq6hq3jk48cjqz@146.19.24.32:26656,g142k7zc2qym3c0u6jmkf6rv26llgr2f4nakmlmt@54.145.44.95:26656,g1v5unyq7fsndekzegp2xh0tw45nsxpkx5qsgy8u@135.181.232.179:26656,g1dlu8z4kxq8hekht2vmn6z3qqzrea4u37js727a@176.9.3.249:26656,g16f7dlfvrk6qugcdmaq5npw0sjhlf79vrz7ge6c@5.9.8.148:30800,g12gxe0qpq90vhhpp5gtavafgr2nl9cntntvrjkj@186.233.184.95:37656,g1uycj5lkvu97jddywjttd8xq53u3p6eyhh2js25@62.210.124.8:26656
 ```
 
 ### Download Genesis
@@ -63,25 +69,21 @@ gnoland secrets init
 - Genesis
 
 ```
-wget -O $HOME/gnoland-data/config/genesis.json https://gno-testnets-genesis.s3.eu-central-1.amazonaws.com/test6/genesis.json
+wget -O $HOME/gno/gnoland-data/config/genesis.json https://github.com/gnolang/gno/releases/download/chain/test13/genesis.json
 ```
 
-### create service file and start node
-
-Create service file
+### Create Service file
 
 ```
 sudo tee /etc/systemd/system/gnoland.service > /dev/null <<EOF
 [Unit]
-Description=gnoland
+Description=Gnoland node
 After=network-online.target
 [Service]
 User=$USER
-WorkingDirectory=$HOME/gnoland-data
-ExecStart=$HOME/go/bin/gnoland start \
---chainid test6 \
---data-dir $HOME/gnoland-data \
---genesis $HOME/gnoland-data/config/genesis.json
+WorkingDirectory=$HOME/gno
+Environment="GNOROOT=/root/gno"
+ExecStart=$(which gnoland) start --genesis $HOME/gno/gnoland-data/config/genesis.json --data-dir $HOME/gno/gnoland-data/ --chainid test-13 --skip-genesis-sig-verification
 Restart=always
 RestartSec=3
 LimitNOFILE=65535
@@ -111,15 +113,7 @@ curl -s localhost:26657/status | jq .result.sync_info.latest_block_height
 
 
 ### Snapshot
-<a href="https://service.vinjan.xyz/testnet/gnoland/snapshot" target="_blank">
+<a href="https://vinjan-inc.com/testnet/gnoland/snapshot" target="_blank">
   <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
 </a>
 
-
-### Create Validator
-
-Heads up to the Cheat Sheets to create validator
-
-<a href="https://service.vinjan.xyz/testnet/gnoland/cheat" target="_blank">
-  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">CLI Cheatsheets</button>
-</a>
