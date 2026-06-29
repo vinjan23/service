@@ -1,0 +1,28 @@
+---
+layout: '~/layouts/MarkdownLayout.astro'
+title: Statesync
+network: Testnet
+icon: limonata
+chain: limonata_10777-1
+version: 
+---
+
+```
+sudo systemctl stop limonatad
+cp $HOME/.evmd/data/priv_validator_state.json $HOME/.evmd/priv_validator_state.json.backup
+limonatad comet unsafe-reset-all --home $HOME/.evmd --keep-addr-book
+```
+```
+SNAP_RPC="https://rpc-t.limonata.vinjan-inc.com"
+LATEST_HEIGHT=$(curl -s $SNAP_RPC/block | jq -r .result.block.header.height); \
+BLOCK_HEIGHT=$((LATEST_HEIGHT - 1000)); \
+TRUST_HASH=$(curl -s "$SNAP_RPC/block?height=$BLOCK_HEIGHT" | jq -r .result.block_id.hash)
+sed -i "/\[statesync\]/, /^enable =/ s/=.*/= true/;\
+/^rpc_servers =/ s|=.*|= \"$SNAP_RPC,$SNAP_RPC\"|;\
+/^trust_height =/ s/=.*/= $BLOCK_HEIGHT/;\
+/^trust_hash =/ s/=.*/= \"$TRUST_HASH\"/" $HOME/.evmd/config/config.toml
+```
+```
+sudo systemctl restart limonatad
+sudo journalctl -u limonatad -f -o cat
+```
