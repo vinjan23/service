@@ -67,7 +67,7 @@ curl -L https://snapshot.vinjan-inc.com/limonata/addrbook.json > $HOME/.evmd/con
 ### Configure Seeds and Peers
 
 ```
-peers="4b154368aab24cb5b31c927efd50c73d0f4f9799@142.127.103.79:26656"
+peers="e27dfd298be3453fea65a61d1c6c06b540761016@95.216.102.220:19156"
 sed -i -e "s|^persistent_peers *=.*|persistent_peers = \"$peers\"|" $HOME/.evmd/config/config.toml
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0aLIMO\"/" $HOME/.evmd/config/app.toml
 ```
@@ -106,10 +106,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable limonatad
 ```
 
-### Snapshot
-<a href="https://vinjan-inc.com/testnet/limonata/snapshot" target="_blank">
-  <button style="background-color: green; border: none; color: white; padding: 15px 32px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 10px; box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);" onmouseover="this.style.boxShadow='0 0 0 4px rgba(0,255,0,0.5)'" onmouseout="this.style.boxShadow='0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19)'">Snapshot</button>
-</a>
+- Use Statesync
 
 ### Statesync
 <a href="https://vinjan-inc.com/testnet/limonata/statesync" target="_blank">
