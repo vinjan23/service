@@ -39,9 +39,11 @@ go version
 ### Install binary
 
 ```
-curl -sL https://github.com/Limonata-Blockchain/limonata/releases/latest/download/limonatad-linux-amd64.tar.gz | tar xz
+wget https://github.com/Limonata-Blockchain/limonata/releases/download/limonata-testnet-v0.1.0/limonatad-linux-amd64.tar.gz
+tar xzf limonatad-linux-amd64.tar.gz
 chmod +x limonatad
 mv limonatad /usr/local/bin/
+rm -rf limonatad-linux-amd64.tar.gz
 ```
 
 ### Initialize Node
@@ -67,7 +69,7 @@ curl -L https://snapshot.vinjan-inc.com/limonata/addrbook.json > $HOME/.evmd/con
 ### Configure Seeds and Peers
 
 ```
-peers="e27dfd298be3453fea65a61d1c6c06b540761016@95.216.102.220:19156"
+peers="14673dfbd8efff7eed0a97880efde1d0a54da948@195.201.160.23:19156"
 sed -i -e "s|^persistent_peers *=.*|persistent_peers = \"$peers\"|" $HOME/.evmd/config/config.toml
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0aLIMO\"/" $HOME/.evmd/config/app.toml
 ```
