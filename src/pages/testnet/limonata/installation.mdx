@@ -4,7 +4,7 @@ title: Installation Node
 network: Testnet
 icon: limonata
 chain: limonata_10777-1
-version: 
+version: v0.2.0
 ---
 
 ### Hardware requirements
@@ -39,7 +39,7 @@ go version
 ### Install binary
 
 ```
-wget https://github.com/Limonata-Blockchain/limonata/releases/download/limonata-testnet-v0.1.0/limonatad-linux-amd64.tar.gz
+wget https://github.com/Limonata-Blockchain/limonata/releases/download/limonata-testnet-v0.2.0/limonatad-linux-amd64.tar.gz
 tar xzf limonatad-linux-amd64.tar.gz
 chmod +x limonatad
 mv limonatad /usr/local/bin/
@@ -69,7 +69,7 @@ curl -L https://snapshot.vinjan-inc.com/limonata/addrbook.json > $HOME/.evmd/con
 ### Configure Seeds and Peers
 
 ```
-peers="14673dfbd8efff7eed0a97880efde1d0a54da948@195.201.160.23:19156"
+peers="f8bef28f14306bb9b70e026bcc3c89b6188a6688@95.216.102.220:19156"
 sed -i -e "s|^persistent_peers *=.*|persistent_peers = \"$peers\"|" $HOME/.evmd/config/config.toml
 sed -i -e "s/^minimum-gas-prices *=.*/minimum-gas-prices = \"0aLIMO\"/" $HOME/.evmd/config/app.toml
 ```
