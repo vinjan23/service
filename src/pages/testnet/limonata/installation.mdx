@@ -4,7 +4,7 @@ title: Installation Node
 network: Testnet
 icon: limonata
 chain: limonata_10777-1
-version: v0.2.0
+version: v0.3.2
 ---
 
 ### Hardware requirements
@@ -39,11 +39,13 @@ go version
 ### Install binary
 
 ```
-wget https://github.com/Limonata-Blockchain/limonata/releases/download/limonata-testnet-v0.2.0/limonatad-linux-amd64.tar.gz
-tar xzf limonatad-linux-amd64.tar.gz
-chmod +x limonatad
-mv limonatad /usr/local/bin/
-rm -rf limonatad-linux-amd64.tar.gz
+cd $HOME
+rm -rf limonata
+git clone https://github.com/Limonata-Blockchain/limonata.git
+cd limonata
+git checkout limonata-v0.3.2
+make install
+mv $HOME/go/bin/evmd $HOME/go/bin/limonatad
 ```
 
 ### Initialize Node
