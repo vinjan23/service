@@ -6,9 +6,9 @@ icon: limonata
 chain: limonata_10777-1
 version: v0.3.2
 ---
-`
+
 Update Every 12 Hours
-`
+
 
 ```
 sudo systemctl stop limonatad
@@ -27,5 +27,5 @@ mv $HOME/.evmd/priv_validator_state.json.backup $HOME/.evmd/data/priv_validator_
 ```
 ```
 sudo systemctl restart limonatad
-journalctl -fu limonata -o cat
+sudo journalctl -u limonatad -f -o cat
 ```
